@@ -1,0 +1,132 @@
+@startuml
+title "addComponent - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant Dashboard as UI
+participant AppManager
+participant AppManager.ComponentService
+participant AppManager.LibraryService
+participant AppManager.RepositoryService
+participant AppManager.PipelineService
+participant SourceManager
+participant GitLab
+participant PipelineManager
+participant Jenkins
+participant ResourceManager
+
+activate User
+User -> UI: LINK: goto /addComponent page
+activate UI
+UI -> User:
+deactivate UI
+
+note over User
+  Requirments:
+  Enter required parameters for the new component to create
+  :groupPath (eg. TAS)
+  :componentName (eg. ExampleManager)
+  Click create button
+end note
+
+User -> AppManager: GET /groups
+activate AppManager
+AppManager -> ResourceManager: GET /groups
+activate ResourceManager
+AppManager <- ResourceManager: Group[]
+deactivate ResourceManager
+User <- AppManager: Group[] \n {"id":"uuid", "name":"groupPath"}
+deactivate AppManager
+
+User -> AppManager: POST /components
+activate AppManager
+AppManager -> AppManager.ComponentService : create(Component component) \n [body:Component{"name"= :componentName, \n "metadata"={"groupPath"=:groupPath}}]
+activate AppManager.ComponentService
+AppManager.ComponentService -> ResourceManager: POST /components \n [params: "groupPath"= :groupPath] \n [body: Component{"name"= :componentName}]
+activate ResourceManager
+ResourceManager -> ResourceManager: create DB resource + Keycloak resource
+ResourceManager -> ResourceManager: add READ permission on component uri
+ResourceManager -> AppManager.ComponentService: Component{"id"= <guid>, "name"= :componentName, "status"= <PENDING>, "metadata"={"groupId"=<groupId>, "groupPath"=:groupPath}}
+deactivate ResourceManager
+AppManager <-- AppManager.ComponentService: \n Component{ \n "id" = <guid>, \n "name" = :componentName, \n "status" = "PENDING"}
+AppManager --> User: success
+deactivate AppManager
+deactivate User
+
+
+!define SourceRepositoryCaller AppManager.ComponentService
+"SourceRepositoryCaller" -> AppManager.RepositoryService: createRepository(String name, String path, String[] deployKeys) \n name=:component.name \n path=:groupPath/components/:component.name/api \n deployKeys=[:component.metadata.groupId]
+!include ./../../SourceRepository/create-sequence-from-path.puml
+
+AppManager.ComponentService -> ResourceManager: PATCH /components/{componentId} \n [params: "componentId"= :component.id] \n [body: Component{"apiRepository"= SourceRepository.id}]
+activate ResourceManager
+ResourceManager -> AppManager.ComponentService: Component
+deactivate ResourceManager
+
+
+loop (programming languages) :language={java, python}
+   loop (library) :libraryType={model [optionnal, if exists], interface, client}
+
+      AppManager.ComponentService -> AppManager.LibraryService : add( \n Component component, \n Language language, \n Type type) : Library
+
+      activate AppManager.LibraryService
+
+
+      AppManager.LibraryService -> ResourceManager: POST /libraries \n [body: Library {"type"=:libraryType, "language"=:language, "component"= {"id"= component.id}}]
+      activate ResourceManager
+      ResourceManager -> ResourceManager: create Library into db
+      AppManager.LibraryService <-- ResourceManager: Library {"id"= <guid>, "status"=<PENDING>}
+      deactivate ResourceManager
+
+      AppManager.ComponentService <-- AppManager.LibraryService : Library \n {"id" = <guid>,\n  "type"=:libraryType,\n  "language"=:language,\n  "component"= {"id"= component.id},\n status = <PENDING>}
+
+
+      AppManager.LibraryService -> AppManager.RepositoryService: createRepository(String name, String path, String[] deployKeys) \n name=:component.name/:language/:libraryType \n path=:groupPath/components/:component.name/:language/:libraryType \n deployKeys=[:component.metadata.groupId]
+      note over AppManager.RepositoryService
+            RepositoryService.createRepository(String name, String path, String[] deployKeys) is already specified above
+      end note
+      activate AppManager.RepositoryService
+      AppManager.LibraryService <- AppManager.RepositoryService: SourceRepository("id" = <guid>, status = "PENDING" }
+      deactivate AppManager.RepositoryService
+
+      AppManager.LibraryService -> ResourceManager: PATCH /libraries/{libraryId} \n [params: "libraryId"= :Library.id] \n [body: Library {"sourceRepository"= {"id"= SourceRepository.id}}]
+      activate ResourceManager
+      AppManager.LibraryService <- ResourceManager : Library
+      deactivate ResourceManager
+
+
+== Wait SourceRepository is READY ==
+
+      !define PipelineServiceCaller AppManager.LibraryService
+      "PipelineServiceCaller" -> AppManager.PipelineService: PipelineService.createPipeline(\n String path, SourceRepository sourceRepository, PipelineTemplate pipelineTemplate) : Pipeline  \n path=groupId/:component.name/implementations/:language/:implementationName \n sourceRepository=:sourceRepository \n PipelineTemplate=?
+      !include ./../../Pipeline/create-sequence-from-pathSourceRepositoryPipelineTemplate.puml
+
+
+      AppManager.LibraryService -> ResourceManager: PATCH /libraries/{libraryId} \n [params: "libraryId"= :Library.id] \n [body: Pipeline {"id"= <guid>, "status"=<PENDING>}]
+      activate ResourceManager
+      ResourceManager -> AppManager.LibraryService: Library
+      deactivate ResourceManager
+
+
+
+== Wait Pipeline and SourceRepository status are READY ==
+
+      AppManager.LibraryService -> ResourceManager: PATCH /libraries/{libraryId} \n [params: "libraryId"= :Library.id] \n [body: Library {"status"=READY}]
+      activate ResourceManager
+      AppManager.LibraryService <- ResourceManager : Library updated w/ Pipeline and SourceRepository
+      deactivate ResourceManager
+      deactivate AppManager.LibraryService
+   end
+end
+
+== Wait SourceRepositoryApi and all Libraries status are READY ==
+
+AppManager.ComponentService -> ResourceManager: PATCH /components/{componentId} \n [params: "componentId"= :componentId.id] \n [body: Component {"status"=READY}]
+note left : update component with status "Ready"
+activate ResourceManager
+ResourceManager -> ResourceManager: update component : status = "READY"
+ResourceManager -> AppManager.ComponentService: Component
+deactivate ResourceManager
+deactivate AppManager.ComponentService
+
+@enduml

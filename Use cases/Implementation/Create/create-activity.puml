@@ -1,0 +1,47 @@
+@startuml
+start
+if (Name of implementation exists?) then (yes)
+    :Name of implementation already exists;
+    end
+else (no)
+  :Create into db;
+endif
+:Implementation is PENDING;
+
+:Create implementation's source repository;
+
+if (Implementation's source repository  is READY ?) then (yes)
+    :Source repository is READY;
+else (no)
+    :Source repository is PENDING, ERROR or UNSTABLE (not READY);
+    :Implementation is ERROR;
+    end
+endif
+
+
+:Create implementation's pipeline;
+if (Implementation's pipeline  is READY?) then (yes)
+    :Implementation's Pipeline is READY;
+else (no)
+    :Implementation's Pipeline is PENDING, ERROR or UNSTABLE (not READY);
+    :Implementation is ERROR;
+    end
+endif
+
+:Create initial version of implementation;
+:ImplementationVersion is PENDING;
+:Generate source code of new version;
+:Push and tag source code into Source Repository;
+
+if (SourceRepository is updated?) then (yes)
+    :ImplementationVersion is READY;
+else (no)
+    :ImplementationVersion is ERROR;
+    :Implementation is ERROR;
+    end
+endif
+
+:Implementation is READY;
+
+end
+@enduml

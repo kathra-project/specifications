@@ -1,0 +1,123 @@
+@startuml
+title "addImplementation - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant Dashboard as UI
+participant AppManager
+participant AppManager.ImplementationService as "AppManager.ImplementationService"
+participant AppManager.ImplementationVersionService
+participant AppManager.RepositoryService
+participant AppManager.PipelineService
+participant ResourceManager
+participant SourceManager
+participant PipelineManager
+participant Codegen
+
+
+
+activate User
+User -> UI: LINK: goto /addImplementation page
+activate UI
+UI -> User:
+deactivate UI
+
+note over User
+  Requirments:
+  Enter required parameters for the new component to create
+  Click create button
+end note
+
+User -> AppManager: POST /implementations
+activate AppManager
+AppManager -> AppManager.ImplementationService: create(String name, \n ApiVersion apiVersion,\n Language lang)
+activate AppManager.ImplementationService
+
+AppManager.ImplementationService -> ResourceManager: POST /implementations [body: Implementation(mandatories: name, Language lang, apiVersion.component, status = PENDING)]
+    activate ResourceManager
+    ResourceManager -> ResourceManager: create DB resource
+    AppManager.ImplementationService <- ResourceManager: Implementation w/ id
+    deactivate ResourceManager
+
+AppManager <-- AppManager.ImplementationService: Implementation w/ id
+AppManager --> User: success
+deactivate AppManager
+deactivate User
+
+
+
+!define SourceRepositoryCaller AppManager.ImplementationService
+"SourceRepositoryCaller" -> AppManager.RepositoryService: createRepository(String path, String[] deployKeys) \n path=:component.metadata.groupPath/:implementation.component.id/implementations/:implementation.lang/:implementation.name \n deployKeys=[:component.metadata.groupId]
+!include ./../../SourceRepository/create-sequence-from-path.puml
+
+AppManager.ImplementationService --> ResourceManager: PATCH /implementation/:implementationId (mandatory: sourceRepository w/ id)
+
+== WAIT sourceRepository is READY ==
+
+!define PipelineServiceCaller AppManager.ImplementationService
+"PipelineServiceCaller" -> AppManager.PipelineService: PipelineService.createPipeline(\n String path, SourceRepository sourceRepository, PipelineTemplate pipelineTemplate) : Pipeline  \n path=groupId/:component.name/implementations/:language/:implementationName \n sourceRepository=:sourceRepository \n PipelineTemplate=?
+!include ./../../Pipeline/create-sequence-from-pathSourceRepositoryPipelineTemplate.puml
+
+
+AppManager.ImplementationService --> ResourceManager: PATCH /implementation/:implementationId (mandatory: pipeline w/ id)
+
+== Wait Implementation's Pipeline and SourceRepository are READY ==
+
+
+AppManager.ImplementationService -> AppManager.ImplementationVersionService : create( \n Implementation implementation,\n ApiVersion version,\n String version[default: 1.0.0])
+activate AppManager.ImplementationVersionService
+
+AppManager.ImplementationVersionService -> ResourceManager: POST /implementationVersions [body: ImplementationVersion(mandatories: implementation, apiVersion, version, status = PENDING)]
+activate ResourceManager
+    ResourceManager -> ResourceManager: create ImplementationVersion \n into Db
+    ResourceManager -> AppManager.ImplementationVersionService: ImplementationVersion w/ id
+deactivate ResourceManager
+
+AppManager.ImplementationService <-- AppManager.ImplementationVersionService : ImplementationVersion w/ id
+
+AppManager.ImplementationVersionService -> Codegen: POST /generate [formdata: lang:implementation.language]
+    activate Codegen
+    Codegen -> AppManager.ImplementationVersionService: zip file w/ source code generated
+    deactivate Codegen
+
+
+AppManager.ImplementationVersionService -> AppManager.RepositoryService: RepositoryService.updateSourceRepository( \n SourceRepository sourceRepository, String version, File archiveFile)
+activate AppManager.RepositoryService
+
+
+    AppManager.RepositoryService -> SourceManager: POST /updateRepository [formdata: file:source-code.zip, param: url=sourceRepository.sshUrl, tag=version)]
+    activate SourceManager
+        SourceManager -> GitLab: unzip, commit, \n tag <version>, push to url
+        SourceManager -> AppManager.RepositoryService: OK
+    deactivate SourceManager
+
+AppManager.ImplementationVersionService <- AppManager.RepositoryService : SourceRepository
+deactivate AppManager.RepositoryService
+
+AppManager.ImplementationVersionService -> ResourceManager: PATCH /implementationVersions/:implementationVersionId \n [params: "implementationVersionId"= :implementationVersion.id] \n [body: ImplementationVersion{ status = READY}]
+activate ResourceManager
+AppManager.ImplementationVersionService <- ResourceManager: ImplementationVersion
+deactivate ResourceManager
+
+
+deactivate AppManager.ImplementationVersionService
+
+
+== Wait ImplementationVersionService is READY ==
+
+
+AppManager.ImplementationService -> ResourceManager: PATCH /implementations/{implementationId} \n [params: "implementationId"= :implementation.id] \n [body: Implementation{"library"=library, status = READY}]
+activate ResourceManager
+ResourceManager -> AppManager.ImplementationService: Implementation
+deactivate ResourceManager
+
+deactivate AppManager.ImplementationService
+
+
+deactivate User
+
+
+
+
+deactivate AppManager
+@enduml

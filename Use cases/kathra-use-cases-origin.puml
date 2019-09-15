@@ -1,0 +1,57 @@
+@startuml
+'default
+left to right direction
+
+
+:developer: as "Developer"
+:experimenter: as "Experimenter"
+:productionManager: as "Production Manager"
+:admin: as "Administrator"
+:demonstrator: as "Demonstrator"
+
+
+(development) as "Make developments"
+
+(manageApplicationLifecycle) as "Manage application lifecycle"
+
+(experiment) as "Experiment"
+
+(manageProductionPlatform) as "Manage production plateform"
+(usePlatform) as "Use plateform"
+
+(managePlatform) as "Manage plateform"
+(manageApplication) as "Manage applications"
+(manageAccess) as "Manage access"
+
+(monitorPlatform) as "Monitor plateform"
+
+(operate) as "Operate"
+(superversion) as "Superversion"
+(acl) as "Make ACL"
+
+(demonstrate) as "Demonstration"
+
+developer --> (development)
+experimenter --> (experiment)
+productionManager --> (manageProductionPlatform)
+demonstrator --> (demonstrate)
+admin --> (operate)
+
+
+(development) .> (manageApplicationLifecycle) : extends
+(development) .> (experiment) : extends
+
+(experiment) .> (usePlatform) : include
+(experiment) .> (managePlatform) : include
+(managePlatform) .> (manageApplication) : include
+(managePlatform) .> (manageAccess) : include
+
+(experiment) .> (monitorPlatform) : include
+(manageProductionPlatform) .> (monitorPlatform) : include
+
+(operate) .> (superversion) : include
+(operate) .> (acl) : include
+
+(demonstrate) .> (usePlatform) : include
+
+@enduml

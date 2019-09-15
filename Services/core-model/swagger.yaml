@@ -1,0 +1,296 @@
+swagger: '2.0'
+info:
+  title: Kathra Core Model
+  version: 1.0.0-RC-SNAPSHOT
+  x-artifactName: core
+  x-groupId: org.kathra
+definitions:
+  RESOURCE_STATUS:
+    type: string
+    enum: &RESOURCE_STATUS
+    - PENDING
+    - READY
+    - UPDATING
+    - UNSTABLE
+    - ERROR
+    - DELETED
+  PROGRAMMING_LANGUAGE:
+    type: string
+    enum: &PROGRAMMING_LANGUAGE
+    - JAVA
+    - PYTHON
+  LIBRARY_TYPE:
+    type: string
+    enum: &LIBRARY_TYPE
+    - MODEL
+    - INTERFACE
+    - CLIENT
+  PIPELINE_TEMPLATE:
+    type: string
+    enum: &PIPELINE_TEMPLATE
+    - JAVA_LIBRARY
+    - PYTHON_LIBRARY
+    - JAVA_SERVICE
+    - PYTHON_SERVICE
+  Resource:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      status:
+        enum: *RESOURCE_STATUS
+      createdBy:
+        type: string
+      updatedBy:
+        type: string
+      createdAt:
+        type: integer
+      updatedAt:
+        type: integer
+      metadata:
+        type: object
+        additionalProperties:
+          type: object
+  Component:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        description:
+          type: string
+        title:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/definitions/ApiVersion'
+        libraries:
+          type: array
+          items:
+            $ref: '#/definitions/Library'
+        implementations:
+          type: array
+          items:
+            $ref: '#/definitions/Implementation'
+        apiRepository:
+          $ref: '#/definitions/SourceRepository'
+  Asset:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        sourceRepository:
+          $ref: '#/definitions/SourceRepository'
+        pipeline:
+          $ref: '#/definitions/Pipeline'
+        language:
+          enum: *PROGRAMMING_LANGUAGE
+  Library:
+    allOf:
+    - $ref: '#/definitions/Asset'
+    - type: object
+      properties:
+        component:
+          $ref: '#/definitions/Component'
+        type:
+          enum: *LIBRARY_TYPE
+        versions:
+          type: array
+          items:
+            $ref: '#/definitions/LibraryApiVersion'
+  Implementation:
+    allOf:
+    - $ref: '#/definitions/Asset'
+    - type: object
+      properties:
+        description:
+          type: string
+        title:
+          type: string
+        versions:
+          type: array
+          items:
+            $ref: '#/definitions/ImplementationVersion'
+  ImplementationVersion:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        sourceRepo:
+          $ref: '#/definitions/SourceRepository'
+        version:
+          type: string
+        implementation:
+          $ref: '#/definitions/Implementation'
+        apiVersion:
+          $ref: '#/definitions/ApiVersion'
+  ApiVersion:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        component:
+          $ref: '#/definitions/Component'
+        released:
+          type: boolean
+        version:
+          type: string
+        apiRepositoryStatus:
+          enum: *RESOURCE_STATUS
+        librariesApiVersions:
+          type: array
+          items:
+            $ref: '#/definitions/LibraryApiVersion'
+        implementationsVersions:
+          type: array
+          items:
+            $ref: '#/definitions/ImplementationVersion'
+  LibraryApiVersion:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        library:
+          $ref: '#/definitions/Library'
+        apiVersion:
+          $ref: '#/definitions/ApiVersion'
+        apiRepositoryStatus:
+          enum: *RESOURCE_STATUS
+        pipelineStatus:
+          enum: *RESOURCE_STATUS
+  SourceRepository:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        provider:
+          type: string
+        providerId:
+          type: string
+        path:
+          type: string
+        sshUrl:
+          type: string
+        httpUrl:
+          type: string
+        webUrl:
+          type: string
+        branchs:
+          type: array
+          items:
+            type: string
+  Pipeline:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        provider:
+          type: string
+        providerId:
+          type: string
+        credentialId:
+          type: string
+        path:
+          type: string
+        sourceRepository:
+          $ref: '#/definitions/SourceRepository'
+        template:
+          enum: *PIPELINE_TEMPLATE
+  Group:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        path:
+          type: string
+          description: Group's path in case of subgroup
+        members:
+          type: "array"
+          items:
+            $ref: "#/definitions/Assignation"
+        parent:
+          $ref: '#/definitions/Group'
+        sourceRepositoryStatus:
+          enum: *RESOURCE_STATUS
+        sourceMembershipStatus:
+          enum: *RESOURCE_STATUS
+        pipelineFolderStatus:
+          enum: *RESOURCE_STATUS
+        binaryRepositoryStatus:
+          enum: *RESOURCE_STATUS
+  KeyPair:
+    allOf:
+    - $ref: "#/definitions/Resource"
+    - type: "object"
+      properties:
+        private:
+          type: string
+        public:
+          type: string
+        group:
+          $ref: '#/definitions/Group'
+  User:
+    allOf:
+    - $ref: "#/definitions/Resource"
+    - type: "object"
+      properties:
+        firstName:
+          type: "string"
+        lastName:
+          type: "string"
+        email:
+          type: "string"
+        password:
+          type: "string"
+        phone:
+          type: "string"
+        groups:
+          type: "array"
+          items:
+            $ref: "#/definitions/Assignation"
+  Assignation:
+    allOf:
+    - $ref: "#/definitions/Resource"
+    - type: "object"
+      properties:
+        role:
+          type: "string"
+        fte:
+          type: "string"
+  SourceRepositoryCommit:
+    type: object
+    properties:
+      id:
+        type: string
+      shortId:
+        type: string
+      title:
+        type: string
+      authorName:
+        type: string
+      authorEmail:
+        type: string
+      createdAt:
+        type: string
+      committerName:
+        type: string
+      committerEmail:
+        type: string
+      message:
+        type: string
+  Membership:
+    type: object
+    properties:
+      path:
+        type: "string"
+      memberType:
+        type: "string"
+        enum: ["user", "group"]
+      memberName:
+        type: "string"
+      role:
+        type: "string"
+        enum: ["guest", "contributor", "manager"]
+paths: {}

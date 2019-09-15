@@ -1,0 +1,118 @@
+@startuml
+
+title "addImplementationVersion - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant AppManager
+participant AppManager.ImplementationVersionLibraryService
+participant AppManager.RepositoryService
+participant AppManager.PipelineService
+
+participant ResourceManager
+participant SourceManager
+participant Codegen
+participant PipelineManager
+participant GitLab
+participant Jenkins
+
+
+activate User
+User -> AppManager: POST /implementations \n body = [\n   apiVersion:apiVersion.id,\n   implementation: Implementation(name, group, language, description)\n ]
+deactivate User
+activate AppManager
+AppManager -> ResourceManager: POST /apiVersions \n [body: apiVersion(mandatories: version, component={id:componentId}, metadata.sourceRepositoryStatus=CREATING)]
+activate ResourceManager
+ResourceManager -> ResourceManager: create ApiVersion \n into Db
+ResourceManager -> AppManager: ApiVersion (mandatories: id is defined, status=CREATING, metadata.sourceRepositoryStatus=CREATING)
+deactivate ResourceManager
+AppManager --> User: success
+
+AppManager -> SourceManager: POST /updateFile \n [formdata: file:swagger.yaml, params: filename:/api/swagger.yaml, url:apiVersion.sourceRepo.sshUrl, tag:apiVersion.version]
+activate SourceManager
+SourceManager -> GitLab: update /api/swagger.yml, \n commit, \n tag <apiVersion.version>, \n push
+SourceManager -> AppManager: SourceRepository
+deactivate SourceManager
+
+AppManager -> ResourceManager: PATCH /apiVersions \n [body: apiVersion(metadata.sourceRepositoryStatus=READY)]
+activate ResourceManager
+ResourceManager -> AppManager: ApiVersion
+deactivate ResourceManager
+
+
+
+loop component.libaries
+
+    AppManager -> AppManager.ImplementationVersionLibraryService: createImplementationVersionLibraryService(ApiVersion, Library):ApiVersionLibrary
+    deactivate AppManager
+    activate AppManager.ImplementationVersionLibraryService
+
+        AppManager.ImplementationVersionLibraryService -> ResourceManager: POST /apiVersionLibrary/ \n [body: ApiVersionLibrary(mandatories: library, apiVersion, \n status = CREATING)]
+        activate ResourceManager
+            ResourceManager -> ResourceManager: create ApiVersionLibrary \n into Db
+            ResourceManager -> AppManager.ImplementationVersionLibraryService: ApiVersionLibrary w/ id
+        deactivate ResourceManager
+
+    AppManager.ImplementationVersionLibraryService --> AppManager : ApiVersionLibrary w/ id
+    activate AppManager
+
+        AppManager.ImplementationVersionLibraryService -> Codegen: POST /generate?library=library.type&language=library.language \n [formdata: file:swagger.yaml]
+        activate Codegen
+        Codegen -> AppManager.ImplementationVersionLibraryService: zip file w/ source code generated
+        deactivate Codegen
+
+        AppManager.ImplementationVersionLibraryService -> AppManager.RepositoryService: RepositoryService.updateSourceRepository( \n ApiVersionLibrary apiVersionLibrary, \n File archiveFile) : ApiVersionLibrary
+        activate AppManager.RepositoryService
+
+
+            AppManager.RepositoryService -> SourceManager: POST /createRepository \n [formdata: file:source-code.zip, \n param: \n url=:groupId/:componentId/:language/:library.git, \n tag=apiVersion.version)]
+            activate SourceManager
+                SourceManager -> GitLab: git create, commit, \n tag <apiVersion.version>, push to url
+                SourceManager -> AppManager.RepositoryService: OK
+            deactivate SourceManager
+
+        AppManager.RepositoryService --> ResourceManager: PATCH /apiVersionLibrary/:apiVersionLibraryId \n [body:sourceRepository (mandatories: status = READY)]
+
+        deactivate AppManager.RepositoryService
+        deactivate AppManager.ImplementationVersionLibraryService
+
+
+
+end
+
+== Wait all ApiVersionLibrary status are READY ==
+
+
+loop component.libaries
+
+
+
+        AppManager -> AppManager.PipelineService: PipelineService.executeApiLibraryVersion(\n ApiLibraryVersion apiLibraryVersion) : Build
+        activate AppManager.PipelineService
+
+            AppManager.PipelineService -> ResourceManager: PUT /build \n [param: pipelineId: pipeline.id, tag: tag]
+            activate ResourceManager
+            ResourceManager -> AppManager.PipelineService: Build w/ number
+            deactivate ResourceManager
+
+            AppManager.PipelineService --> AppManager: Build w/ number
+
+            loop every {{CHECK-BUILD-INTERVAL}} seconds [max-iterations:{{MAX-ITERATION}}]
+                AppManager.PipelineService -> ResourceManager: GET /build \n [param: pipelineId: pipeline.id, buildNumber: number]
+                activate ResourceManager
+                ResourceManager -> AppManager.PipelineService: Build w/ informations
+                deactivate ResourceManager
+            end
+
+        AppManager.PipelineService --> ResourceManager: PATCH /apiVersionLibrary/:apiVersionLibraryId \n [body:sourceRepository (mandatories: status = BUILT)]
+        deactivate AppManager.PipelineService
+
+
+end
+
+== Wait all ApiVersionLibrary status are BUILT ==
+
+AppManager --> ResourceManager : PATCH /apiVersion/:apiVersionId [body:ApiVersion (mandatories: status=OK)]
+
+
+@enduml

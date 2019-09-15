@@ -1,0 +1,20 @@
+@startuml
+'default
+left to right direction
+
+
+:developer: as "Developer"
+
+(development) as "Make developments"
+(componentFeature) as "View & create component"
+(apiVersionFeature) as "View, create & update api version"
+(implementationFeature) as "View, create & update implementation"
+
+
+(development) .> (componentFeature) : include
+(development) .> (apiVersionFeature) : include
+(development) .> (implementationFeature) : include
+
+developer --> (development)
+
+@enduml

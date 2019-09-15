@@ -1,0 +1,32 @@
+@startuml
+title "initSmite - Sequence Diagram"
+
+actor Integrator
+'boundary Proxy
+participant Synchronizer
+participant PipelineManager
+participant SourceManager
+participant Jenkins
+participant Gitlab
+
+activate Integrator
+Integrator -> Synchronizer : initSmite
+activate Synchronizer
+Synchronizer -> Integrator : success
+deactivate Integrator
+
+
+Synchronizer -> PipelineManager : POST /folders [folderName="smite-projects"]
+activate PipelineManager
+PipelineManager -> Jenkins : addFolder [folderName="smite-projects"]
+PipelineManager -> Synchronizer : OK
+deactivate PipelineManager
+
+
+Synchronizer -> SourceManager : POST /groups [groupName = "smite-projects"]
+activate SourceManager
+SourceManager -> Gitlab : addGroup [groupName = "smite-projects"]
+SourceManager -> Synchronizer : OK
+deactivate SourceManager
+deactivate Synchronizer
+@enduml

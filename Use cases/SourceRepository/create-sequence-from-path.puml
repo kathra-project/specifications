@@ -1,0 +1,37 @@
+@startuml
+
+
+activate AppManager.RepositoryService
+
+    AppManager.RepositoryService -> ResourceManager: POST /sourceRepositories \n [body: SourceRepository{"name"= :name, "path" = :pat, "deployKeys"= :deployKeys}]
+
+    activate ResourceManager
+        ResourceManager -> ResourceManager: create SourceRepository \n into Db
+        ResourceManager -> AppManager.RepositoryService: SourceRepository {"id"= <guid>, "name"= :name, "path" = :path, "status"= <PENDING>}
+    deactivate ResourceManager
+
+
+    AppManager.RepositoryService --> "SourceRepositoryCaller" : SourceRepository {"id"= <guid>, "name"= :component.name, "status"= <PENDING>}
+
+    AppManager.RepositoryService -> SourceManager: POST /sourceRepositories \n [body: SourceRepository{"path"=:path}]
+
+    activate SourceManager
+        SourceManager -> GitLab: git create
+        SourceManager -> AppManager.RepositoryService: SourceRepository { \n\
+    \t"name"= "api", \n\t"provider"= <providerName>,\n\t"providerId"= <SourceManagerProviderRepoId>\n\
+    \t"sshUrl"= <SourceManagerProviderSshUrl>, \n\t"httpUrl"= <SourceManagerProviderHttpUrl>, \n\t"webUrl"= <SourceManagerProviderWebUrl>, \n\t"branches"= ["master","dev"] \n\
+    }
+
+    deactivate SourceManager
+
+    AppManager.RepositoryService -> ResourceManager: PATCH /sourceRepositories/{sourceRepositoryId} \n [params: "sourceRepositoryId"= :SourceRepository.id] \n [body: SourceRepository { \n\t"provider"= <providerName>,\n\t"providerId"= <SourceManagerRepoId>\n\
+    \t"sshUrl"= <SourceManagerProviderSshUrl>, \n\t"httpUrl"= <SourceManagerProviderHttpUrl>, \n\t"webUrl"= <SourceManagerProviderWebUrl>, \n\t"branches"= ["master","dev"], \n\t"status"=READY \n\
+    }]
+
+    activate ResourceManager
+    ResourceManager -> AppManager.RepositoryService: SourceRepository
+    deactivate ResourceManager
+
+deactivate AppManager.RepositoryService
+
+@enduml

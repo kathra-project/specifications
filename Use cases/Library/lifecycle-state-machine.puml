@@ -1,0 +1,30 @@
+@startuml
+state "Create a new library" as insertLibrary : Library should be specified
+[*] --> insertLibrary
+insertLibrary --> PENDING
+PENDING : Library existing in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Create source repository for library" as createRepository
+    state "Create pipeline for library" as createPipeline
+    [*] --> createRepository
+    createRepository --> createPipeline
+    createPipeline --> [*]
+}
+ERROR -> [*]
+PENDING -> READY : Library is fully initialized
+PENDING -> ERROR
+READY : Update Library status to READY
+READY --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check source repository is READY" as checkRepository
+    state "Check pipeline is READY" as checkPipeline
+    [*] --> checkRepository
+    checkRepository --> checkPipeline
+    checkPipeline --> [*]
+}
+UNSTABLE -> READY : Library is available
+READY --> DELETED
+DELETED -> [*]
+
+@enduml

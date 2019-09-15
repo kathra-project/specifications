@@ -1,0 +1,55 @@
+@startuml
+'default
+left to right direction
+
+:webUser: as "WebUser"
+
+:webUser: -> [WebBrowser]
+
+package "Visualisation" {
+[WebBrowser] -> [Dashboard]
+}
+
+
+package "Application Building" {
+[WebBrowser] -> [KathraAppManager]
+[KathraAppManager] .> [KathraSourceManager]
+[KathraAppManager] .> [KathraCodeGenManager]
+[KathraAppManager] .> [KathraPipelineManager]
+[KathraPipelineManager] .> [KathraContinousIntegrationTool]
+}
+
+package "General" {
+[KathraAppManager] -> [KathraResourceManager]
+[KathraResourceManager] .> [SecurityApi (e.g. Keycloack)]
+}
+
+package "Runtime Management" {
+[WebBrowser] -> [KathraPlatformManager]
+[KathraPlatformManager] .> [KathraCatalogManager]
+[KathraPlatformManager] .> [KathraResourceManager]
+}
+
+
+package "ImageRepository (e.g. Harbor)" {
+[KathraContinousIntegrationTool] .> [HarborApi]
+}
+
+package "LibraryRepository (e.g. Nexus)" {
+[KathraContinousIntegrationTool] .> [ImageRepositoryApi] : HTTP
+}
+
+package "SourceRepository (e.g. GitLab)" {
+[KathraSourceManager] .> [SourceRepositoryApi]
+}
+
+package "AutomatationServer (e.g. Jenkins)" {
+[KathraPipelineManager] .> [AutomatationServerApi]
+}
+
+package "ContainerManager (e.g. Kubernetes)" {
+[KathraContinousIntegrationTool] .> [ContainerManagerApi]
+}
+
+
+@enduml

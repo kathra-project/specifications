@@ -1,0 +1,29 @@
+@startuml
+
+== Wait all ApiVersionLibrary status are READY ==
+
+loop apiversion.apiversionlibraries
+
+        AppManager.ApiVersionService -> AppManager.PipelineService: PipelineService.executeApiLibraryVersion(\n ApiLibraryVersion apiLibraryVersion) : Build
+        activate AppManager.PipelineService
+
+            AppManager.PipelineService -> PipelineManager: PUT /build \n [param: path: pipeline.path, branch: tag]
+            activate PipelineManager
+            PipelineManager -> AppManager.PipelineService: Build w/ number, commit, pipelinePath
+            deactivate PipelineManager
+
+            AppManager.PipelineService --> AppManager.ApiVersionService: Build w/ number
+
+            loop every {{CHECK-BUILD-INTERVAL}} seconds [max-iterations:{{MAX-ITERATION}}]
+                AppManager.PipelineService -> PipelineManager: GET /build \n [param: path: pipeline.path, buildNumber: number]
+                activate PipelineManager
+                PipelineManager -> AppManager.PipelineService: Build w/ log, commit, pipelinePath
+                deactivate PipelineManager
+            end
+
+        AppManager.PipelineService --> ResourceManager: PATCH /apiVersionLibrary/:apiVersionLibraryId \n [body:ApiVersionLibrary (mandatories: pipelineStatus = READY)]
+        deactivate AppManager.PipelineService
+
+end
+
+@enduml

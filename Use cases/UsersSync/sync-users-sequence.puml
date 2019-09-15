@@ -1,0 +1,137 @@
+@startuml
+title "synchronizeTeams - Sequence Diagram"
+
+participant Batch
+participant Synchronizer
+participant UserManager
+participant ResourceManager
+participant Keycloak
+participant SourceManager
+participant PipelineManager
+participant BinaryRepositoryManager
+participant Gitlab
+participant Jenkins
+participant Harbor
+
+activate Batch
+Batch -> Synchronizer : synchronize
+activate Synchronizer
+Synchronizer -> Batch : success
+deactivate Batch
+
+Synchronizer -> UserManager : GET /groups
+activate UserManager
+UserManager-> Keycloak : getGroups
+activate Keycloak
+Keycloak -> UserManager : groups
+deactivate Keycloak
+UserManager -> Synchronizer : Group[] (/w members)
+deactivate UserManager
+Synchronizer -> ResourceManager : GET /groups
+activate ResourceManager
+ResourceManager -> ResourceManager : getGroups
+ResourceManager -> Synchronizer : Group[]
+deactivate ResourceManager
+loop for each Group group : Group[] from UserManager (Depth First Search)
+Synchronizer -> Synchronizer : if ( Group[] from ResourceManager doesn't contains group [based on group.path])
+activate Synchronizer
+Synchronizer -> Synchronizer : search group.parentGroup in Group[] from ResourceManager (containing newly created). Status must be <READY>.
+Synchronizer -> ResourceManager : POST /group [body : Group{"providerId"=:group.providerId,"name"=:group.name, "path"=:group.path, "parent"=:parentGroup}]
+activate ResourceManager
+ResourceManager -> ResourceManager : create group into db
+ResourceManager -> Synchronizer : Group {"id"=<guid>, "status"= <PENDING>, "sourceRepositoryStatus"= <PENDING>, "pipelineFolderStatus"=<PENDING>, "binaryRepositoryStatus"=<PENDING>, "sourceMembershipStatus"= <PENDING>}
+deactivate ResourceManager
+Synchronizer -> Synchronizer : SmiteUtils.generateOpenSSHKeyPair
+Synchronizer -> ResourceManager : POST /keyPair [body : KeyPair{"group" = Group{"id"=<guid>}, "privateKey"=":keyPair.privateValue", "publicKey"=":keyPair.publicValue"]
+activate ResourceManager
+ResourceManager -> ResourceManager : create keyPair into db
+ResourceManager -> Synchronizer : KeyPair
+deactivate ResourceManager
+Synchronizer -> PipelineManager : POST /folders [body: :group.path/components]
+activate PipelineManager
+PipelineManager -> Jenkins : createFolder (recursively if not exists)
+PipelineManager -> Synchronizer : String [folder path]
+deactivate PipelineManager
+
+Synchronizer -> PipelineManager : POST /memberships [body: Membership{"path"=":group.path/components", "memberType"=<GROUP>, "memberName"=":group.path", "role"=<GUEST>}]
+activate PipelineManager
+PipelineManager -> Jenkins : setPermissions (read-only on Jenkins)
+PipelineManager -> Synchronizer : Membership
+deactivate PipelineManager
+
+Synchronizer -> PipelineManager : POST /credentials [body : Credential{"path" = :group.path/components, "credentialId"=<guid>,\n "username"="git",description="SSH pull key for SMITE project","privateKey"=":keyPair.privateValue"}]
+activate PipelineManager
+PipelineManager -> Jenkins : addCredential ["path" = :group.path/components, "credentialId"="<guid>",\n "username"="git",description="SSH pull key for SMITE project","privateKey"=":keyPair.privateValue"]
+PipelineManager -> Synchronizer : Credential
+deactivate PipelineManager
+
+Synchronizer -> ResourceManager : PATCH /group [body : Group{id=<guid>, status=<READY>, pipelineFolderStatus=<READY>}]
+activate ResourceManager
+ResourceManager -> ResourceManager : update group into db
+ResourceManager -> Synchronizer : Group
+deactivate ResourceManager
+
+Synchronizer -> Synchronizer : determine parentGroup = :group[.parent(while parent!="smite-projects")]
+Synchronizer -> BinaryRepositoryManager : POST /containersRepositories [body : ContainerRepository{"name"=":parentGroup.name}]
+
+activate BinaryRepositoryManager
+BinaryRepositoryManager -> Harbor : create repository if not exists
+BinaryRepositoryManager -> Synchronizer : ContainerRepository
+deactivate BinaryRepositoryManager
+
+Synchronizer -> BinaryRepositoryManager : POST /memberships [body: Membership{"path"=":rootParent.path", "memberType"=<USER>, "memberName"="jenkins.harbor","role"=<MAINTAINER>}]
+activate BinaryRepositoryManager
+BinaryRepositoryManager -> Harbor : setPermissions
+BinaryRepositoryManager -> Synchronizer : Membership
+deactivate BinaryRepositoryManager
+
+Synchronizer -> ResourceManager : PATCH /group [body : Group{id=group.id, binaryRepositoryStatus=<READY>}]
+activate ResourceManager
+ResourceManager -> ResourceManager : update group into db
+ResourceManager -> Synchronizer : Group
+deactivate ResourceManager
+
+Synchronizer -> SourceManager : POST /sourceRepositories \n [body: SourceRepository{"path"= ":group.path/components/smite-deploy-key"}]
+activate SourceManager
+SourceManager -> Gitlab : git create [repoUrl= ":group.path/smite-deploy-key.git"]
+SourceManager -> Synchronizer : SourceRepository
+deactivate SourceManager
+
+Synchronizer -> SourceManager : POST /deployKey [body : formData{ "path"=:group.path/smite-deploy-key, \n "keyName"=<guid>, \n "keyValue"=":keyPair.publicValue"}]
+activate SourceManager
+SourceManager -> Gitlab : createDeployKey ["path"=:group.path/smite-deploy-key, \n "keyName"=<guid>, \n "keyValue"=":keyPair.publicValue"]
+SourceManager -> Synchronizer : ApiResponse
+deactivate SourceManager
+Synchronizer -> ResourceManager : PATCH /group [body : Group{"id"=<guid>, "sourceRepositoryStatus"=<READY>}]
+activate ResourceManager
+ResourceManager -> ResourceManager : update group into db
+ResourceManager -> Synchronizer : Group
+deactivate ResourceManager
+deactivate Synchronizer
+
+Synchronizer -> SourceManager : GET /memberships [params : "path"=:group.path/components, "memberType"=<USER>]
+activate SourceManager
+Synchronizer <- SourceManager : MemberShip[]
+deactivate SourceManager
+
+Synchronizer -> Synchronizer : checkMembers[membership, Group[].members from UserManager] : usersToAdd, usersToDelete
+
+Synchronizer -> SourceManager : POST /batch/memberships [body : Membership[] {"path":"group.path/components", "memberType"=<USER>, "memberName"=":usersToAdd","role"=<MAINTAINER>}}]
+activate SourceManager
+SourceManager -> Synchronizer : ApiResponse
+deactivate SourceManager
+
+Synchronizer -> SourceManager : DELETE /batch/memberships [body : Membership[] {"path":"group.path/components", "memberType"=<USER>, "memberName"=":usersToDelete"}]
+activate SourceManager
+SourceManager -> Synchronizer : ApiResponse
+deactivate SourceManager
+
+Synchronizer -> ResourceManager : PATCH /group [body : Group{"id"=<guid>, "status"=<READY>, "sourceMembershipStatus"=<READY>}]
+activate ResourceManager
+ResourceManager -> ResourceManager : update group into db
+ResourceManager -> Synchronizer : Group
+deactivate ResourceManager
+end
+
+deactivate Synchronizer
+@enduml

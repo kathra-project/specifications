@@ -1,0 +1,32 @@
+@startuml
+
+activate AppManager.PipelineService
+
+      AppManager.PipelineService -> ResourceManager: POST /pipelines \n [body:Pipeline { \n\
+\t"path"=:path, \n\t"sourceRepository"=:sourceRepository, \n\t"pipelineTemplate"=:pipelineTemplate \n }]
+      activate ResourceManager
+      ResourceManager -> ResourceManager: create pipeline into db
+      ResourceManager -> AppManager.PipelineService: Pipeline {"id"= <guid>, "status" = "PENDING" }
+      deactivate ResourceManager
+
+      AppManager.PipelineService --> "PipelineServiceCaller" : Pipeline { "id" = <guid>, "status" = "PENDING" }
+
+      AppManager.PipelineService -> PipelineManager: POST /pipelines \n [body: Pipeline { \n\
+\t"path"=:groupPath/components/:component.name/:language/:libraryType, \n\t"sourceRepository"={"sshUrl"=<SourceManagerProviderSshUrl>},\n\t"pipelineTemplate"=[JavaLibrary,JavaService,PythonLibrary,PythonService]\n}]
+      activate PipelineManager
+            PipelineManager -> Jenkins: Create Jenkins pipeline named filename(:path) from template into folder : \n dirname(:path)
+          PipelineManager -> AppManager.PipelineService: Pipeline { \n\
+\t"provider"=<providerName>, \n\t"providerId"=<PipelineManagerProviderPipelineId>\n}
+      deactivate PipelineManager
+
+
+
+      AppManager.PipelineService --> ResourceManager: PATCH /pipelines/{pipelineId} \n [params: "pipelineId" = :Pipeline.id] \n [body:Pipeline { \n\
+\t"provider" = <providerName>,\n\t"providerId" = <PipelineManagerProviderPipelineId>\n\t"status" = "READY" \n }]
+
+      activate ResourceManager
+      ResourceManager -> AppManager.PipelineService: Library
+      deactivate ResourceManager
+deactivate AppManager.PipelineService
+
+@enduml

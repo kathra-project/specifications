@@ -1,0 +1,52 @@
+@startuml
+state "Create a new implementation for api version" as insertImplementation
+[*] --> insertImplementation
+insertImplementation --> PENDING
+PENDING : Implementation existing in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Create source repository's implementation" as createSourceRepository
+    state "Create pipeline's implementation" as createPipeline
+
+    state "Create new version's implementation" as createImplementationVersion {
+        state "Generate source code's implementation" as generateSourceCode
+        state "Create an initial version's implementation" as insertImplementationVersion : ImplementationVersion existing in DB with status PENDING
+        state "Push and tag source code's version implementation" as pushSourceCode
+        state "Launch pipeline" as launchPipeline : Pipeline status should be BUILT
+        state "ImplementationVersion is READY" as implementationVersionREADY : ImplementationVersion with status READY
+
+        [*] --> generateSourceCode
+        generateSourceCode --> insertImplementationVersion
+        insertImplementationVersion --> pushSourceCode
+        pushSourceCode --> launchPipeline
+        launchPipeline --> implementationVersionREADY
+        implementationVersionREADY --> [*]
+    }
+
+    [*] --> createSourceRepository
+    createSourceRepository --> createPipeline
+    createPipeline --> createImplementationVersion
+    createImplementationVersion --> [*]
+}
+ERROR -> [*]
+PENDING -> READY : Implementation is fully initialized
+READY -> PENDING : Not implemented
+PENDING -> ERROR
+READY : Implementation status to READY
+READY --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check api version is READY" as checkApiVersion
+    state "Check source repository is READY" as checkSourceRepository
+    state "Check first implementation version is READY" as checkImplementationVersion
+    state "Check pipeline are READY" as checkPipeline
+    [*] --> checkApiVersion
+    checkApiVersion --> checkSourceRepository
+    checkSourceRepository --> checkPipeline
+    checkPipeline --> checkImplementationVersion
+    checkImplementationVersion --> [*]
+}
+UNSTABLE -> READY : Implementation is available
+READY --> DELETED
+DELETED -> [*]
+
+@enduml

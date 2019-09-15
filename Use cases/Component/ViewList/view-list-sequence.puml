@@ -1,0 +1,47 @@
+@startuml
+title "view list components - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant Dashboard as UI
+participant AppManager
+participant ResourceManager
+
+activate User
+User -> UI: LINK: goto /components page
+activate UI
+UI -> User:
+deactivate UI
+
+note over User
+  Requirements:
+  User logged
+end note
+
+User -> AppManager: GET /components
+activate AppManager
+AppManager -> ResourceManager: GET /components
+activate ResourceManager
+ResourceManager -> ResourceManager.ComponentService : findAll()
+activate ResourceManager.ComponentService
+ResourceManager.ComponentService -> SecurityService : getUuidResources(String ressourceType [value="components"]));
+activate SecurityService
+SecurityService -> KeyCloack : ??
+activate KeyCloack
+SecurityService <- KeyCloack : uuid []
+deactivate KeyCloack
+ResourceManager.ComponentService <- SecurityService : uuid []
+deactivate SecurityService
+ResourceManager.ComponentService -> ResourceManager.ComponentService: get components from uuid
+ResourceManager <- ResourceManager.ComponentService : Component []
+deactivate ResourceManager.ComponentService
+ResourceManager -> AppManager: Component [mandatories : uuid, name, description, author, apiVersions[mandatories:id, name, version], state, group]
+deactivate ResourceManager
+AppManager -> User: Component[] [mandatories : uuid, name, description, author, apiVersions[mandatories:id, name, version], state, group]
+deactivate AppManager
+deactivate User
+
+
+
+
+@enduml

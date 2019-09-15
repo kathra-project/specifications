@@ -1,0 +1,35 @@
+@startuml
+start
+if (Component exists?) then (yes)
+    :Insert library into DB;
+else (no)
+    end
+endif
+:Library is PENDING;
+
+:Create library's source repository  into SourceManager;
+
+if (Source repository's library is READY ?) then (yes)
+    :Source repository is READY;
+else (no)
+    :Source repository is PENDING, ERROR or UNSTABLE (not READY);
+    :Library is ERROR;
+    end
+endif
+
+:Create library's pipeline into PipelineManager;
+
+if (library's pipeline is READY ?) then (yes)
+    :Pipeline is READY;
+else (no)
+    :Pipeline is PENDING, ERROR or UNSTABLE (not READY);
+    :Library is ERROR;
+    end
+endif
+
+
+
+
+:Library is READY;
+
+@enduml

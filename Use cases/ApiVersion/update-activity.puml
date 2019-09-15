@@ -1,0 +1,62 @@
+@startuml
+start
+if (ApiVersion is READY?) then (yes)
+    :ApiVersion is READY;
+else (no)
+    :ApiVersion have to be READY to be updated;
+    end
+endif
+
+if (ApiVersion is SNAPSHOT?) then (yes)
+    :ApiVersion is SNAPSHOT;
+else (no)
+    :ApiVersion is not SNAPSHOT, it's already released, can't be updated;
+    end
+endif
+
+if (Api source repository of component is READY?) then (yes)
+    :Api source repository is READY;
+else (no)
+    :Api source repository of component have to be READY to be updated;
+    end
+endif
+
+:ApiVersion is UPDATING;
+
+:For each ApiVersionLibrary;
+fork
+    :ApiVersionLibrary is UPDATING;
+    :ApiVersionLibrary is not BUILT;
+    :Generate source code for X lang and Y library;
+    :Push generation into specific existing source repository;
+    :Tag source repository with api version;
+    :ApiVersionLibrary is READY;
+fork again
+    :Other ApiVersionLibrary;
+end fork
+
+if (Api version libraries status are READY before X seconds) then (yes)
+else (no)
+    :Api version is ERROR;
+    end
+endif
+
+:ApiVersionLibrary launch building;
+fork
+    :Launch specific pipeline building for language and library;
+    :ApiVersionLibrary is BUILT;
+fork again
+    :Other ApiVersionLibrary;
+end fork
+
+
+if (Api version libraries are built before X seconds) then (yes)
+else (no)
+    :Api version is ERROR;
+    end
+endif
+
+:Api version is READY;
+
+end
+@enduml

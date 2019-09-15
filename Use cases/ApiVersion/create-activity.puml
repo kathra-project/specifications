@@ -1,0 +1,64 @@
+@startuml
+start
+if (Version of component exists?) then (yes)
+    :Version of component already exists;
+    end
+else (no)
+endif
+
+if (Does an api version with SNAPSHOT status exist for this component?) then (yes)
+    :An api version with SNAPSHOT status exists for this component;
+    end
+else (no)
+endif
+
+:Create into db;
+
+:Api version is PENDING;
+if (Api source repository of component exists?) then (yes)
+    :Update repository with swagger;
+    :Api version metadata.sourceRepositoryStatus is READY;
+else (no)
+    :api repository doesn't exist;
+    :Api version is ERROR;
+    end
+endif
+
+:Create ApiVersionLibrary for each Libraries's component : language [Java,Python], type [Model, Interface, ApiClient];
+fork
+    :Create ApiVersionLibrary with status PENDING;
+    :Generate source code for language's lib and type's lib;
+    :Push generation into specific existing source repository;
+    :Tag source repository with api version;
+    :ApiVersionLibrary w/ repositoryStatus = READY
+fork again
+    :Other lang X;
+end fork
+
+if (All apiVersionLibraries w/ repositoryStatus = READY before X seconds) then (yes)
+else (no)
+    :Api version is ERROR;
+    end
+endif
+
+:Launch ApiVersionLibrary building;
+fork
+    :Launch specific pipeline building for language and library;
+    :ApiVersionLibrary w/ pipelineStatus = READY;
+fork again
+    :Other ApiVersionLibrary;
+end fork
+
+
+if (All apiVersionLibraries w/ repositoryStatus = READY before X seconds) then (yes)
+else (no)
+    :Api version is ERROR;
+    end
+endif
+
+:All apiVersionLibrary is READY;
+
+:Api version is READY;
+
+end
+@enduml

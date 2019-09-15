@@ -1,0 +1,59 @@
+@startuml
+start
+if (Group's component exists?) then (yes)
+    :Group exists;
+    :Insert component into DB;
+else (no)
+    :Group doesn't exist;
+    end
+endif
+:Component is PENDING;
+
+:Create source repository's component;
+
+if (Source repository's component is READY ?) then (yes)
+    :Source repository is READY;
+else (no)
+    :Source repository is PENDING, ERROR or UNSTABLE (not READY);
+    :Component is ERROR;
+    end
+endif
+
+:Create Library for each X language [Java,Python];
+fork
+    :For each Y libraries types [Model, Interface, ApiClient];
+    repeat
+        :Create library for X language and Y library type into db with status PENDING;
+        :Create source repository's library for X lang and Y;
+        if (Source repository for X lang and Y is READY?) then (yes)
+            :Source repository's library is READY;
+        else (no)
+            :Source repository's library is PENDING, ERROR or UNSTABLE (not READY);
+            :Library is ERROR;
+            end
+        endif
+        :Create pipeline's library for X lang and Y;
+        if (Pipeline for X lang and Y is READY?) then (yes)
+            :Pipeline's library is READY;
+        else (no)
+            :Pipeline's library is PENDING, ERROR or UNSTABLE (not READY);
+            :Library is ERROR;
+            end
+        endif
+        :Library is READY;
+    repeat while (Other library to init?)
+fork again
+    :Other lang X;
+end fork
+
+
+
+if (Libraries's component are READY) then (yes)
+    :Component is READY;
+    end
+else (no)
+    :Component is ERROR;
+    end
+endif
+
+@enduml

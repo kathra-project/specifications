@@ -1,0 +1,51 @@
+@startuml
+title "view detail component - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant AppManager
+participant ResourceManager
+participant SourceManager
+participant Gitlab
+
+
+activate User
+User -> AppManager: GET /components/:componentId
+activate AppManager
+AppManager -> ResourceManager: GET /component/:componentId
+activate ResourceManager
+ResourceManager -> ResourceManager: get Component from db
+ResourceManager -> ResourceManager: get ApiVersion from db for Component
+ResourceManager --> AppManager: Component [with user-readable ApiVersions]
+deactivate ResourceManager
+AppManager --> User : Component
+deactivate AppManager
+
+User -> AppManager: GET /components/:componentId/implementations
+activate AppManager
+
+AppManager -> ResourceManager: GET /components/:componentId/implementations
+activate ResourceManager
+ResourceManager -> ResourceManager: get Component from db
+ResourceManager -> ResourceManager: get Implementation from db for Component
+ResourceManager --> AppManager: Implementation[] [mandatories: implementationsVersions w/ apiVersions]
+deactivate ResourceManager
+AppManager --> User : Implementation[] [mandatories: implementationsVersions w/ apiVersions]
+deactivate AppManager
+
+
+User -> AppManager: GET /apiFile[formdata: params: url:apiVersion.sourceRepo.sshUrl, tag:apiVersion.version]
+activate AppManager
+AppManager -> SourceManager: GET /apiFile[formdata: params: filename:swagger.yaml, url:apiVersion.sourceRepo.sshUrl, tag:apiVersion.version]
+activate SourceManager
+SourceManager -> Gitlab : pull /api/swagger.yaml
+activate Gitlab
+SourceManager <-- Gitlab : File
+deactivate Gitlab
+SourceManager --> AppManager : File
+deactivate SourceManager
+
+AppManager --> User : File
+deactivate AppManager
+deactivate User
+@enduml

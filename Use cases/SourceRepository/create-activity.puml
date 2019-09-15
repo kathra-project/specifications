@@ -1,0 +1,28 @@
+@startuml
+start
+if (Source repository with the same ssh url already exists?) then (no)
+    :Ssh url is available;
+    :Insert source repository into DB;
+else (yes)
+    :Source repository already exists;
+    end
+endif
+:Source repository is PENDING;
+
+if (Source repository's group exists ?) then (no)
+    :Create source repository's group into SourceManager;
+else (yes)
+    :Source repository's group exists;
+endif
+
+:Create source repository into SourceManager;
+
+if (Check sshURL is available ?) then (yes)
+    :Source repository is READY;
+    end
+else (no)
+    :Source repository is ERROR;
+    end
+endif
+
+@enduml

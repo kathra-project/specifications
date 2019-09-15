@@ -1,0 +1,298 @@
+@startuml
+hide empty members
+set namespaceSeparator none
+
+skinparam class {
+	BackgroundColor PaleGreen
+	ArrowColor RoyalBlue
+	BorderColor DimGray
+}
+
+/'
+ResourceParameter <|-- SimpleResourceParameter
+ResourceParameter <|-- ApiDependencyParameter
+ResourceParameter <|-- ApplicationDependencyParameter
+
+
+
+
+class  CatalogResource {
+         - application <b>:Application</b>
+         - version <b>:String</b>
+         - licence <b>:String</b>
+         - teaser <b>:String</b>
+         - description <b>:String</b>
+         - websiteUrl <b>:String</b>
+         - iconUrl <b>:String</b>
+         - categories <b>:String[]</b>
+}
+
+class  ResourceParameterDependency {
+         - name <b>:String</b>
+         - condition <b>:String</b>
+         - value <b>:String</b>
+}
+
+class  ResourceParameterValidationRule {
+         - type <b>:String</b>
+         - value <b>:String</b>
+         - prompt <b>:String</b>
+}
+
+class  Environment {
+         - resources <b>:EnvironmentResource[]</b>
+         - status <b>:String</b>
+}
+
+class  ResourceParameterValue {
+         - name <b>:String</b>
+         - value <b>:String</b>
+         - parameter <b>:ResourceParameter</b>
+}
+
+class  EnvironmentResource {
+         - application <b>:Application</b>
+         - parameters <b>:ResourceParameterValue[]</b>
+}
+
+class  ResourceParameter {
+         - name <b>:String</b>
+         - type <b>:String</b>
+         - defaultValue <b>:String</b>
+         - description <b>:String</b>
+         - label <b>:String</b>
+         - rules <b>:ResourceParameterValidationRule[]</b>
+}
+
+class  SimpleResourceParameter {
+         - optional <b>:Boolean</b>
+         - depends <b>:ResourceParameterDependency[]</b>
+}
+
+class  ApiDependencyParameter {
+         - api <b>:Api</b>
+}
+
+class  ApplicationDependencyParameter {
+         - app <b>:Application</b>
+}
+
+class  Application {
+         - parameters <b>:ResourceParameter[]</b>
+}
+
+
+class  Model {
+         - description <b>:String</b>
+         - title <b>:String</b>
+         - sourceRepo <b>:SourceRepository</b>
+         - versions <b>:ModelVersion[]</b>
+}
+
+class  ModelVersion {
+         - sourceRepo <b>:SourceRepository</b>
+         - version <b>:String</b>
+         - modelDependencies <b>:Model[]</b>
+}
+
+class  User {
+         - firstName <b>:String</b>
+         - lastName <b>:String</b>
+         - username : <b>:String</b>
+}
+
+class  RoleMapping {
+         - user <b>:User</b>
+         - Group <b>:Group<b>
+         - role <b>:Role</b>
+}
+RoleMapping  o-- "1"   Group : group
+RoleMapping  o-- "1"   User : user
+RoleMapping  o-- "1"   Role : role
+
+Model  o-- "0..1"   Library : library
+Model  o-- "1"   MODEL_STATUS : status
+Model  "1" o-- "0..*"   ModelVersion
+ModelVersion  o-- "0..1"   Library : library : <i>status</i>
+
+ApiVersion  *-- "0..1"  ModelVersion : model
+ApiVersion  *-- "0..*"  ModelVersion : modelDependencies
+
+Application  *-- "0..*"  ResourceParameter
+'/
+
+class  Resource {
+         - id <b>: String</b>
+         - name <b>: String</b>
+         - metadata <b>: Object</b>
+         - status <b>: RESOURCE_STATUS</b>
+         - createdBy <b>: String</b>
+         - updatedBy <b>: String</b>
+         - createAt <b>: timestamp</b>
+         - updatedAt <b>: timestamp</b>
+}
+
+enum MEMBERSHIP_ROLE {
+         - GUEST
+         - CONTRIBUTOR
+         - MANAGER
+}
+enum MEMBERSHIP_MEMBERTYPE {
+         - USER
+         - GROUP
+}
+class  Membership {
+         - path <b>: String</b>
+         - role <b>: MEMBERSHIP_ROLE </b>
+         - memberType <b>: MEMBERSHIP_MEMBERTYPE</b>
+         - memberName <b>: String</b>
+}
+
+
+class  Component {
+         - description <b>: String</b>
+         - title <b>: String</b>
+         - apiRepository <b>: SourceRepository</b>
+         - versions <b>: ApiVersion[]</b>
+         - implementations <b>: Implementation[]</b>
+         - libraries <b>: Library[]</b>
+}
+Component  o-- "0..1"   SourceRepository
+
+class  ApiVersion {
+         - component <b>:  Component</b>
+         - version <b>: String</b>
+         - released <b>: Boolean</b>
+         - apiRepositoryStatus <b>: RESOURCE_STATUS</b>
+         - implementationVersions <b>: ImplementationVersion[]</b>
+         - librariesApiVersions <b>: LibraryApiVersion[]</b>
+}
+Component "1" *-- "0..*"  ApiVersion
+
+class LibraryApiVersion {
+         - apiVersion <b>: ApiVersion</b>
+         - library <b>: Library</b>
+         - sourceRepositoryStatus <b>: RESOURCE_STATUS</b>
+         - pipelineStatus <b>: RESOURCE_STATUS</b>
+}
+
+enum PIPELINE_TEMPLATE {
+         - JAVA_LIBRARY
+         - JAVA_SERVICE
+         - PYTHON_LIBRARY
+         - PYTHON_SERVICE
+}
+
+enum RESOURCE_STATUS {
+         - PENDING
+         - READY
+         - UPDATING
+         - UNSTABLE
+         - ERROR
+         - DELETED
+}
+
+class Asset {
+    sourceRepository <b>: SourceRepository</b>
+    pipeline <b>: Pipeline</b>
+    langage  <b>: LANGUAGE</b>
+}
+Asset "1..0"  o-- "0..1"   Pipeline
+Asset "1..0" o-- "0..1"   SourceRepository
+
+class  Group {
+         - path <b>: String</b>
+         - parent : <b>Group</b>
+         - sourceRepositoryStatus <b>: RESOURCE_STATUS</b>
+         - sourceMembershipStatus <b>: RESOURCE_STATUS</b>
+         - pipelineFolderStatus <b>: RESOURCE_STATUS</b>
+         - binaryRepositoryStatus <b>: RESOURCE_STATUS</b>
+}
+Group  o-- "0..1"   Group : parent
+
+class KeyPair {
+         - private <b>: String</b>
+         - public <b>: String </b>
+}
+
+Group  "1" <-- "0..1"   KeyPair : group
+
+class Asset {
+    sourceRepository <b>:SourceRepository</b>
+    pipeline <b>:Pipeline</b>
+    langage  <b>: LANGUAGE</b>
+}
+Asset  o-- "0..1"   Pipeline : pipeline
+Asset  o-- "0..1"   SourceRepository : sourceRepository
+
+class  SourceRepository {
+         - provider <b>: String</b>
+         - providerId <b>: String</b>
+         - path <b>: String</b>
+         - sshUrl <b>: String</b>
+         - httpUrl <b>: String</b>
+         - webUrl <b>: String</b>
+         - branchs <b>: String[]</b>
+}
+
+class  Pipeline {
+         - provider <b>: String</b>
+         - providerId <b>: String</b>
+         - credentialId <b>: String</b>
+         - sourceRepository <b>: SourceRepository</b>
+         - path <b>: String</b>
+         - template <b>: PIPELINE_TEMPLATE</b>
+         - asset <b>: Asset</b>
+}
+Pipeline "1" o-- SourceRepository
+
+
+
+LibraryApiVersion "0..6" --* "1"  ApiVersion
+LibraryApiVersion "0..N" --o "1" Library
+
+
+Asset <|-- Library
+class  Library {
+         - type  <b>: LIBRARY_TYPE</b>
+         - component <b>: Component</b>
+         - versions <b>: LibraryApiVersion[]</b>
+}
+Component "1" *-- "0..6" Library
+
+enum PROGRAMMING_LANGUAGE {
+         - JAVA
+         - PYTHON
+}
+
+enum LIBRARY_TYPE {
+         - MODEL
+         - INTERFACE
+         - CLIENT
+}
+
+
+
+Asset <|-- Implementation
+class  Implementation {
+         - description <b>: String</b>
+         - title <b>: String</b>
+         - component <b>: Component</b>
+         - versions <b>: ImplementationVersion[]</b>
+}
+Implementation  "1" *-- "0..*"  ImplementationVersion
+Component  "0..*" *-- "1"  Implementation
+
+class  ImplementationVersion {
+         - version <b>: String</b>
+         - implementation <b>: Implementation</b>
+         - apiVersion <b>: ApiVersion</b>
+}
+ImplementationVersion  "0..*" --o "1" ApiVersion
+
+
+note as N1
+  Name: <b><color:royalBlue>Smite Core Model</color>
+  Version: <b><color:royalBlue>1.4.0-SNAPSHOT</color>
+end note
+@enduml

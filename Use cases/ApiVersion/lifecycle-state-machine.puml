@@ -1,0 +1,50 @@
+@startuml
+[*] --> PENDING : [ Component IS READY && Check an ApiVersion SNAPSHOT of component doesn't exist ]
+PENDING : apiVersion existing in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Update API specification File into component api repository" as apiFileUpdate
+    state "Create missing component's library " as createLibraryMissing
+    state "Create api version library for each component's library" as createApiVersionLibraries : Create ApiVersionLibrary, \n Generate source code, \n Push into library's repository, \n Tag library's repository with new version
+    state "Launch pipeline for each ApiVersionLibrary" as launchPipelines
+    [*] --> apiFileUpdate
+    apiFileUpdate --> createLibraryMissing
+    createLibraryMissing --> createApiVersionLibraries
+    createApiVersionLibraries --> launchPipelines
+    launchPipelines --> [*]
+}
+ERROR -> [*]
+PENDING -> READY : Api version is initialized
+READY -> UPDATING : Update Api version with new apifile \n [ApiVersion should be SNAPSHOP version, not RELEASED]
+UPDATING -> READY : Updated with success
+state UPDATING {
+    state "Update apifile into component api repository" as apiFileUpdate2
+    state "Create missing component's library " as createLibraryMissing2
+    state "Create or update api version library for each component's library " as createApiVersionLibraries2 : Create ApiVersionLibrary, \n Generate source code, \n Push into library's repository, \n Tag library's repository with new version
+    state "Launch pipeline for each ApiVersionLibrary" as launchPipelines2
+    [*] --> apiFileUpdate2
+    apiFileUpdate2 --> createLibraryMissing2
+    createLibraryMissing2 --> createApiVersionLibraries2
+    createApiVersionLibraries2 --> launchPipelines2
+    launchPipelines2 --> [*]
+}
+UPDATING -> ERROR : Updated with error
+PENDING -> ERROR
+READY : Update ApiVersion's status to READY
+READY --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check component is READY" as checkComponent
+    state "Check api source repository is READY" as checkApiRepository
+    state "Check api version libraries are READY" as checkApiVersionLibraries
+    state "Check api version pipelines are READY" as checkApiVersionPipelines
+    [*] --> checkComponent
+    checkComponent --> checkApiRepository
+    checkApiRepository --> checkApiVersionLibraries
+    checkApiVersionLibraries --> checkApiVersionPipelines
+    checkApiVersionPipelines --> [*]
+}
+UNSTABLE -> READY : Api version is available
+READY --> DELETED
+DELETED -> [*]
+
+@enduml

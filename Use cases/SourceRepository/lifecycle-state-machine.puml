@@ -1,0 +1,30 @@
+@startuml
+state "Create a new source repository" as insertSourceRepository : ssh url should be specified and unique
+[*] --> insertSourceRepository
+insertSourceRepository --> PENDING
+PENDING : Source repository existing in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Create source repository group " as createRepositoryGroup : Create source repository group into SourceManager
+    state "Create source repository" as createRepository : Create source repository into SourceManager
+    [*] --> createRepositoryGroup
+    createRepositoryGroup --> createRepository
+    createRepository --> [*]
+}
+ERROR -> [*]
+PENDING -> OK : Source repository is fully initialized
+PENDING -> ERROR
+OK : Update source repository status to OK
+OK --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check group into SourceManager is OK" as checkGroup
+    state "Check source repository into SourceManager is OK" as checkSourceRepository
+    [*] --> checkGroup
+    checkGroup --> checkSourceRepository
+    checkSourceRepository --> [*]
+}
+UNSTABLE -> OK : Source repository is available
+OK --> DELETED
+DELETED -> [*]
+
+@enduml

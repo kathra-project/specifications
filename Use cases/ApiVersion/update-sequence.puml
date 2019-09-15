@@ -1,0 +1,100 @@
+@startuml
+
+title "updateApiVersion - Sequence Diagram"
+
+actor User as "Developer"
+'boundary Proxy
+participant AppManager
+participant AppManager.ApiVersionService
+participant AppManager.ApiVersionLibraryService
+participant AppManager.RepositoryService
+participant AppManager.PipelineService
+
+participant ResourceManager
+participant SourceManager
+participant Codegen
+participant PipelineManager
+participant GitLab
+participant Jenkins
+
+
+activate User
+User -> AppManager: POST /components/:componentId/apiVersions \n [formdata: file:swagger.yaml, string:apiVersionId]
+activate AppManager
+AppManager -> AppManager.ApiVersionService: update(ApiVersion apiVersion, File swagger.yaml);
+activate AppManager.ApiVersionService
+
+note right: check ApiVersion is READY and SNAPSHOT
+
+
+AppManager.ApiVersionService -> ResourceManager: PATCH /apiVersions \n [body: apiVersion(mandatories: status=UPDATING)]
+activate ResourceManager
+ResourceManager -> ResourceManager: create ApiVersion \n into Db
+ResourceManager -> AppManager.ApiVersionService: ApiVersion (mandatories: status=UPDATING)
+deactivate ResourceManager
+
+AppManager <-- AppManager.ApiVersionService: ApiVersion w/ status=UPDATING
+User <-- AppManager : ApiVersion w/ status=UPDATING
+deactivate AppManager
+deactivate User
+
+AppManager.ApiVersionService --> ResourceManager: PATCH /apiVersions/:apiVersionId \n [body: apiVersion(sourceRepositoryStatus=UPDATING)]
+
+AppManager.ApiVersionService -> SourceManager: POST /updateFile \n [formdata: file:swagger.yaml, params: filename:/api/swagger.yaml, url:apiVersion.sourceRepo.sshUrl, tag:apiVersion.version]
+activate SourceManager
+SourceManager -> GitLab: update /api/swagger.yml, \n commit, \n tag <apiVersion.version>, \n push
+SourceManager -> AppManager.ApiVersionService: SourceRepository
+deactivate SourceManager
+
+AppManager.ApiVersionService --> ResourceManager: PATCH /apiVersions/:apiVersionId \n [body: apiVersion(sourceRepositoryStatus=READY)]
+
+
+
+loop apiVersion.apiVersionLibraries
+
+
+
+    AppManager.ApiVersionService -> AppManager.ApiVersionLibraryService: updateApiVersionLibrary(ApiVersionLibrary apiVersionLibrary, File swagger):ApiVersionLibrary
+    deactivate AppManager
+    activate AppManager.ApiVersionLibraryService
+
+        AppManager.ApiVersionLibraryService --> ResourceManager: PATCH /apiVersionLibrary/:apiVersionLibraryId \n [body: apiVersionLibrary(status=UPDATING, sourceRepositoryStatus=UPDATING)]
+
+    AppManager.ApiVersionLibraryService --> AppManager.ApiVersionService : ApiVersionLibrary w/ id
+    activate AppManager
+
+        AppManager.ApiVersionLibraryService -> Codegen: POST /generate?library=library.type&language=library.language \n [formdata: file:swagger.yaml]
+        activate Codegen
+        Codegen -> AppManager.ApiVersionLibraryService: zip file w/ source code generated
+        deactivate Codegen
+
+        AppManager.ApiVersionLibraryService -> AppManager.RepositoryService: RepositoryService.updateSourceRepository( \n ApiVersionLibrary apiVersionLibrary, \n File archiveFile) : ApiVersionLibrary
+        activate AppManager.RepositoryService
+
+
+            AppManager.RepositoryService -> SourceManager: POST /pushIntoRepository \n [formdata: file:source-code.zip, \n param: \n url=:groupId/:componentId/:language/:library.git, \n tag=apiVersion.version)]
+            activate SourceManager
+                SourceManager -> GitLab: git create, commit, \n tag <apiVersion.version>, push to url
+                SourceManager -> AppManager.RepositoryService: READY
+            deactivate SourceManager
+
+        AppManager.RepositoryService --> ResourceManager: PATCH /apiVersionLibrary/:apiVersionLibraryId \n [body:sourceRepository (mandatories: repositoryStatus = READY)]
+
+        deactivate AppManager.RepositoryService
+        deactivate AppManager.ApiVersionLibraryService
+
+end
+
+!include common-apiVersionLibrary-building-sequence.puml
+
+loop apiversion.apiversionlibraries
+== Wait ApiVersionLibrary's pipelineStatus and repositoryStatus are READY ==
+    AppManager.ApiVersionService --> ResourceManager: PATCH /apiVersionLibrary/:apiVersionLibraryId \n [body:sourceRepository (mandatories: status = READY)]
+end
+
+== Wait all ApiVersionLibrary are READY ==
+
+AppManager.ApiVersionService --> ResourceManager : PATCH /apiVersion/:apiVersionId [body:ApiVersion (mandatories: status=READY)]
+deactivate AppManager.ApiVersionService
+
+@enduml

@@ -1,0 +1,99 @@
+@startuml
+
+title "addApiVersion - Sequence Diagram"
+
+actor User as "Developer"
+'boundary Proxy
+participant AppManager
+participant AppManager.ApiVersionService
+participant AppManager.ApiVersionLibraryService
+participant AppManager.RepositoryService
+participant AppManager.PipelineService
+
+participant ResourceManager
+participant SourceManager
+participant Codegen
+participant PipelineManager
+participant GitLab
+participant Jenkins
+
+
+activate User
+User -> AppManager: POST /components/{componentId}/apiVersions \n [params: "componentId"= :componentId] \n [body: file.yaml]
+activate AppManager
+AppManager -> AppManager.ApiVersionService: create(ApiVersion apiVersion, File apiFile [file.yaml]);
+activate AppManager.ApiVersionService
+
+note right: check api version with SNAPSHOT status doesn't exist for this component
+
+AppManager.ApiVersionService -> ResourceManager: POST /apiVersions \n [body: apiVersion{"version"=:versionParsedFromFile, "component"={"id"=:apiVersion.component.id}]
+activate ResourceManager
+ResourceManager -> ResourceManager: create ApiVersion \n into Db
+ResourceManager -> AppManager.ApiVersionService: ApiVersion {"id"=<guid>, "status"=<PENDING>, "sourceRepositoryStatus"=<PENDING>, ...}
+deactivate ResourceManager
+
+AppManager <-- AppManager.ApiVersionService :  ApiVersion
+User <-- AppManager : ApiVersion
+deactivate AppManager
+deactivate User
+
+AppManager.ApiVersionService -> SourceManager: POST /sourceRepositories/{sourceRepositoryPath}/branches/{branch}/commits": \n [params: "sourceRepositoryPath"= component.sourceRepository.path, "branch"= dev, "tag"= apiVersion.version] \n [body: apiFile]
+activate SourceManager
+SourceManager -> GitLab: clone from <path>, replace file <filepath>, \n commit, \n tag <tag>, \n push
+SourceManager -> AppManager.ApiVersionService: Commit
+deactivate SourceManager
+
+AppManager.ApiVersionService --> ResourceManager: PATCH /apiVersions/{apiVersionId} \n [params: "apiVersionId"= apiVersion.id] \n [body: apiVersion{"sourceRepositoryStatus"= READY}]
+
+loop component.libaries
+
+    AppManager.ApiVersionService -> AppManager.ApiVersionLibraryService: createApiVersionLibraryService(ApiVersion apiVersion, Library library, File apiFile [file.yaml]):ApiVersionLibrary
+    deactivate AppManager
+    activate AppManager.ApiVersionLibraryService
+
+        AppManager.ApiVersionLibraryService -> ResourceManager: POST /apiVersionLibrary \n [body: ApiVersionLibrary { \n \
+\t"library"={"id"=Library.id},\n\t"apiVersion"={"id"=ApiVersion.id}}]
+        activate ResourceManager
+            ResourceManager -> ResourceManager: create ApiVersionLibrary \n into Db
+            ResourceManager -> AppManager.ApiVersionLibraryService: ApiVersionLibrary { \n \
+\t"id"=<guid>",\n\t"library"={"id"=Library.id},\n\t"apiVersion"={"id"=ApiVersion.id},\n\t"status"=<PENDING>\n}]
+        deactivate ResourceManager
+
+    AppManager.ApiVersionLibraryService --> AppManager.ApiVersionService : ApiVersionLibrary w/ id
+    activate AppManager
+
+        AppManager.ApiVersionLibraryService -> Codegen: POST /generate?library=library.type&language=library.language \n [body: apiFile]
+        activate Codegen
+        Codegen -> AppManager.ApiVersionLibraryService: zip file w/ source code generated
+        deactivate Codegen
+
+        AppManager.ApiVersionLibraryService -> AppManager.RepositoryService: RepositoryService.updateSourceRepository( \n ApiVersionLibrary apiVersionLibrary, \n File archiveFile) : ApiVersionLibrary
+        activate AppManager.RepositoryService
+
+            AppManager.RepositoryService -> SourceManager: POST /sourceRepositories/{sourceRepositoryPath}/branches/{branch}/commits": \n [params: "sourceRepositoryPath"= apiVersionLibrary.library.sourceRepository.path, "branch"= dev, "tag"= apiVersion.version, "uncompress"= True] \n [body: archiveFile]
+            activate SourceManager
+                SourceManager -> GitLab: clone <path>, unzip <file>, add *, commit, \n tag <apiVersion.version>
+                SourceManager -> AppManager.RepositoryService: Commit
+            deactivate SourceManager
+        AppManager.ApiVersionLibraryService <- AppManager.RepositoryService
+        deactivate AppManager.RepositoryService
+
+        AppManager.ApiVersionLibraryService --> ResourceManager: PATCH /apiVersionLibrary/{apiVersionLibraryId} [params: "apiVersionLibraryId"= :apiVersionLibrary.id] [body: ApiVersionLibrary {"repositoryStatus" = READY }]
+
+        deactivate AppManager.ApiVersionLibraryService
+
+end
+
+!include common-apiVersionLibrary-building-sequence.puml
+
+loop apiversion.apiversionlibraries
+== Wait ApiVersionLibrary's pipelineStatus and repositoryStatus are READY ==
+    AppManager.ApiVersionService --> ResourceManager: PATCH /apiVersionLibrary/{apiVersionLibraryId} \n [params: "apiVersionLibraryId"= :apiVersionLibrary.id] \n [body: ApiVersionLibrary {"status" = READY }]
+end
+
+== Wait all ApiVersionLibrary are READY ==
+
+AppManager.ApiVersionService --> ResourceManager : PATCH /apiVersion/{apiVersionId} \n [params: "apiVersionId"= :apiVersion.id] \n [body: ApiVersion {"status"=READY}]
+deactivate AppManager.ApiVersionService
+
+@enduml

@@ -1,0 +1,36 @@
+@startuml
+state "Create a new component" as insertComponent : Group should be specified
+[*] --> insertComponent
+insertComponent --> PENDING
+PENDING : Component existing in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Create source repository for api" as createRepositoryApi
+    state "Create group source repository for implementations" as createGroupRepositoryImplementation
+    state "Create libraries" as createLibrariesForProgrammingLanguage : Create libraries (repository + pipeline) for each programming language and libraries types
+    [*] --> createRepositoryApi
+    createRepositoryApi --> createGroupRepositoryImplementation
+    createGroupRepositoryImplementation --> createLibrariesForProgrammingLanguage
+    createLibrariesForProgrammingLanguage --> [*]
+}
+ERROR -> [*]
+PENDING -> READY : Component is fully initialized
+PENDING -> ERROR
+READY : Update Component status to READY
+READY --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check group is READY" as checkGroup
+    state "Check api source repository is READY" as checkApiRepository
+    state "Check group source repository implementation is READY" as checkGroupRepositoryImplementation
+    state "Check libaries are READY" as checkApiVersionLibaries
+    [*] --> checkGroup
+    checkGroup --> checkApiRepository
+    checkApiRepository --> checkGroupRepositoryImplementation
+    checkGroupRepositoryImplementation --> checkApiVersionLibaries
+    checkApiVersionLibaries --> [*]
+}
+UNSTABLE -> READY : Component is available
+READY --> DELETED
+DELETED -> [*]
+
+@enduml

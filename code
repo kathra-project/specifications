@@ -1,0 +1,163 @@
+Name:           pipeline-montage-v1-qks6d
+Namespace:      engage-ai
+Node:           node6-interne/192.168.208.28
+Start Time:     Fri, 30 Nov 2018 15:26:02 +0100
+Labels:         app=pipeline-montage-v1
+                component=worker
+                pipelineName=montage
+                suite=pachyderm
+                version=1.7.11
+Annotations:    kubernetes.io/limit-ranger=LimitRanger plugin set: cpu, memory limit for container storage; cpu, memory request for init container init; cpu, memory limit for init container init
+                pipelineName=montage
+Status:         Running
+IP:             10.233.88.67
+Controlled By:  ReplicationController/pipeline-montage-v1
+Init Containers:
+  init:
+    Container ID:  docker://72127155ee16bcb279cf83a82ad6ad8f73b957b4396134f6b218799b2eee3e2b
+    Image:         pachyderm/worker:1.7.11
+    Image ID:      docker-pullable://pachyderm/worker@sha256:29c4a8d960c9c142c0039b7fc02b84ec16820d15b57c58641ba044852439219b
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /pach/worker.sh
+    State:          Terminated
+      Reason:       Completed
+      Exit Code:    0
+      Started:      Fri, 30 Nov 2018 15:26:18 +0100
+      Finished:     Fri, 30 Nov 2018 15:26:19 +0100
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     200m
+      memory:  512Mi
+    Requests:
+      cpu:        50m
+      memory:     192Mi
+    Environment:  <none>
+    Mounts:
+      /pach-bin from pach-bin (rw)
+      /pachyderm-storage-secret from pachyderm-storage-secret (rw)
+      /pfs from pachyderm-worker (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from pachyderm-token-qxss5 (ro)
+Containers:
+  user:
+    Container ID:  docker://b835a967efc8df71694026b6b3674953b3e9c11debbfd67bcac5f8581039ef46
+    Image:         v4tech/imagemagick
+    Image ID:      docker-pullable://v4tech/imagemagick@sha256:959eb75b13efb41a8f37495784150574d66175adebd0c6c18216b482c574d109
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /pach-bin/worker
+    State:          Waiting
+      Reason:       CrashLoopBackOff
+    Last State:     Terminated
+      Reason:       Error
+      Exit Code:    1
+      Started:      Fri, 30 Nov 2018 15:57:59 +0100
+      Finished:     Fri, 30 Nov 2018 15:57:59 +0100
+    Ready:          False
+    Restart Count:  11
+    Limits:
+      cpu:     400m
+      memory:  2Gi
+    Requests:
+      cpu:     100m
+      memory:  128Mi
+    Environment:
+      PPS_WORKER_IP:       (v1:status.podIP)
+      PPS_POD_NAME:       pipeline-montage-v1-qks6d (v1:metadata.name)
+      PPS_ETCD_PREFIX:    pachyderm/1.7.0/pachyderm_pps
+      PPS_NAMESPACE:      engage-ai
+      PPS_SPEC_COMMIT:    ada55483159d4dfd8a09ad055e8ae65f
+      PPS_PIPELINE_NAME:  montage
+    Mounts:
+      /pach-bin from pach-bin (rw)
+      /pachyderm-storage-secret from pachyderm-storage-secret (rw)
+      /pfs from pachyderm-worker (rw)
+      /var/run/docker.sock from docker (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from pachyderm-token-qxss5 (ro)
+  storage:
+    Container ID:  docker://fb3e0e09bf30fc461acf7ac87689b1d6ed99425c7c5ec230d7468a38ac1e3b5a
+    Image:         pachyderm/pachd:1.7.11
+    Image ID:      docker-pullable://pachyderm/pachd@sha256:47857dc8fb6e8812de4cf9a306e407937e694b8e52bca023fabbc1658a249cef
+    Port:          <none>
+    Host Port:     <none>
+    Command:
+      /pachd
+      --mode
+      sidecar
+    State:          Running
+      Started:      Fri, 30 Nov 2018 15:26:29 +0100
+    Ready:          True
+    Restart Count:  0
+    Limits:
+      cpu:     200m
+      memory:  512Mi
+    Requests:
+      cpu:     0
+      memory:  64M
+    Environment:
+      BLOCK_CACHE_BYTES:  64M
+      PFS_CACHE_SIZE:     16
+      PACH_ROOT:          /pach
+      STORAGE_BACKEND:    LOCAL
+    Mounts:
+      /pach from pach-disk (rw)
+      /pachyderm-storage-secret from pachyderm-storage-secret (rw)
+      /var/run/secrets/kubernetes.io/serviceaccount from pachyderm-token-qxss5 (ro)
+Conditions:
+  Type           Status
+  Initialized    True 
+  Ready          False 
+  PodScheduled   True 
+Volumes:
+  pach-bin:
+    Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:  
+  pachyderm-worker:
+    Type:    EmptyDir (a temporary directory that shares a pod's lifetime)
+    Medium:  
+  pach-disk:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/pachyderm/pachd
+    HostPathType:  
+  pachyderm-storage-secret:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  pachyderm-storage-secret
+    Optional:    false
+  docker:
+    Type:          HostPath (bare host directory volume)
+    Path:          /var/run/docker.sock
+    HostPathType:  
+  pachyderm-token-qxss5:
+    Type:        Secret (a volume populated by a Secret)
+    SecretName:  pachyderm-token-qxss5
+    Optional:    false
+QoS Class:       Burstable
+Node-Selectors:  <none>
+Tolerations:     <none>
+Events:
+  Type     Reason                 Age                 From                    Message
+  ----     ------                 ----                ----                    -------
+  Normal   Scheduled              37m                 default-scheduler       Successfully assigned pipeline-montage-v1-qks6d to node6-interne
+  Normal   SuccessfulMountVolume  37m                 kubelet, node6-interne  MountVolume.SetUp succeeded for volume "docker"
+  Normal   SuccessfulMountVolume  37m                 kubelet, node6-interne  MountVolume.SetUp succeeded for volume "pach-disk"
+  Normal   SuccessfulMountVolume  37m                 kubelet, node6-interne  MountVolume.SetUp succeeded for volume "pach-bin"
+  Normal   SuccessfulMountVolume  37m                 kubelet, node6-interne  MountVolume.SetUp succeeded for volume "pachyderm-worker"
+  Normal   SuccessfulMountVolume  37m                 kubelet, node6-interne  MountVolume.SetUp succeeded for volume "pachyderm-token-qxss5"
+  Normal   SuccessfulMountVolume  37m                 kubelet, node6-interne  MountVolume.SetUp succeeded for volume "pachyderm-storage-secret"
+  Normal   Pulling                37m                 kubelet, node6-interne  pulling image "pachyderm/worker:1.7.11"
+  Normal   Pulled                 36m                 kubelet, node6-interne  Successfully pulled image "pachyderm/worker:1.7.11"
+  Normal   Created                36m                 kubelet, node6-interne  Created container
+  Normal   Started                36m                 kubelet, node6-interne  Started container
+  Normal   Pulling                36m                 kubelet, node6-interne  pulling image "v4tech/imagemagick"
+  Normal   Pulled                 36m                 kubelet, node6-interne  Successfully pulled image "v4tech/imagemagick"
+  Normal   Pulling                36m                 kubelet, node6-interne  pulling image "pachyderm/pachd:1.7.11"
+  Normal   Pulled                 36m                 kubelet, node6-interne  Successfully pulled image "pachyderm/pachd:1.7.11"
+  Normal   Created                36m                 kubelet, node6-interne  Created container
+  Normal   Started                36m                 kubelet, node6-interne  Started container
+  Normal   Created                36m (x3 over 36m)   kubelet, node6-interne  Created container
+  Normal   Started                36m (x3 over 36m)   kubelet, node6-interne  Started container
+  Normal   Pulled                 36m (x2 over 36m)   kubelet, node6-interne  Container image "v4tech/imagemagick" already present on machine
+  Warning  BackOff                1m (x159 over 36m)  kubelet, node6-interne  Back-off restarting failed container

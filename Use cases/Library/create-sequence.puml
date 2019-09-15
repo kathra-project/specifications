@@ -1,0 +1,98 @@
+@startuml
+title "Create library - Sequence Diagram"
+
+participant AppManager
+participant AppManager.LibraryService
+participant AppManager.RepositoryService
+participant AppManager.PipelineService
+participant ResourceManager
+participant SourceManager
+participant PipelineManager
+
+AppManager -> AppManager.LibraryService : add( \n Component component, \n Language language, \n Type type) : Library
+
+activate AppManager.LibraryService
+
+
+AppManager.LibraryService -> ResourceManager: POST /libraries \n [body: Library w/ type, language, component]
+activate ResourceManager
+ResourceManager -> ResourceManager: create Library into db
+AppManager.LibraryService <-- ResourceManager: Library w/ id]
+deactivate ResourceManager
+
+AppManager <-- AppManager.LibraryService : Library /w id
+
+AppManager.LibraryService -> AppManager.RepositoryService: RepositoryService.createLibraryRepository( \n Library library) : SourceRepository
+activate AppManager.RepositoryService
+
+
+
+AppManager.RepositoryService -> ResourceManager: POST /sourceRepositories \n [body: SourceRepository(status = PENDING)]
+activate ResourceManager
+  ResourceManager -> ResourceManager: create SourceRepository \n into Db
+  ResourceManager -> AppManager.RepositoryService: SourceRepository w/ id
+deactivate ResourceManager
+
+AppManager.RepositoryService -> ResourceManager: PATCH /libraries/:library.id (with sourceRepository = SourceRepository w/ id)
+activate ResourceManager
+ResourceManager -> AppManager.RepositoryService: Library
+deactivate ResourceManager
+
+AppManager.RepositoryService --> AppManager.LibraryService : SourceRepository w/ id
+
+
+AppManager.RepositoryService -> SourceManager: POST /createRepository [body: SourceRepository{"path"=:library.component.metadata.groupPath/:library.component.name/:library.language/:library.type)]
+activate SourceManager
+  SourceManager -> GitLab: git create
+  SourceManager -> AppManager.RepositoryService: SourceRepository { \n\
+      \t"name"= "api", \n\t"provider"= <providerName>,\n\t"providerId"= <SourceManagerProviderRepoId>\n\
+      \t"sshUrl"= <SourceManagerProviderSshUrl>, \n\t"httpUrl"= <SourceManagerProviderHttpUrl>, \n\t"webUrl"= <SourceManagerProviderWebUrl>, \n\t"branches"= ["master","dev"] \n\
+      }
+deactivate SourceManager
+
+AppManager.RepositoryService -> ResourceManager: PATCH /sourceRepositories/{sourceRepositoryId} \n [params: "sourceRepositoryId"= :SourceRepository.id] \n [body: SourceRepository { \n\t"provider"= <providerName>,\n\t"providerId"= <SourceManagerRepoId>\n\
+    \t"sshUrl"= <SourceManagerProviderSshUrl>, \n\t"httpUrl"= <SourceManagerProviderHttpUrl>, \n\t"webUrl"= <SourceManagerProviderWebUrl>, \n\t"branches"= ["master","dev"], \n\t"status"=READY \n\
+    }]
+deactivate AppManager.RepositoryService
+
+== Wait until SourceRepository status is READY (sshUrl is required) ==
+
+AppManager.LibraryService -> AppManager.PipelineService: PipelineService.createPipeline(\n Library library (mandatories: Component, SourceRepository)) : Pipeline
+activate AppManager.PipelineService
+
+AppManager.PipelineService -> ResourceManager: POST /pipelines \n [body:Pipeline \n (mandatories: \n status = PENDING)]
+activate ResourceManager
+ResourceManager -> ResourceManager: create pipeline into db
+ResourceManager -> AppManager.PipelineService: Pipeline w/ id
+deactivate ResourceManager
+
+AppManager.PipelineService -> ResourceManager: PATCH /libraries/:library.id (with pipeline = Pipeline w/ id)
+activate ResourceManager
+ResourceManager -> AppManager.PipelineService: Library
+deactivate ResourceManager
+
+AppManager.PipelineService --> AppManager.LibraryService: Pipeline w/ id
+
+
+AppManager.PipelineService -> PipelineManager: POST /createPipeline \n [Body: Pipeline { "path"=:groupPath/:component.name/:language/::library \n "sourceRepository"=:library;sourceRepository \n "template"=[JavaLibrary,JavaService,PythonLibrary,PythonService}]
+activate PipelineManager
+  PipelineManager -> Jenkins: Create Jenkins pipeline from template into folder : \n :folderName/:jobName
+  PipelineManager -> AppManager.PipelineService: READY
+deactivate PipelineManager
+
+AppManager.PipelineService --> ResourceManager: PATCH /pipelines/:pipelineId \n [body:Pipeline (mandatories: \n status = READY)]
+
+deactivate AppManager.PipelineService
+
+== Wait Pipeline and SourceRepository status are READY ==
+
+
+AppManager.LibraryService -> ResourceManager: PATCH /libraries/:libraryId (with status = READY)
+activate ResourceManager
+AppManager.LibraryService <- ResourceManager : Library updated w/ Pipeline and SourceRepository
+deactivate ResourceManager
+
+
+deactivate AppManager.LibraryService
+
+@enduml

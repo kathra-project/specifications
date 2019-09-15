@@ -1,0 +1,36 @@
+@startuml
+[*] --> PENDING
+PENDING : Created group in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Create reference into user manager (e.g. KC)" as createIntoUserManager : create group into openid api
+    state "Create SSH key (private/public)" as generateSshKey : save private and public key into db
+    state "Generate group source repository" as generateGroupSourceRepository : create group repository with public pull key
+    state "Generate group pipeline" as generateGroupPipeline : create group pipeline with private pull key
+    [*] --> createIntoUserManager
+    createIntoUserManager --> generateSshKey
+    generateSshKey --> generateGroupSourceRepository
+    generateGroupSourceRepository --> generateGroupPipeline
+    generateGroupPipeline --> [*]
+}
+ERROR -> [*]
+PENDING -> READY : Group is initialized
+PENDING -> ERROR
+READY : Update group status to READY
+READY --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check group exist is READY" as checkUserManager
+    state "Check group ssh keys are valid" as checkSshKeyValidity
+    state "Check group source repository is READY" as checkSourceRepository
+    state "Check group pipeline are READY" as checkPipeline
+    [*] --> checkUserManager
+    checkUserManager --> checkSshKeyValidity
+    checkSshKeyValidity --> checkSourceRepository
+    checkSourceRepository --> checkPipeline
+    checkPipeline --> [*]
+}
+UNSTABLE -> READY : group is available
+READY --> DELETE
+DELETE -> [*]
+
+@enduml

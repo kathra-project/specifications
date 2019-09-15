@@ -1,0 +1,24 @@
+@startuml
+[*] --> PENDING
+PENDING : Created User in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Create reference into user manager (e.g. KC)" as createIntoUserManager : create user into openid api
+    [*] --> createIntoUserManager
+    createIntoUserManager --> [*]
+}
+ERROR -> [*]
+PENDING -> READY : User is initialized
+PENDING -> ERROR
+READY : Update User status to READY
+READY --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check User exist is READY" as checkUserManager
+    [*] --> checkUserManager
+    checkUserManager --> [*]
+}
+UNSTABLE -> READY : User is available
+READY --> DELETE
+DELETE -> [*]
+
+@enduml
