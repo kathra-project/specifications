@@ -1,36 +1,38 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
   x-groupId: org.kathra
   x-artifactName: binaryRepositoryManager
   description: Kathra Binary Repository Manager
-  version: '1.0.0-RC-SNAPSHOT'
+  version: 1.0.0
   title: Kathra Binary Repository Manager
 securityDefinitions:
   kathra_auth:
-    type: "oauth2"
-    authorizationUrl: "https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth"
-    tokenUrl: "https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token"
-    flow: "accessCode"
+    type: oauth2
+    authorizationUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth
+    tokenUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token
+    flow: accessCode
     scopes:
-      read: "read everything"
-      write: "create everything"
+      read: read everything
+      write: create everything
 paths:
-  "/containersRepositories/":
+  /containersRepositories/:
     get:
       operationId: getContainersRepositories
-      summary: Retrieve a list of existing containers repositories for authenticated user
+      summary: Retrieve a list of existing containers repositories for authenticated
+        user
       responses:
-        '200':
-          description: List of existing containers repositories for authenticated user
+        "200":
+          description: List of existing containers repositories for authenticated
+            user
           schema:
             type: array
             items:
-              "$ref": "#/definitions/ContainersRepository"
-        '401':
+              $ref: '#/definitions/ContainersRepository'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
+        - read
     post:
       summary: Add a containers repository
       operationId: addContainersRepository
@@ -40,166 +42,173 @@ paths:
         description: Containers repository object to be created
         required: true
         schema:
-          $ref: "#/definitions/ContainersRepository"
+          $ref: '#/definitions/ContainersRepository'
       responses:
-        '200':
-          description: Success message containing the id of the newly created containers repository
+        "200":
+          description: Success message containing the id of the newly created containers
+            repository
           schema:
-            "$ref": "#/definitions/ApiResponse"
-        '401':
+            $ref: '#/definitions/ApiResponse'
+        "401":
           description: Unauthorized
       security:
-        - kathra_auth:
-          - "write"
-
-  "/containersRepositories/{containersRepoId}":
+      - kathra_auth:
+        - write
+  /containersRepositories/{containersRepoId}:
     get:
       summary: Retrieve a specific containers repository
       operationId: getContainersRepository
       parameters:
-        - name: containersRepoId
-          in: path
-          required: true
-          description: The id of the containers repository to retrieve
-          type: string
+      - name: containersRepoId
+        in: path
+        required: true
+        description: The id of the containers repository to retrieve
+        type: string
       responses:
         "200":
           description: Expected response to a valid request
           schema:
-            $ref: "#/definitions/ContainersRepository"
-        '401':
+            $ref: '#/definitions/ContainersRepository'
+        "401":
           description: Unauthorized
       security:
-        - kathra_auth:
-          - "read"
+      - kathra_auth:
+        - read
     patch:
       summary: Partially update a registered containers repository
       operationId: updateContainersRepositoryAttributes
       parameters:
-        - name: containersRepoId
-          in: path
-          required: true
-          description: The id of the containers repository to partially update
-          type: string
-        - name: containersRepository
-          in: body
-          description: Containers repository object to use to patch existing resource
-          required: true
-          schema:
-            $ref: "#/definitions/ContainersRepository"
+      - name: containersRepoId
+        in: path
+        required: true
+        description: The id of the containers repository to partially update
+        type: string
+      - name: containersRepository
+        in: body
+        description: Containers repository object to use to patch existing resource
+        required: true
+        schema:
+          $ref: '#/definitions/ContainersRepository'
       responses:
-        '200':
-          description: Success message containing the id of the modified containers repository
+        "200":
+          description: Success message containing the id of the modified containers
+            repository
           schema:
-            "$ref": "#/definitions/ApiResponse"
-        '401':
+            $ref: '#/definitions/ApiResponse'
+        "401":
           description: Unauthorized
       security:
-        - kathra_auth:
-          - "write"
+      - kathra_auth:
+        - write
     put:
       summary: Fully update a registered containers repository
       operationId: updateContainersRepository
       parameters:
-        - name: containersRepoId
-          in: path
-          required: true
-          description: The id of the containers repository to replace
-          type: string
-        - name: containersRepository
-          in: body
-          description: Containers repository object to use to replace existing resource
-          required: true
-          schema:
-            $ref: "#/definitions/ContainersRepository"
+      - name: containersRepoId
+        in: path
+        required: true
+        description: The id of the containers repository to replace
+        type: string
+      - name: containersRepository
+        in: body
+        description: Containers repository object to use to replace existing resource
+        required: true
+        schema:
+          $ref: '#/definitions/ContainersRepository'
       responses:
-        '200':
-          description: Success message containing the id of the modified containers repository
+        "200":
+          description: Success message containing the id of the modified containers
+            repository
           schema:
-            "$ref": "#/definitions/ApiResponse"
-        '401':
-          description: Unauthorized
-      security:
-        - kathra_auth:
-          - "write"
-
-  "/containersRepositories/{containersRepoId}/membership":
-    get:
-      summary: Retrieve a list of users and groups membership values for the specified containers repository
-      operationId: getContainersRepositoryMembership
-      parameters:
-        - name: containersRepoId
-          in: path
-          required: true
-          description: The id of the containers repository to retrieve
-          type: string
-      responses:
-        '200':
-          description: List of users and groups membership values for the specified containers repository
-          schema:
-            type: array
-            items:
-              "$ref": "#/definitions/Membership"
-        '401':
+            $ref: '#/definitions/ApiResponse'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
+        - write
+  /containersRepositories/{containersRepoId}/membership:
+    get:
+      summary: Retrieve a list of users and groups membership values for the specified
+        containers repository
+      operationId: getContainersRepositoryMembership
+      parameters:
+      - name: containersRepoId
+        in: path
+        required: true
+        description: The id of the containers repository to retrieve
+        type: string
+      responses:
+        "200":
+          description: List of users and groups membership values for the specified
+            containers repository
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Membership'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
     post:
       summary: Add a containers repository membership for a user or group
       operationId: addContainersRepositoryMembership
       parameters:
-        - name: containersRepoId
-          in: path
-          required: true
-          description: The id of the containers repository to retrieve
-          type: string
-        - name: containersRepositoryMembership
-          in: body
-          description: Membership object to add to the containers repository
-          required: true
-          schema:
-            $ref: "#/definitions/Membership"
+      - name: containersRepoId
+        in: path
+        required: true
+        description: The id of the containers repository to retrieve
+        type: string
+      - name: containersRepositoryMembership
+        in: body
+        description: Membership object to add to the containers repository
+        required: true
+        schema:
+          $ref: '#/definitions/Membership'
       responses:
-        '200':
-          description: Success message containing the id of the newly created containers repository
+        "200":
+          description: Success message containing the id of the newly created containers
+            repository
           schema:
-            "$ref": "#/definitions/ApiResponse"
-        '401':
+            $ref: '#/definitions/ApiResponse'
+        "401":
           description: Unauthorized
       security:
-        - kathra_auth:
-          - "write"
+      - kathra_auth:
+        - write
 definitions:
   ContainersRepository:
-    type: "object"
+    type: object
     properties:
       name:
-        type: "string"  
+        type: string
       metadata:
-        type: "object"  
+        type: object
         properties:
           isPublic:
-            type: "string"
+            type: string
             default: "false"
           scanImagesOnPush:
-            type: "string"
+            type: string
             default: "true"
           contentTrustEnabled:
-            type: "string"
+            type: string
             default: "false"
           preventVulnerableFromRunning:
-            type: "string"
-            default: "false" 
+            type: string
+            default: "false"
           vulnerableThreshold:
-            type: "string"
-            enum: [low, medium, high]
-            default: "medium"
+            type: string
+            enum:
+            - low
+            - medium
+            - high
+            default: medium
   Membership:
     type: object
     x-artifactId: kathra-core-model
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
-  artifactVersion: 1.0.0-RC-SNAPSHOT
+  artifactVersion: 1.0.0
   modelPackage: core.model

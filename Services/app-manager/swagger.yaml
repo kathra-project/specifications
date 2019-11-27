@@ -1,59 +1,52 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
   x-groupId: org.kathra
   x-artifactName: appManager
   description: Kathra Applications Manager
-  version: '1.0.0-RC-SNAPSHOT'
+  version: 1.0.0
   title: Kathra Applications Manager
 securityDefinitions:
   kathra_auth:
-    type: "oauth2"
-    authorizationUrl: "https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth"
-    tokenUrl: "https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token"
-    flow: "accessCode"
+    type: oauth2
+    authorizationUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth
+    tokenUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token
+    flow: accessCode
     scopes:
-      read: "read everything"
-      write: "create everything"
+      read: read everything
+      write: create everything
 tags:
 - name: groups
-  description: 'Groups'
-
+  description: Groups
 - name: components
-  description: 'Components'
-
+  description: Components
 - name: apiVersions
-  description: 'Api versions'
-
+  description: Api versions
 - name: implementations
-  description: 'Implementations'
-
+  description: Implementations
 - name: repositories
-  description: 'Repositories'
-
+  description: Repositories
 - name: pipelines
-  description: 'Pipelines'
-
+  description: Pipelines
 paths:
-  "/groups":
+  /groups:
     get:
       operationId: getGroups
       summary: Get the groups list
       tags:
       - groups
       responses:
-        '200':
+        "200":
           description: The Groups list
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Group"
-        '401':
+              $ref: '#/definitions/Group'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-  
-  "/components":
+        - read
+  /components:
     post:
       operationId: createComponent
       summary: Create a new Component
@@ -62,38 +55,38 @@ paths:
       parameters:
       - in: body
         name: component
-        description: "The parameters for the component to create. Required: name and metadata.groupPath"
+        description: 'The parameters for the component to create. Required: name and
+          metadata.groupPath'
         schema:
-          "$ref": "#/definitions/Component"
+          $ref: '#/definitions/Component'
       responses:
-        '200':
+        "200":
           description: The Component that have just been created
           schema:
-            "$ref": "#/definitions/Component"
-        '401':
+            $ref: '#/definitions/Component'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "write"
+        - write
     get:
       operationId: getComponents
       summary: Get the components list
       tags:
       - components
       responses:
-        '200':
+        "200":
           description: The Components list
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Component"
-        '401':
+              $ref: '#/definitions/Component'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-
-  "/components/{componentId}":
+        - read
+  /components/{componentId}:
     get:
       operationId: getComponentById
       summary: Get the component having the given id"
@@ -106,17 +99,16 @@ paths:
         description: The ID of the Component to get
         type: string
       responses:
-        '200':
+        "200":
           description: The Component having the given id
           schema:
-            "$ref": "#/definitions/Component"
-        '401':
+            $ref: '#/definitions/Component'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-
-  "/components/{componentId}/implementations":
+        - read
+  /components/{componentId}/implementations:
     get:
       operationId: getComponentImplementations
       summary: Get the component having the given id
@@ -129,26 +121,25 @@ paths:
         description: The ID of the Component to get the implementations from
         type: string
       responses:
-        '200':
+        "200":
           description: The array of Implementations of the given Component
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Implementation"
-        '401':
+              $ref: '#/definitions/Implementation'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-
-  "/components/{componentId}/apiVersions":
+        - read
+  /components/{componentId}/apiVersions:
     post:
       operationId: createApiVersion
       summary: Create a new ApiVersion via an OpenAPI file
       tags:
       - apiVersions
       consumes:
-      - "multipart/form-data"
+      - multipart/form-data
       parameters:
       - in: formData
         name: openApiFile
@@ -160,17 +151,16 @@ paths:
         description: The ID of the Component the APIVersion will be created for
         type: string
       responses:
-        '200':
+        "200":
           description: The ApiVersion that have just been created
           schema:
-            "$ref": "#/definitions/ApiVersion"
-        '401':
+            $ref: '#/definitions/ApiVersion'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "write"
-
-  "/implementations":
+        - write
+  /implementations:
     post:
       operationId: createImplementation
       summary: Create a new Implementation for the given ApiVersion
@@ -191,39 +181,38 @@ paths:
               type: string
               description: Implementation's name
             apiVersion:
-              "$ref": "#/definitions/ApiVersion"
+              $ref: '#/definitions/ApiVersion'
             language:
               type: string
               description: The language to use for source code generation
       responses:
-        '200':
+        "200":
           description: The Implementation that have just been created
           schema:
-            "$ref": "#/definitions/Implementation"
-        '401':
+            $ref: '#/definitions/Implementation'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "write"
+        - write
     get:
       operationId: getImplementations
       summary: Get the Implementations list
       tags:
       - implementations
       responses:
-        '200':
+        "200":
           description: The Implementations list
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Implementation"
-        '401':
+              $ref: '#/definitions/Implementation'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-
-  "/implementations/{implementationId}":
+        - read
+  /implementations/{implementationId}:
     get:
       operationId: getImplementationById
       summary: Get the Implementation having the given id"
@@ -236,17 +225,16 @@ paths:
         description: The ID of the Implementation to get
         type: string
       responses:
-        '200':
+        "200":
           description: The Implementation having the given id
           schema:
-            "$ref": "#/definitions/Implementation"
-        '401':
+            $ref: '#/definitions/Implementation'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-
-  "/sourceRepositories/branches/{sourceRepositoryId}":
+        - read
+  /sourceRepositories/branches/{sourceRepositoryId}:
     get:
       operationId: getRepositoryBranches
       summary: Get the branches for the given SourceRepository
@@ -259,19 +247,18 @@ paths:
         description: The ID of the SourceRepository to get
         type: string
       responses:
-        '200':
+        "200":
           description: The Branch list of the given SourceRepository
           schema:
             type: array
             items:
               type: string
-        '401':
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-
-  "/commits/{sourceRepositoryId}":
+        - read
+  /commits/{sourceRepositoryId}:
     get:
       operationId: getRepositoryCommitsForBranch
       summary: Get the commits for the given SourceRepository for a given branch
@@ -289,26 +276,26 @@ paths:
         description: The name of the branch to get the commits from
         type: string
       responses:
-        '200':
-          description: The Commits list of the given SourceRepository for the given branch
+        "200":
+          description: The Commits list of the given SourceRepository for the given
+            branch
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Commit"
-        '401':
+              $ref: '#/definitions/Commit'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-
-  "/apiFile":
+        - read
+  /apiFile:
     get:
       operationId: getApiFile
       summary: Get the API File from the specified source repository
       tags:
       - repositories
       consumes:
-      - "multipart/form-data"
+      - multipart/form-data
       parameters:
       - in: formData
         name: url
@@ -316,20 +303,20 @@ paths:
         type: string
       - in: formData
         name: tag
-        description: The source repository tag corresponding to the version of the API described by the file
+        description: The source repository tag corresponding to the version of the
+          API described by the file
         type: string
       responses:
-        '200':
+        "200":
           description: The OpenAPI file describing the API
           schema:
             type: file
-        '401':
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-  
-  "/apiFileValidation":
+        - read
+  /apiFileValidation:
     post:
       summary: Check the integrity of an API file
       operationId: getApiFileValidation
@@ -344,12 +331,11 @@ paths:
         required: true
         type: file
       responses:
-        '200':
+        "200":
           description: apiFileValidation Response
           schema:
-            "$ref": "#/definitions/ApiFileValidationResponse"
-
-  "/pipelines/{pipelineId}/builds":
+            $ref: '#/definitions/ApiFileValidationResponse'
+  /pipelines/{pipelineId}/builds:
     get:
       operationId: getPipelineBuildsForBranch
       summary: Get the builds for the given pipeline for a given branch
@@ -367,18 +353,18 @@ paths:
         description: The name of the branch to get the builds of
         type: string
       responses:
-        '200':
-          description: The Commits list of the given SourceRepository for the given branch
+        "200":
+          description: The Commits list of the given SourceRepository for the given
+            branch
           schema:
             type: array
             items:
-              "$ref": "#/definitions/Commit"
-        '401':
+              $ref: '#/definitions/Commit'
+        "401":
           description: Unauthorized
       security:
       - kathra_auth:
-        - "read"
-
+        - read
 definitions:
   Group:
     type: object
@@ -410,7 +396,10 @@ definitions:
     properties:
       format:
         type: string
-        enum: [json,yaml,invalid]
+        enum:
+        - json
+        - yaml
+        - invalid
       name:
         type: string
         description: Service's name
@@ -429,5 +418,5 @@ definitions:
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
-  artifactVersion: 1.0.0-RC-SNAPSHOT
+  artifactVersion: 1.0.0
   modelPackage: core.model

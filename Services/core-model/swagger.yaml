@@ -1,13 +1,13 @@
-swagger: '2.0'
+swagger: "2.0"
 info:
   title: Kathra Core Model
-  version: 1.0.0-RC-SNAPSHOT
+  version: 1.0.0
   x-artifactName: core
   x-groupId: org.kathra
 definitions:
   RESOURCE_STATUS:
     type: string
-    enum: &RESOURCE_STATUS
+    enum:
     - PENDING
     - READY
     - UPDATING
@@ -16,18 +16,18 @@ definitions:
     - DELETED
   PROGRAMMING_LANGUAGE:
     type: string
-    enum: &PROGRAMMING_LANGUAGE
+    enum:
     - JAVA
     - PYTHON
   LIBRARY_TYPE:
     type: string
-    enum: &LIBRARY_TYPE
+    enum:
     - MODEL
     - INTERFACE
     - CLIENT
   PIPELINE_TEMPLATE:
     type: string
-    enum: &PIPELINE_TEMPLATE
+    enum:
     - JAVA_LIBRARY
     - PYTHON_LIBRARY
     - JAVA_SERVICE
@@ -40,7 +40,13 @@ definitions:
       name:
         type: string
       status:
-        enum: *RESOURCE_STATUS
+        enum:
+        - PENDING
+        - READY
+        - UPDATING
+        - UNSTABLE
+        - ERROR
+        - DELETED
       createdBy:
         type: string
       updatedBy:
@@ -86,7 +92,9 @@ definitions:
         pipeline:
           $ref: '#/definitions/Pipeline'
         language:
-          enum: *PROGRAMMING_LANGUAGE
+          enum:
+          - JAVA
+          - PYTHON
   Library:
     allOf:
     - $ref: '#/definitions/Asset'
@@ -95,7 +103,10 @@ definitions:
         component:
           $ref: '#/definitions/Component'
         type:
-          enum: *LIBRARY_TYPE
+          enum:
+          - MODEL
+          - INTERFACE
+          - CLIENT
         versions:
           type: array
           items:
@@ -138,7 +149,13 @@ definitions:
         version:
           type: string
         apiRepositoryStatus:
-          enum: *RESOURCE_STATUS
+          enum:
+          - PENDING
+          - READY
+          - UPDATING
+          - UNSTABLE
+          - ERROR
+          - DELETED
         librariesApiVersions:
           type: array
           items:
@@ -157,9 +174,21 @@ definitions:
         apiVersion:
           $ref: '#/definitions/ApiVersion'
         apiRepositoryStatus:
-          enum: *RESOURCE_STATUS
+          enum:
+          - PENDING
+          - READY
+          - UPDATING
+          - UNSTABLE
+          - ERROR
+          - DELETED
         pipelineStatus:
-          enum: *RESOURCE_STATUS
+          enum:
+          - PENDING
+          - READY
+          - UPDATING
+          - UNSTABLE
+          - ERROR
+          - DELETED
   SourceRepository:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -197,7 +226,11 @@ definitions:
         sourceRepository:
           $ref: '#/definitions/SourceRepository'
         template:
-          enum: *PIPELINE_TEMPLATE
+          enum:
+          - JAVA_LIBRARY
+          - PYTHON_LIBRARY
+          - JAVA_SERVICE
+          - PYTHON_SERVICE
   Group:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -207,23 +240,47 @@ definitions:
           type: string
           description: Group's path in case of subgroup
         members:
-          type: "array"
+          type: array
           items:
-            $ref: "#/definitions/Assignation"
+            $ref: '#/definitions/Assignation'
         parent:
           $ref: '#/definitions/Group'
         sourceRepositoryStatus:
-          enum: *RESOURCE_STATUS
+          enum:
+          - PENDING
+          - READY
+          - UPDATING
+          - UNSTABLE
+          - ERROR
+          - DELETED
         sourceMembershipStatus:
-          enum: *RESOURCE_STATUS
+          enum:
+          - PENDING
+          - READY
+          - UPDATING
+          - UNSTABLE
+          - ERROR
+          - DELETED
         pipelineFolderStatus:
-          enum: *RESOURCE_STATUS
+          enum:
+          - PENDING
+          - READY
+          - UPDATING
+          - UNSTABLE
+          - ERROR
+          - DELETED
         binaryRepositoryStatus:
-          enum: *RESOURCE_STATUS
+          enum:
+          - PENDING
+          - READY
+          - UPDATING
+          - UNSTABLE
+          - ERROR
+          - DELETED
   KeyPair:
     allOf:
-    - $ref: "#/definitions/Resource"
-    - type: "object"
+    - $ref: '#/definitions/Resource'
+    - type: object
       properties:
         private:
           type: string
@@ -233,32 +290,32 @@ definitions:
           $ref: '#/definitions/Group'
   User:
     allOf:
-    - $ref: "#/definitions/Resource"
-    - type: "object"
+    - $ref: '#/definitions/Resource'
+    - type: object
       properties:
         firstName:
-          type: "string"
+          type: string
         lastName:
-          type: "string"
+          type: string
         email:
-          type: "string"
+          type: string
         password:
-          type: "string"
+          type: string
         phone:
-          type: "string"
+          type: string
         groups:
-          type: "array"
+          type: array
           items:
-            $ref: "#/definitions/Assignation"
+            $ref: '#/definitions/Assignation'
   Assignation:
     allOf:
-    - $ref: "#/definitions/Resource"
-    - type: "object"
+    - $ref: '#/definitions/Resource'
+    - type: object
       properties:
         role:
-          type: "string"
+          type: string
         fte:
-          type: "string"
+          type: string
   SourceRepositoryCommit:
     type: object
     properties:
@@ -284,13 +341,18 @@ definitions:
     type: object
     properties:
       path:
-        type: "string"
+        type: string
       memberType:
-        type: "string"
-        enum: ["user", "group"]
+        type: string
+        enum:
+        - user
+        - group
       memberName:
-        type: "string"
+        type: string
       role:
-        type: "string"
-        enum: ["guest", "contributor", "manager"]
+        type: string
+        enum:
+        - guest
+        - contributor
+        - manager
 paths: {}
