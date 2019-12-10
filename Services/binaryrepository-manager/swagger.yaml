@@ -3,7 +3,7 @@ info:
   x-groupId: org.kathra
   x-artifactName: binaryRepositoryManager
   description: Kathra Binary Repository Manager
-  version: 1.0.0
+  version: 1.1.0-SNAPSHOT
   title: Kathra Binary Repository Manager
 securityDefinitions:
   kathra_auth:
@@ -210,5 +210,5 @@ definitions:
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
-  artifactVersion: 1.0.0
+  artifactVersion: 1.1.0-SNAPSHOT
   modelPackage: core.model
