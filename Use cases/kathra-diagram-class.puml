@@ -290,9 +290,43 @@ class  ImplementationVersion {
 }
 ImplementationVersion  "0..*" --o "1" ApiVersion
 
+Asset <|-- CatalogEntry
+class  CatalogEntry {
+     - packageType <b>:PACKAGE_TYPE</b>
+     - version <b>:String</b>
+     - repository <b>:String</b>
+     - provider <b>: String</b>
+     - providerId <b>: String</b>
+     - url <b>: String</b>
+     - documentation <b>: String</b>
+     - description <b>: String</b>
+     - packageTemplate <b>: PACKAGE_TEMPLATE</b>
+}
+ImplementationVersion  "0..*" --o "1" CatalogEntry
+
+class  CatalogEntryArgument {
+     - label <b>: String</b>
+     - description <b>: String</b>
+     - key <b>: String</b>
+     - value <b>: String</b>
+     - contrainst <b>: String</b>
+}
+CatalogEntry  "0..*" --o "1" CatalogEntryArgument
+
+enum PACKAGE_TYPE {
+     - APT
+     - SNAP
+     - HELM
+     - KUSTOMIZE
+}
+
+enum PACKAGE_TEMPLATE {
+     - REST_API
+}
+
 
 note as N1
-  Name: <b><color:royalBlue>Smite Core Model</color>
-  Version: <b><color:royalBlue>1.4.0-SNAPSHOT</color>
+  Name: <b><color:royalBlue>Kathra Core Model</color>
+  Version: <b><color:royalBlue>1.1.0-SNAPSHOT</color>
 end note
 @enduml

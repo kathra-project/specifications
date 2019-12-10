@@ -23,6 +23,8 @@ left to right direction
 (manageApplication) as "Manage applications"
 (manageAccess) as "Manage access"
 
+(publishApplication) as "Publish application"
+
 (monitorPlatform) as "Monitor plateform"
 
 (operate) as "Operate"
@@ -40,6 +42,7 @@ admin --> (operate)
 
 (development) .> (manageApplicationLifecycle) : extends
 (development) .> (experiment) : extends
+(development) .> (publishApplication) : extends
 
 (experiment) .> (usePlatform) : include
 (experiment) .> (managePlatform) : include
