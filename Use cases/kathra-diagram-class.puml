@@ -290,39 +290,10 @@ class  ImplementationVersion {
 }
 ImplementationVersion  "0..*" --o "1" ApiVersion
 
-Asset <|-- CatalogEntry
-class  CatalogEntry {
-     - packageType <b>:PACKAGE_TYPE</b>
-     - version <b>:String</b>
-     - repository <b>:String</b>
-     - provider <b>: String</b>
-     - providerId <b>: String</b>
-     - url <b>: String</b>
-     - documentation <b>: String</b>
-     - description <b>: String</b>
-     - packageTemplate <b>: PACKAGE_TEMPLATE</b>
-}
+
+!include ./Use Cases/CatalogEntry/model.puml
 ImplementationVersion  "0..*" --o "1" CatalogEntry
-
-class  CatalogEntryArgument {
-     - label <b>: String</b>
-     - description <b>: String</b>
-     - key <b>: String</b>
-     - value <b>: String</b>
-     - contrainst <b>: String</b>
-}
-CatalogEntry  "0..*" --o "1" CatalogEntryArgument
-
-enum PACKAGE_TYPE {
-     - APT
-     - SNAP
-     - HELM
-     - KUSTOMIZE
-}
-
-enum PACKAGE_TEMPLATE {
-     - REST_API
-}
+Asset <|-- CatalogEntryPackage
 
 
 note as N1

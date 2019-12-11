@@ -1,0 +1,27 @@
+@startuml
+
+class  CatalogEntry {
+     - version <b>:String</b>
+     - documentation <b>: String</b>
+     - description <b>: String</b>
+     - packageTemplate <b>: PACKAGE_TEMPLATE</b>
+}
+
+enum PACKAGE_TEMPLATE {
+     - REST_API
+}
+CatalogEntry  "0..*" --o "1" CatalogEntryPackage
+
+class  CatalogEntryArgument {
+     - label <b>: String</b>
+     - description <b>: String</b>
+     - key <b>: String</b>
+     - value <b>: String</b>
+     - contrainst <b>: String</b>
+}
+CatalogEntry  "0..*" --o "1" CatalogEntryArgument
+
+!include ./Use Cases/CatalogEntryPackage/model.puml
+
+
+@enduml

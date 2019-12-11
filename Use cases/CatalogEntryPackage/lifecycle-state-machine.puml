@@ -1,0 +1,49 @@
+@startuml
+state "Create a new catalog entry package from an Catalog Entry" as insertCatalogEntryPackage : packageType should be setted
+[*] --> insertCatalogEntryPackage
+insertCatalogEntryPackage --> PENDING
+PENDING : Catalog entry package existing in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Generate source package" as generateSrc : Generate source for package from CatalogManager or CodeGen
+    state "Create source repository " as createRepository : Create source repository group into SourceManager
+    state "Create pipeline" as createPipeline : Create pipeline into PipelineManager
+    state "Push source" as pushSource : Push source into SourceManager
+    state "Run pipeline" as runPipeline : Run pipeline into PipelineManager
+    state "Test deploy" as testDeploy : Test deploy package from CatalogManager
+    [*] --> generateSrc
+    generateSrc --> createRepository
+    createRepository --> createPipeline
+    createPipeline --> pushSource
+    pushSource --> runPipeline
+    runPipeline --> testDeploy
+    testDeploy --> [*]
+}
+ERROR -> [*]
+PENDING -> OK : Catalog entry package is fully initialized
+PENDING --> ERROR
+OK : Update CatalogEntryPackage to OK
+OK --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check source into SourceManager is OK" as checkSource
+    state "Check pipeline into PipelineManager is OK" as checkPipeline
+    state "Test deploy from CatalogManager is OK" as testPackage
+    [*] --> checkSource
+    checkSource --> checkPipeline
+    checkPipeline --> testPackage
+    testPackage --> [*]
+}
+UNSTABLE -> OK : Catalog entry package is available
+OK --> DELETED
+state DELETED {
+    state "Delete source into SourceManager" as deleteSrc
+    state "Delete pipeline into PipelineManager" as deletePipeline
+    state "Delete package from CatalogManager" as deleteEntry
+    [*] --> deleteSrc
+    deleteSrc --> deletePipeline
+    deletePipeline --> deleteEntry
+    deleteEntry --> [*]
+}
+DELETED -left-> [*]
+
+@enduml

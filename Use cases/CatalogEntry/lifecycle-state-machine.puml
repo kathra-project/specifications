@@ -1,23 +1,13 @@
 @startuml
-state "Create a new catalog entry" as insertCatalogEntry : packageType, packageTemplate and implementationVersion should be setted
+state "Create a new catalog entry" as insertCatalogEntry : packageTemplate and implementationVersion should be setted
 [*] --> insertCatalogEntry
 insertCatalogEntry --> PENDING
 PENDING : Catalog entry existing in DB with status PENDING
 ERROR : An error has occured during initialization
 state PENDING {
-    state "Generate source package" as generateSrc : Generate source for package from CatalogManager or CodeGen
-    state "Create source repository " as createRepository : Create source repository group into SourceManager
-    state "Create pipeline" as createPipeline : Create pipeline into PipelineManager
-    state "Push source" as pushSource : Push source into SourceManager
-    state "Run pipeline" as runPipeline : Run pipeline into PipelineManager
-    state "Test deploy" as testDeploy : Test deploy package from CatalogManager
-    [*] --> generateSrc
-    generateSrc --> createRepository
-    createRepository --> createPipeline
-    createPipeline --> pushSource
-    pushSource --> runPipeline
-    runPipeline --> testDeploy
-    testDeploy --> [*]
+    state "Generate collections of CatalogEntryPackage for each PACKAGE_TYPE avaliables" as generatesPackages
+    [*] --> generatesPackages
+    generatesPackages --> [*]
 }
 ERROR -> [*]
 PENDING -> OK : Catalog entry is fully initialized
@@ -25,24 +15,16 @@ PENDING -> ERROR
 OK : Update CatalogEntry to OK
 OK --> UNSTABLE : An error exception is detected
 state UNSTABLE {
-    state "Check source into SourceManager is OK" as checkSource
-    state "Check pipeline into PipelineManager is OK" as checkPipeline
-    state "Test deploy from CatalogManager is OK" as testPackage
-    [*] --> checkSource
-    checkSource --> checkPipeline
-    checkPipeline --> testPackage
-    testPackage --> [*]
+    state "Check all catalog entry packages is OK" as checkPackages
+    [*] --> checkPackages
+    checkPackages --> [*]
 }
 UNSTABLE -> OK : Catalog entry is available
 OK --> DELETED
 state DELETED {
-    state "Delete source into SourceManager" as deleteSrc
-    state "Delete pipeline into PipelineManager" as deletePipeline
-    state "Delete catalogManager from CatalogManager" as deleteEntry
-    [*] --> deleteSrc
-    deleteSrc --> deletePipeline
-    deletePipeline --> deleteEntry
-    deleteEntry --> [*]
+    state "Delete catalog entry packages" as deletePackages
+    [*] --> deletePackages
+    deletePackages --> [*]
 }
 DELETED -> [*]
 

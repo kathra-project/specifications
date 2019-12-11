@@ -1,0 +1,18 @@
+@startuml
+
+class  CatalogEntryPackage {
+     - packageType <b>:PACKAGE_TYPE</b>
+     - version <b>:String</b>
+     - provider <b>: String</b>
+     - providerId <b>: String</b>
+     - url <b>: String</b>
+}
+
+enum PACKAGE_TYPE {
+     - HELM
+     - KUSTOMIZE
+     - APT
+     - SNAP
+}
+
+@enduml

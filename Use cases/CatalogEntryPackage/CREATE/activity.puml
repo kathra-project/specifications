@@ -1,0 +1,58 @@
+@startuml
+start
+if (Does same package type exist in catalog entry ?) then (yes)
+    :Same package type exists in catalog entry;
+    end
+else (no)
+  :Create into db;
+endif
+:Catalog entry package is PENDING;
+
+:Create catalog entry package's source repository;
+
+if (Is catalog entry package's source repository READY ?) then (yes)
+    :Source repository is READY;
+else (no)
+    :Source repository is PENDING, ERROR or UNSTABLE (not READY);
+    :Catalog entry package is ERROR;
+    end
+endif
+
+
+:Create catalog entry package's pipeline;
+if (Is catalog entry package's pipeline READY?) then (yes)
+    :Catalog entry package's Pipeline is READY;
+else (no)
+    :Catalog entry package's Pipeline is PENDING, ERROR or UNSTABLE (not READY);
+    :Catalog entry package is ERROR;
+    end
+endif
+
+:Generate package source from CatalogManager;
+:Push and tag source code into Source Repository;
+
+if (Is SourceRepository updated?) then (yes)
+    :Run pipeline;
+else (no)
+    :Catalog entry package is ERROR;
+    end
+endif
+
+:Run pipeline;
+if (Is pipeline's job success?) then (yes)
+    :Test package;
+else (no)
+    :Catalog entry package is ERROR;
+    end
+endif
+
+:Test deploy package;
+if (Is package deployed with success ?) then (yes)
+    :Catalog entry package is READY;
+else (no)
+    :Catalog entry package is ERROR;
+    end
+endif
+
+end
+@enduml
