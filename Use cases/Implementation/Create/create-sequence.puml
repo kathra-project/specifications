@@ -117,7 +117,5 @@ deactivate AppManager.ImplementationService
 deactivate User
 
 
-
-
 deactivate AppManager
 @enduml

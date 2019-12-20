@@ -291,8 +291,8 @@ class  ImplementationVersion {
 ImplementationVersion  "0..*" --o "1" ApiVersion
 
 
-!include ./Use Cases/CatalogEntry/model.puml
-ImplementationVersion  "0..*" --o "1" CatalogEntry
+!include ./CatalogEntry/model.puml
+Asset  "0..*" --o "1" CatalogEntry
 Asset <|-- CatalogEntryPackage
 
 

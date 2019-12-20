@@ -1,0 +1,149 @@
+@startuml
+title "addImplementation - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant Dashboard as UI
+participant AppManager
+participant AppManager.CatalogEntryService as "AppManager.CatalogEntryService"
+participant AppManager.CatalogEntryPackageService
+participant AppManager.CatalogEntryPackageVersionService
+participant AppManager.RepositoryService
+participant AppManager.PipelineService
+participant ResourceManager
+participant SourceManager
+participant PipelineManager
+participant CatalogCodeGen
+
+
+activate User
+User -> UI: LINK: goto /addCatalogEntry page
+activate UI
+UI -> User:
+deactivate UI
+
+note over User
+  Requirments:
+  Enter required parameters for the new catalog entry to create
+  Click create button
+end note
+
+User -> AppManager: POST /catalog-entries
+activate AppManager
+AppManager -> AppManager.CatalogEntryService: create(String name, PackageTemplate template, Map<String,String> parameters, Asset asset, Group group)
+activate AppManager.CatalogEntryService
+
+AppManager.CatalogEntryService -> ResourceManager: POST /catalog-entries [body: CatalogEntry(mandatories: name, template, group, asset, status = PENDING)]
+    activate ResourceManager
+    ResourceManager -> ResourceManager: create DB resource
+    AppManager.CatalogEntryService <- ResourceManager: CatalogEntry w/ id
+    deactivate ResourceManager
+
+AppManager <-- AppManager.CatalogEntryService: CatalogEntry w/ id
+AppManager --> User: success
+deactivate AppManager
+deactivate User
+
+loop (package types) :packageType={HELM, KUSTOMIZE, ...}
+
+  AppManager.CatalogEntryService -> AppManager.CatalogEntryPackageService : add( \n CatalogEntry catalogEntry, \n PackageType packageType, Map<String,String> parameters) : CatalogEntryPackage
+
+  activate AppManager.CatalogEntryPackageService
+
+
+  AppManager.CatalogEntryPackageService -> ResourceManager: POST /catalog-entry-packages \n [body: CatalogEntryPackage {"type"=:libraryType, "packageType"=:packageType, "catalogEntry"= {"id"= catalogEntry.id}}]
+  activate ResourceManager
+  ResourceManager -> ResourceManager: create CatalogEntryPackage into db
+  AppManager.CatalogEntryPackageService <-- ResourceManager: CatalogEntryPackage {"id"= <guid>, "status"=<PENDING>}
+  deactivate ResourceManager
+
+  AppManager.CatalogEntryService <-- AppManager.CatalogEntryPackageService:  CatalogEntryPackage {"id"= <guid>, "status"=<PENDING>}
+
+  !define SourceRepositoryCaller AppManager.CatalogEntryPackageService
+  "SourceRepositoryCaller" -> AppManager.RepositoryService:createRepository(String name, String path, String[] deployKeys) \n name=:catalogEntry.name/:packageType \n path=:groupPath/catalog/:catalogEntry.name/:packageType \n deployKeys=[:catalogEntry.metadata.groupId]
+  !include ./../../SourceRepository/create-sequence-from-path.puml
+
+  AppManager.CatalogEntryPackageService -> ResourceManager: PATCH /catalog-entry-packages/{catalogEntryPackageId} \n [params: "catalogEntryPackageId"= :CatalogEntryPackage.id] \n [body: CatalogEntryPackage {"sourceRepository"= {"id"= SourceRepository.id}}]
+  activate ResourceManager
+  AppManager.CatalogEntryPackageService <- ResourceManager : CatalogEntryPackage
+  deactivate ResourceManager
+
+  !define PipelineServiceCaller AppManager.CatalogEntryPackageService
+  "PipelineServiceCaller" -> AppManager.PipelineService: PipelineService.createPipeline(\n String path, SourceRepository sourceRepository, PipelineTemplate pipelineTemplate) : Pipeline  \n path=groupId/:catalogEntry.name/implementations/:packageType/:implementationName \n sourceRepository=:sourceRepository \n PipelineTemplate=?
+  !include ./../../Pipeline/create-sequence-from-pathSourceRepositoryPipelineTemplate.puml
+
+
+  AppManager.CatalogEntryPackageService -> ResourceManager: PATCH /catalog-entry-packages/{catalogEntryPackageId} \n [params: "catalogEntryPackageId"= :CatalogEntryPackage.id] \n [body: CatalogEntryPackage {"pipeline"= {"id"= Pipeline.id}}]
+  activate ResourceManager
+  ResourceManager -> AppManager.CatalogEntryPackageService: CatalogEntryPackage
+  deactivate ResourceManager
+
+
+
+== Wait until SourceRepository and Pipeline status are READY ==
+
+  
+
+    AppManager.CatalogEntryPackageService -> AppManager.CatalogEntryPackageVersionService : CatalogEntryPackageVersionService.createVersion(CatalogEntryPackage package, String version [1.0.0], Map<String,String> parameters)
+    activate AppManager.CatalogEntryPackageVersionService
+    AppManager.CatalogEntryPackageVersionService -> ResourceManager: POST /catalog-entry-packages \n [body: CatalogEntryPackage {"type"=:libraryType, "packageType"=:packageType, "catalogEntry"= {"id"= catalogEntry.id}}]
+    activate ResourceManager
+    ResourceManager -> ResourceManager: create CatalogEntryPackage into db
+    AppManager.CatalogEntryPackageVersionService <-- ResourceManager: CatalogEntryPackageVersion {"id"= <guid>, "status"=<PENDING>}
+    deactivate ResourceManager
+  
+
+    AppManager.CatalogEntryPackageService <-- AppManager.CatalogEntryPackageVersionService : CatalogEntryPackageVersion w/ id
+
+    AppManager.CatalogEntryPackageVersionService -> CatalogCodeGen: POST /generate [formdata: template:catalogEntry.template, parameters: parameters]
+    activate CatalogCodeGen
+    CatalogCodeGen -> AppManager.CatalogEntryPackageVersionService: zip file w/ source code generated
+    deactivate CatalogCodeGen
+
+
+    AppManager.CatalogEntryPackageVersionService -> AppManager.RepositoryService: RepositoryService.updateSourceRepository( \n SourceRepository sourceRepository, String version, File archiveFile)
+    activate AppManager.RepositoryService
+
+    AppManager.RepositoryService -> SourceManager: POST /updateRepository [formdata: file:source-code.zip, param: url=sourceRepository.sshUrl, tag=version)]
+    activate SourceManager
+        SourceManager -> GitLab: unzip, commit, \n tag <version>, push to url
+        SourceManager -> AppManager.RepositoryService: OK
+    deactivate SourceManager
+
+    AppManager.CatalogEntryPackageVersionService <- AppManager.RepositoryService : SourceRepository
+    deactivate AppManager.RepositoryService
+
+    AppManager.CatalogEntryPackageVersionService -> ResourceManager: PATCH /catalog-entry-packages/:CatalogEntryPackageVersionId \n [params: "CatalogEntryPackageVersionId"= :catalogEntryPackage.id] \n [body: CatalogEntryPackageVersion{ status = READY}]
+    activate ResourceManager
+    AppManager.CatalogEntryPackageVersionService <- ResourceManager: CatalogEntryPackageVersion
+    deactivate ResourceManager
+
+
+    deactivate AppManager.CatalogEntryPackageVersionService
+
+    == Wait CatalogEntryPackageVersionService status is READY ==
+
+
+
+    AppManager.CatalogEntryPackageService -> ResourceManager: PATCH /catalog-entry-packages/{catalogEntryPackageId} \n [params: "catalogEntryPackageId"= :CatalogEntryPackage.id] \n [body: CatalogEntryPackage {"status"=READY}]
+    activate ResourceManager
+    AppManager.CatalogEntryPackageService <- ResourceManager : CatalogEntryPackage updated w/
+    deactivate ResourceManager
+
+    deactivate AppManager.CatalogEntryPackageService
+
+  
+  
+end
+
+== Wait all CatalogEntryPackage status are READY ==
+
+
+AppManager.CatalogEntryService -> ResourceManager: PATCH /catalog-entries/{catalogEntryId} \n [params: "catalogEntryId"= :catalogEntry.id] \n [body: CatalogEntry{status = READY}]
+activate ResourceManager
+ResourceManager -> AppManager.CatalogEntryService: CatalogEntryPackage
+deactivate ResourceManager
+
+deactivate AppManager.CatalogEntryService
+
+@enduml

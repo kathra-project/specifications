@@ -1,0 +1,34 @@
+@startuml
+title "List implementations - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant Dashboard as UI
+participant AppManager
+participant ResourceManager
+
+activate User
+User -> UI: LINK: goto /smite/applications#implementations page
+activate UI
+UI -> User:
+deactivate UI
+
+note over User
+  Requirements:
+  User logged-in
+end note
+
+User -> AppManager: GET /implementations
+activate AppManager
+AppManager -> ResourceManager: GET /implementations
+activate ResourceManager
+ResourceManager -> ResourceManager : get implementations
+AppManager <- ResourceManager : Implementation[] [mandatories: \n   metadatas:Map([mandatories:\n      group:string\n   ]),\n   id:string, name:string, description:string, language: string, \n   versions: Array([mandatories: \n      id:string, name:string\n   ])\n]
+deactivate ResourceManager
+User <- AppManager : Implementation[]
+deactivate AppManager
+
+deactivate User
+
+
+@enduml

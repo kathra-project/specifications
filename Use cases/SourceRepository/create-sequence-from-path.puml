@@ -11,7 +11,7 @@ activate AppManager.RepositoryService
     deactivate ResourceManager
 
 
-    AppManager.RepositoryService --> "SourceRepositoryCaller" : SourceRepository {"id"= <guid>, "name"= :component.name, "status"= <PENDING>}
+    AppManager.RepositoryService --> "SourceRepositoryCaller" : SourceRepository {"id"= <guid>, "name"= :name, "status"= <PENDING>}
 
     AppManager.RepositoryService -> SourceManager: POST /sourceRepositories \n [body: SourceRepository{"path"=:path}]
 

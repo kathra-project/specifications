@@ -25,7 +25,7 @@ activate AppManager.PipelineService
 \t"provider" = <providerName>,\n\t"providerId" = <PipelineManagerProviderPipelineId>\n\t"status" = "READY" \n }]
 
       activate ResourceManager
-      ResourceManager -> AppManager.PipelineService: Library
+      ResourceManager -> AppManager.PipelineService: Pipeline
       deactivate ResourceManager
 deactivate AppManager.PipelineService
 
