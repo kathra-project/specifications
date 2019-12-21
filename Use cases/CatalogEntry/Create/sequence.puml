@@ -1,5 +1,5 @@
 @startuml
-title "addImplementation - Sequence Diagram"
+title "addCatalogEntry - Sequence Diagram"
 
 actor User
 'boundary Proxy
@@ -33,7 +33,7 @@ activate AppManager
 AppManager -> AppManager.CatalogEntryService: create(String name, PackageTemplate template, Map<String,String> parameters, Asset asset, Group group)
 activate AppManager.CatalogEntryService
 
-AppManager.CatalogEntryService -> ResourceManager: POST /catalog-entries [body: CatalogEntry(mandatories: name, template, group, asset, status = PENDING)]
+AppManager.CatalogEntryService -> ResourceManager: POST /catalog-entries  [params: "groupPath"= :groupPath] [body: CatalogEntry(mandatories: name, template, group, asset, status = PENDING)]
     activate ResourceManager
     ResourceManager -> ResourceManager: create DB resource
     AppManager.CatalogEntryService <- ResourceManager: CatalogEntry w/ id

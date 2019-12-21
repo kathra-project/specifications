@@ -1,5 +1,5 @@
 @startuml
-title "view details component - Sequence Diagram"
+title "view details catalog entry - Sequence Diagram"
 
 actor User
 'boundary Proxy

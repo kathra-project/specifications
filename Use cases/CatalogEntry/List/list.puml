@@ -1,0 +1,44 @@
+@startuml
+title "List catalog entries - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant Dashboard as UI
+participant AppManager
+participant ResourceManager
+participant CatalogManager
+
+activate User
+User -> UI: LINK: goto /smite/applications#catalogentries page
+activate UI
+UI -> User:
+deactivate UI
+
+note over User
+  Requirements:
+  User logged-in
+end note
+
+User -> AppManager: GET /catalog-entries
+activate AppManager
+
+AppManager -> CatalogManager: GET /catalog-entries  (get latest version public and private)
+activate CatalogManager
+CatalogManager -> Harbor : helm search
+CatalogManager <- Harbor
+AppManager <- CatalogManager : CatalogEntryPackageVersion[] [mandatories: name: name, providerId:string, provider:string, name:string, version:string, documentation:string, parameters:map[string,string]]
+deactivate CatalogManager
+
+AppManager -> ResourceManager: GET /catalog-entries-packages  (only authorized catalog entries)
+activate ResourceManager
+ResourceManager -> ResourceManager : get catalog-entries-packages
+AppManager <- ResourceManager : CatalogEntry[] [mandatories: name: name, asset:Asset, group:Group]
+deactivate ResourceManager
+AppManager -> AppManager : Merge catalog entries from CatalogManager and ResourceManager and filter : if entry.public = true OR use is membership of group entry owner
+User <- AppManager : CatalogEntry[]
+deactivate AppManager
+
+deactivate User
+
+
+@enduml
