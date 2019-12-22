@@ -69,7 +69,7 @@ loop (package types) :packageType={HELM, KUSTOMIZE, ...}
   deactivate ResourceManager
 
   !define PipelineServiceCaller AppManager.CatalogEntryPackageService
-  "PipelineServiceCaller" -> AppManager.PipelineService: PipelineService.createPipeline(\n String path, SourceRepository sourceRepository, PipelineTemplate pipelineTemplate) : Pipeline  \n path=groupId/:catalogEntry.name/implementations/:packageType/:implementationName \n sourceRepository=:sourceRepository \n PipelineTemplate=?
+  "PipelineServiceCaller" -> AppManager.PipelineService: PipelineService.createPipeline(\n String path, SourceRepository sourceRepository, PipelineTemplate pipelineTemplate) : Pipeline  \n path=groupId/:catalogEntry.name/implementations/:packageType/:implementationName \n sourceRepository=:sourceRepository \n metadata.CATALOG_URL=HARBOR_URL+"/"+:catalogEntry.group.name \n metadata.CATALOG_LOGIN=:catalogEntry.group.technicalUser.login \n metadata.CATALOG_PASSWORD=:catalogEntry.group.technicalUser.password \n metadata.KATHRA_WEBHOOK=:KATHRA_WEBHOOK \n PipelineTemplate=:packageType
   !include ./../../Pipeline/create-sequence-from-pathSourceRepositoryPipelineTemplate.puml
 
 

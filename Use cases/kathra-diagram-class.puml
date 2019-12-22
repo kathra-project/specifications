@@ -209,6 +209,21 @@ class  Group {
          - binaryRepositoryStatus <b>: RESOURCE_STATUS</b>
 }
 Group  o-- "0..1"   Group : parent
+Group  "1" <--   User : technicalUser
+Assignation  "1" o-- "0..N"   Group : assignations
+
+class User {
+         - firstName <b>: String</b>
+         - lastName <b>: String</b>
+         - email <b>: String</b>
+         - password <b>: String</b>
+}
+Assignation  "1" o-- "0..N"   User : assignations
+
+class Assignation {
+        - role <b>: String</b>
+        - fte <b>: String</b>
+}
 
 class KeyPair {
          - private <b>: String</b>

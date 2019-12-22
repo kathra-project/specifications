@@ -12,7 +12,7 @@ activate AppManager.PipelineService
       AppManager.PipelineService --> "PipelineServiceCaller" : Pipeline { "id" = <guid>, "status" = "PENDING" }
 
       AppManager.PipelineService -> PipelineManager: POST /pipelines \n [body: Pipeline { \n\
-\t"path"=:groupPath/components/:component.name/:language/:libraryType, \n\t"sourceRepository"={"sshUrl"=<SourceManagerProviderSshUrl>},\n\t"pipelineTemplate"=[JavaLibrary,JavaService,PythonLibrary,PythonService]\n}]
+\t"path"=:groupPath/components/:component.name/:language/:libraryType, \n\t"sourceRepository"={"sshUrl"=<SourceManagerProviderSshUrl>},\n\t"pipelineTemplate"=:pipelineTemplate,\n\t"metadata"=:metadata\n}]
       activate PipelineManager
             PipelineManager -> Jenkins: Create Jenkins pipeline named filename(:path) from template into folder : \n dirname(:path)
           PipelineManager -> AppManager.PipelineService: Pipeline { \n\
