@@ -13,6 +13,7 @@ left to right direction
 (implementationFeature) as "View, create & update implementation"
 (catalogFeatureManage) as "View, create & update catalog entries"
 (catalogFeatureView) as "View catalog entries"
+(runtimeFeatureManage) as "View, create & update runtime environment"
 
 
 (development) --> (componentFeature) : include
@@ -21,9 +22,12 @@ left to right direction
 (development) --> (catalogFeatureManage) : include
 
 developer --> (development)
+developer --> (runtimeFeatureManage)
 
 experimenter --> (catalogFeatureView)
+experimenter --> (runtimeFeatureManage)
 productionManager --> (catalogFeatureView)
+productionManager --> (runtimeFeatureManage)
 
 
 @enduml

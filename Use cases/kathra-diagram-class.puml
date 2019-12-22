@@ -8,119 +8,6 @@ skinparam class {
 	BorderColor DimGray
 }
 
-/'
-ResourceParameter <|-- SimpleResourceParameter
-ResourceParameter <|-- ApiDependencyParameter
-ResourceParameter <|-- ApplicationDependencyParameter
-
-
-
-
-class  CatalogResource {
-         - application <b>:Application</b>
-         - version <b>:String</b>
-         - licence <b>:String</b>
-         - teaser <b>:String</b>
-         - description <b>:String</b>
-         - websiteUrl <b>:String</b>
-         - iconUrl <b>:String</b>
-         - categories <b>:String[]</b>
-}
-
-class  ResourceParameterDependency {
-         - name <b>:String</b>
-         - condition <b>:String</b>
-         - value <b>:String</b>
-}
-
-class  ResourceParameterValidationRule {
-         - type <b>:String</b>
-         - value <b>:String</b>
-         - prompt <b>:String</b>
-}
-
-class  Environment {
-         - resources <b>:EnvironmentResource[]</b>
-         - status <b>:String</b>
-}
-
-class  ResourceParameterValue {
-         - name <b>:String</b>
-         - value <b>:String</b>
-         - parameter <b>:ResourceParameter</b>
-}
-
-class  EnvironmentResource {
-         - application <b>:Application</b>
-         - parameters <b>:ResourceParameterValue[]</b>
-}
-
-class  ResourceParameter {
-         - name <b>:String</b>
-         - type <b>:String</b>
-         - defaultValue <b>:String</b>
-         - description <b>:String</b>
-         - label <b>:String</b>
-         - rules <b>:ResourceParameterValidationRule[]</b>
-}
-
-class  SimpleResourceParameter {
-         - optional <b>:Boolean</b>
-         - depends <b>:ResourceParameterDependency[]</b>
-}
-
-class  ApiDependencyParameter {
-         - api <b>:Api</b>
-}
-
-class  ApplicationDependencyParameter {
-         - app <b>:Application</b>
-}
-
-class  Application {
-         - parameters <b>:ResourceParameter[]</b>
-}
-
-
-class  Model {
-         - description <b>:String</b>
-         - title <b>:String</b>
-         - sourceRepo <b>:SourceRepository</b>
-         - versions <b>:ModelVersion[]</b>
-}
-
-class  ModelVersion {
-         - sourceRepo <b>:SourceRepository</b>
-         - version <b>:String</b>
-         - modelDependencies <b>:Model[]</b>
-}
-
-class  User {
-         - firstName <b>:String</b>
-         - lastName <b>:String</b>
-         - username : <b>:String</b>
-}
-
-class  RoleMapping {
-         - user <b>:User</b>
-         - Group <b>:Group<b>
-         - role <b>:Role</b>
-}
-RoleMapping  o-- "1"   Group : group
-RoleMapping  o-- "1"   User : user
-RoleMapping  o-- "1"   Role : role
-
-Model  o-- "0..1"   Library : library
-Model  o-- "1"   MODEL_STATUS : status
-Model  "1" o-- "0..*"   ModelVersion
-ModelVersion  o-- "0..1"   Library : library : <i>status</i>
-
-ApiVersion  *-- "0..1"  ModelVersion : model
-ApiVersion  *-- "0..*"  ModelVersion : modelDependencies
-
-Application  *-- "0..*"  ResourceParameter
-'/
-
 class  Resource {
          - id <b>: String</b>
          - name <b>: String</b>
@@ -149,7 +36,7 @@ class  Membership {
 }
 
 
-class  Component {
+class  Component <extends Resource> {
          - description <b>: String</b>
          - title <b>: String</b>
          - apiRepository <b>: SourceRepository</b>
@@ -159,7 +46,7 @@ class  Component {
 }
 Component  o-- "0..1"   SourceRepository
 
-class  ApiVersion {
+class  ApiVersion <extends Resource> {
          - component <b>:  Component</b>
          - version <b>: String</b>
          - released <b>: Boolean</b>
@@ -169,7 +56,7 @@ class  ApiVersion {
 }
 Component "1" *-- "0..*"  ApiVersion
 
-class LibraryApiVersion {
+class LibraryApiVersion <extends Resource> {
          - apiVersion <b>: ApiVersion</b>
          - library <b>: Library</b>
          - sourceRepositoryStatus <b>: RESOURCE_STATUS</b>
@@ -192,15 +79,10 @@ enum RESOURCE_STATUS {
          - DELETED
 }
 
-class Asset {
-    sourceRepository <b>: SourceRepository</b>
-    pipeline <b>: Pipeline</b>
-    langage  <b>: LANGUAGE</b>
-}
 Asset "1..0"  o-- "0..1"   Pipeline
 Asset "1..0" o-- "0..1"   SourceRepository
 
-class  Group {
+class  Group <extends Resource> {
          - path <b>: String</b>
          - parent : <b>Group</b>
          - sourceRepositoryStatus <b>: RESOURCE_STATUS</b>
@@ -212,7 +94,7 @@ Group  o-- "0..1"   Group : parent
 Group  "1" <--   User : technicalUser
 Assignation  "1" o-- "0..N"   Group : assignations
 
-class User {
+class User <extends Resource> {
          - firstName <b>: String</b>
          - lastName <b>: String</b>
          - email <b>: String</b>
@@ -220,27 +102,26 @@ class User {
 }
 Assignation  "1" o-- "0..N"   User : assignations
 
-class Assignation {
+class Assignation <extends Resource> {
         - role <b>: String</b>
         - fte <b>: String</b>
 }
 
-class KeyPair {
+class KeyPair <extends Resource> {
          - private <b>: String</b>
          - public <b>: String </b>
 }
 
 Group  "1" <-- "0..1"   KeyPair : group
 
-class Asset {
+class Asset <extends Resource> {
     sourceRepository <b>:SourceRepository</b>
     pipeline <b>:Pipeline</b>
-    langage  <b>: LANGUAGE</b>
 }
 Asset  o-- "0..1"   Pipeline : pipeline
 Asset  o-- "0..1"   SourceRepository : sourceRepository
 
-class  SourceRepository {
+class  SourceRepository <extends Resource> {
          - provider <b>: String</b>
          - providerId <b>: String</b>
          - path <b>: String</b>
@@ -250,16 +131,15 @@ class  SourceRepository {
          - branchs <b>: String[]</b>
 }
 
-class  Pipeline {
+class  Pipeline <extends Resource> {
          - provider <b>: String</b>
          - providerId <b>: String</b>
          - credentialId <b>: String</b>
          - sourceRepository <b>: SourceRepository</b>
          - path <b>: String</b>
          - template <b>: PIPELINE_TEMPLATE</b>
-         - asset <b>: Asset</b>
 }
-Pipeline "1" o-- SourceRepository
+Pipeline "1" o-- SourceRepository : sourceRepositorys
 
 
 
@@ -272,6 +152,7 @@ class  Library {
          - type  <b>: LIBRARY_TYPE</b>
          - component <b>: Component</b>
          - versions <b>: LibraryApiVersion[]</b>
+         - langage  <b>: PROGRAMMING_LANGUAGE</b>
 }
 Component "1" *-- "0..6" Library
 
@@ -294,11 +175,12 @@ class  Implementation {
          - title <b>: String</b>
          - component <b>: Component</b>
          - versions <b>: ImplementationVersion[]</b>
+         - langage  <b>: PROGRAMMING_LANGUAGE</b>
 }
 Implementation  "1" *-- "0..*"  ImplementationVersion
 Component  "0..*" *-- "1"  Implementation
 
-class  ImplementationVersion {
+class  ImplementationVersion <extends Resource> {
          - version <b>: String</b>
          - implementation <b>: Implementation</b>
          - apiVersion <b>: ApiVersion</b>
@@ -307,8 +189,15 @@ ImplementationVersion  "0..*" --o "1" ApiVersion
 
 
 !include ./CatalogEntry/model.puml
-Asset  "0..*" --o "1" CatalogEntry
+Asset  --- "1" CatalogEntry
 Asset <|-- CatalogEntryPackage
+
+
+!include ./RuntimeEnvironment/model.puml
+CatalogEntryPackage  "0..*" --o "1" RuntimeAppInstance
+Group  "0..*" --- "0..1" RuntimeEnvironment : owner
+User  "0..*" --- "0..1" RuntimeEnvironment : owner
+
 
 
 note as N1

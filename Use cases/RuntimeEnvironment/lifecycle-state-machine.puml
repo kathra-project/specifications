@@ -1,0 +1,31 @@
+@startuml
+state "Create a new runtime environment" as createRuntimeEnv : Cluster and owner (user or group) should be defined
+[*] --> createRuntimeEnv
+createRuntimeEnv --> PENDING
+PENDING : Runtime environment existing in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Create a runtime environment into RuntimeManager" as createRE
+    [*] --> createRE
+    createRE --> [*]
+}
+ERROR -> [*]
+PENDING -> OK : Runtime environment is fully initialized
+PENDING -> ERROR
+OK : Update CatalogEntry to OK
+OK --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check runtime environment exists into RuntimeManager" as checkRE
+    [*] --> checkRE
+    checkRE --> [*]
+}
+UNSTABLE -> OK : Runtime environment is available
+OK --> DELETED
+state DELETED {
+    state "Delete runtime environment into RuntimeManager" as deleteRE
+    [*] --> deleteRE
+    deleteRE --> [*]
+}
+DELETED -> [*]
+
+@enduml

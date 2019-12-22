@@ -1,6 +1,6 @@
 @startuml
 
-class  CatalogEntryPackage {
+class  CatalogEntryPackage{
      - packageType <b>:PACKAGE_TYPE</b>
      - provider <b>: String</b>
      - providerId <b>: String</b>

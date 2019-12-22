@@ -1,0 +1,112 @@
+@startuml
+
+class Cluster < extends Resources> {
+     - providerId <b>: String</b>
+     - provider <b>: String</b>
+     - packageManagerManaged <b>: PACKAGE_TYPE[]</b>
+}
+RuntimeEnvironment  "1" --o "0..*" Cluster
+
+class RuntimeEnvironment < extends Resources> {
+     - providerId <b>: String</b>
+     - provider <b>: String</b>
+     - description <b>: String</b>
+}
+
+RuntimeAppInstance  "1" --o "0..*" RuntimeEnvironment
+class RuntimeAppInstance {
+     - name <b>: String</b>
+     - providerId <b>: String</b>
+     - status <b>: RuntimeAppInstanceStatus</b>
+}
+
+RuntimeJob  "1" --o "0..*" RuntimeEnvironment
+class RuntimeJob {
+     - providerId <b>: String</b>
+     - status <b>: RuntimeAppInstanceStatus</b>
+}
+enum RuntimeJobStatus {
+    SCHEDULED
+    RUNNING
+    SUCCESS
+    FAILED
+}
+
+
+enum RuntimeAppInstanceStatus {
+    DEPLOYED
+    PENDING
+    FAILED
+}
+
+RuntimeAppService  "1" --o "0..*" RuntimeEnvironment
+class RuntimeAppService {
+     - name <b>: String</b>
+     - providerId <b>: String</b>
+     - ports <b>: String[]</b>
+}
+
+RuntimeVolume  "1" --o "0..*" RuntimeEnvironment
+class RuntimeVolume {
+     - name <b>: String</b>
+     - providerId <b>: String</b>
+     - space <b>: String</b>
+     - status <b>: RuntimeJobStatus</b>
+}
+enum RuntimeVolumeStatus {
+    PROVISIONING
+    AVAILABLE
+    TERMINATING
+}
+
+enum RuntimeContainerStatus {
+    CREATING
+    RUNNING
+    PAUSED
+    TERMINATING
+    EXIT_WITH_SUCCES
+    EXIT_WITH_ERROR
+}
+
+RuntimeContainer  "1" --o "0..*" RuntimeEnvironment
+class RuntimeContainer {
+     - name <b>: String</b>
+     - providerId <b>: String</b>
+     - image <b>: String</b>
+     - imageHash <b>: String</b>
+     - memoryLimit <b>: String</b>
+     - cpuLimit <b>: String</b>
+     - status <b>: RuntimeContainerStatus</b>
+}
+
+RuntimeEnvironmentBackup  "1" --o "0..*" RuntimeEnvironment
+class RuntimeEnvironmentBackup {
+     - providerId <b>: String</b>
+     - date <b>: timestamp</b>
+     - status <b>: String</b>
+}
+enum RuntimeEnvironmentBackupStatus {
+    SCHEDULED
+    PROCESSING
+    DONE
+    FAILED
+}
+
+RuntimeHttpLoadBalancer  "1" --o "0..*" RuntimeEnvironment
+
+class RuntimeHttpLoadBalancer {
+     - name <b>: String</b>
+     - providerId <b>: String</b>
+     - hostname <b>: String</b>
+     - port <b>: String</b>
+     - rewriteUrl <b>: String</b>
+}
+RuntimeHttpLoadBalancerForwarding  "1" --o "0..*" RuntimeHttpLoadBalancer
+
+class RuntimeHttpLoadBalancerForwarding {
+     - rule <b>: String</b>
+     - service <b>: String</b>
+     - port <b>: String</b>
+}
+
+@enduml

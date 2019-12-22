@@ -1,6 +1,6 @@
 @startuml
 
-class  CatalogEntry {
+class  CatalogEntry <extends Resource> {
      - packageTemplate <b>: PACKAGE_TEMPLATE</b>
 }
 
