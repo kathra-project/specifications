@@ -1,0 +1,243 @@
+---
+swagger: "2.0"
+info:
+  description: "KATHRA Catalog Management API permetting : \n * Generate source's\
+    \ packages from templates \n * Insert catalog entry from template  \n \n * Insert\
+    \ catalog entry from file  \n\n * Insert catalog entry from source repository\
+    \  \n * Read catalog entries from catalog \n "
+  version: "1.1.0-RC-SNAPSHOT"
+  title: "Kathra Catalog Manager"
+  x-artifactName: "catalogManager"
+  x-groupId: "org.kathra"
+basePath: "/api/v1"
+paths:
+  /templates:
+    get:
+      tags:
+        - "Templating"
+      summary: "Get all templates for catalog generation"
+      operationId: "getTemplates"
+      produces:
+        - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "CatalogEntryPackage wtih providerId"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Template"
+  /generateFromTemplate:
+    post:
+      tags:
+        - "Templating"
+      summary: "Generate archive from template"
+      operationId: "generateFromTemplate"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "Template"
+          description: "CatalogEntryPackage to create from Template"
+          required: true
+          schema:
+            $ref: "#/definitions/Template"
+          x-exportParamName: "Template"
+      responses:
+        200:
+          description: "CatalogEntryPackage wtih providerId"
+          schema:
+            type: "file"
+  /catalogEntries:
+    get:
+      tags:
+        - "Read catalog entries"
+      summary: "Get all entries in the catalog"
+      operationId: "getAllCatalogServices"
+      produces:
+        - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "CatalogEntryPackage with providerId"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CatalogEntryPackage"
+  /catalogEntries/{providerId}:
+    get:
+      tags:
+        - "Read catalog entries"
+      summary: "Get an entry in the catalog"
+      operationId: "getCatalogEntryPackage"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "providerId"
+          in: "path"
+          description: "CatalogEntryPackage providerId"
+          required: true
+          type: "string"
+          x-exportParamName: "ProviderId"
+      responses:
+        200:
+          description: "CatalogEntryPackage with details"
+          schema:
+            $ref: "#/definitions/CatalogEntryPackage"
+  /catalogEntries/{providerId}/versions/{version}:
+    get:
+      tags:
+        - "Read catalog entries"
+      summary: "Get an entry in the catalog for specific version"
+      operationId: "getCatalogEntryFromVersion"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "providerId"
+          in: "path"
+          description: "CatalogEntryPackage providerId"
+          required: true
+          type: "string"
+          x-exportParamName: "ProviderId"
+        - name: "version"
+          in: "path"
+          description: "CatalogEntryPackage version"
+          required: true
+          type: "string"
+          x-exportParamName: "Version"
+      responses:
+        200:
+          description: "CatalogEntryVersion with details"
+          schema:
+            $ref: "#/definitions/CatalogEntryPackageVersion"
+  /catalogEntries/{providerId}/versions:
+    get:
+      tags:
+        - "Read catalog entries"
+      summary: "Get all version for an entry in the catalog"
+      operationId: "getCatalogEntryPackageVersions"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "providerId"
+          in: "path"
+          description: "CatalogEntryPackage providerId"
+          required: true
+          type: "string"
+          x-exportParamName: "ProviderId"
+      responses:
+        200:
+          description: "All versions for CatalogEntryPackage"
+          schema:
+            $ref: "#/definitions/CatalogEntryPackageVersion"
+  /catalogEntries/template:
+    post:
+      tags:
+        - "Add catalog entry"
+      summary: "Create catalog entry from template"
+      operationId: "addCatalogEntryPackageFromTemplate"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "Template"
+          description: "CatalogEntryPackage to create from Template"
+          required: true
+          schema:
+            $ref: "#/definitions/Template"
+          x-exportParamName: "Template"
+      responses:
+        200:
+          description: "Output type"
+          schema:
+            $ref: "#/definitions/CatalogEntryPackage"
+  /catalogEntries/archive:
+    post:
+      tags:
+        - "Add catalog entry"
+      summary: "Create catalog entry from archive file"
+      operationId: "addCatalogEntryPackageFromArchive"
+      consumes:
+        - "multipart/form-data"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "file"
+          in: "formData"
+          description: "The uploaded file data"
+          required: true
+          type: "file"
+          x-exportParamName: "File"
+        - name: "name"
+          in: "path"
+          description: "CatalogEntry's name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+        - name: "version"
+          in: "path"
+          description: "CatalogEntryPackage's version"
+          required: true
+          type: "string"
+          x-exportParamName: "Version"
+      responses:
+        200:
+          description: "Output type"
+          schema:
+            $ref: "#/definitions/CatalogEntryPackage"
+  /catalogEntries/sourceRepository:
+    post:
+      tags:
+        - "Add catalog entry"
+      summary: "Create catalog entry from source repository's url"
+      operationId: "addCatalogEntryPackageFromSourceRepositoryUrl"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "SourceRepositoryUrl"
+          in: "query"
+          description: "CatalogEntryPackage to insert from source repository's URL"
+          required: true
+          type: "string"
+          x-exportParamName: "SourceRepositoryUrl"
+        - name: "branch"
+          in: "path"
+          description: "Source repository's branch/tag/commit"
+          required: true
+          type: "string"
+          x-exportParamName: "Branch"
+        - name: "name"
+          in: "path"
+          description: "CatalogEntryPackage's name"
+          required: true
+          type: "string"
+          x-exportParamName: "Name"
+        - name: "version"
+          in: "path"
+          description: "CatalogEntryPackage's version"
+          required: true
+          type: "string"
+          x-exportParamName: "Version"
+      responses:
+        200:
+          description: "Output type"
+          schema:
+            $ref: "#/definitions/CatalogEntryPackage"
+definitions:
+  PackageTemplate:
+    type: object
+    x-artifactId: kathra-core-model
+  PackageTemplateArgument:
+    type: object
+    x-artifactId: kathra-core-model
+  CatalogEntryPackage:
+    type: object
+    x-artifactId: kathra-core-model
+  CatalogEntryPackageVersion:
+    type: object
+    x-artifactId: kathra-core-model
+x-dependencies:
+- artifactId: kathra-core-model
+  groupId: org.kathra
+  artifactVersion: 1.1.0-SNAPSHOT
+  modelPackage: core.model

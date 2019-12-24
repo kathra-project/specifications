@@ -15,6 +15,22 @@ securityDefinitions:
       read: read everything
       write: create everything
 paths:
+  /credentials/{id}:
+    get:
+      summary: Return credentials for a user
+      description: getCredentials      
+      parameters:
+      - name: id
+        in: path
+        required: true
+        description: The id of the containers repository to retrieve
+        type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Credential'
+
   /containersRepositories/:
     get:
       operationId: getContainersRepositories
@@ -177,6 +193,13 @@ paths:
       - kathra_auth:
         - write
 definitions:
+  Credential:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
   ContainersRepository:
     type: object
     properties:

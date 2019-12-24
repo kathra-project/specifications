@@ -89,7 +89,7 @@ paths:
   /components/{componentId}:
     get:
       operationId: getComponentById
-      summary: Get the component having the given id"
+      summary: Get the component having the given id
       tags:
       - components
       parameters:
@@ -108,6 +108,27 @@ paths:
       security:
       - kathra_auth:
         - read
+    delete:
+      operationId: deleteComponentById
+      summary: Delete the component having the given id
+      tags:
+      - components
+      parameters:
+      - in: path
+        name: componentId
+        required: true
+        description: The ID of the Component to delete
+        type: string
+      responses:
+        "200":
+          description: The Component having the given id
+          schema:
+            $ref: '#/definitions/Component'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write
   /components/{componentId}/implementations:
     get:
       operationId: getComponentImplementations
@@ -160,6 +181,102 @@ paths:
       security:
       - kathra_auth:
         - write
+  /apiVersions/{apiVersionId}:
+    put:
+      operationId: updateApiVersion
+      summary: Update ApiVersion via an OpenAPI file
+      tags:
+      - apiVersions
+      consumes:
+      - multipart/form-data
+      parameters:
+      - in: formData
+        name: openApiFile
+        description: The OpenAPI file representing the APIVersion to create
+        type: file
+      - in: path
+        name: apiVersionId
+        required: true
+        description: The ID of the Component the APIVersion will be created for
+        type: string
+      responses:
+        "200":
+          description: The ApiVersion that have just been created
+          schema:
+            $ref: '#/definitions/ApiVersion'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write
+    delete:
+      operationId: deleteApiVersion
+      summary: Delete ApiVersion via an OpenAPI file
+      tags:
+      - apiVersions
+      consumes:
+      - multipart/form-data
+      parameters:
+      - in: path
+        name: apiVersionId
+        required: true
+        description: The ID of the Component the APIVersion will be deleted for
+        type: string
+      responses:
+        "200":
+          description: The ApiVersion that have just been deleted
+          schema:
+            $ref: '#/definitions/ApiVersion'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write
+    get:
+      operationId: getApiVersionById
+      summary: Get the Api Version having the given id
+      tags:
+      - apiVersions
+      parameters:
+      - in: path
+        name: apiVersionId
+        required: true
+        description: The ID of the Api Version to get
+        type: string
+      responses:
+        "200":
+          description: The Api Version having the given id
+          schema:
+            $ref: '#/definitions/ApiVersion'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+  /apiVersions/{apiVersionId}/apiFile:
+    get:
+      operationId: getApiFile
+      summary: Get the API File from the specified source repository
+      tags:
+      - apiVersions
+      consumes:
+      - multipart/form-data
+      parameters:
+      - in: path
+        name: apiVersionId
+        required: true
+        description: The ID of the requested APIVersion file
+        type: string
+      responses:
+        "200":
+          description: The OpenAPI file describing the API
+          schema:
+            type: file
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
   /implementations:
     post:
       operationId: createImplementation
@@ -185,6 +302,9 @@ paths:
             language:
               type: string
               description: The language to use for source code generation
+            desc:
+              type: string
+              description: Implementation's description
       responses:
         "200":
           description: The Implementation that have just been created
@@ -215,7 +335,7 @@ paths:
   /implementations/{implementationId}:
     get:
       operationId: getImplementationById
-      summary: Get the Implementation having the given id"
+      summary: Get the Implementation having the given id
       tags:
       - implementations
       parameters:
@@ -234,6 +354,27 @@ paths:
       security:
       - kathra_auth:
         - read
+    delete:
+      operationId: deleteImplementationById
+      summary: Delete the Implementation having the given id
+      tags:
+      - implementations
+      parameters:
+      - in: path
+        name: implementationId
+        required: true
+        description: The ID of the Implementation to delete
+        type: string
+      responses:
+        "200":
+          description: The Implementation having the given id
+          schema:
+            $ref: '#/definitions/Implementation'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write
   /sourceRepositories/branches/{sourceRepositoryId}:
     get:
       operationId: getRepositoryBranches
@@ -288,34 +429,6 @@ paths:
       security:
       - kathra_auth:
         - read
-  /apiFile:
-    get:
-      operationId: getApiFile
-      summary: Get the API File from the specified source repository
-      tags:
-      - repositories
-      consumes:
-      - multipart/form-data
-      parameters:
-      - in: formData
-        name: url
-        description: The URL of the source repository to get the API file from
-        type: string
-      - in: formData
-        name: tag
-        description: The source repository tag corresponding to the version of the
-          API described by the file
-        type: string
-      responses:
-        "200":
-          description: The OpenAPI file describing the API
-          schema:
-            type: file
-        "401":
-          description: Unauthorized
-      security:
-      - kathra_auth:
-        - read
   /apiFileValidation:
     post:
       summary: Check the integrity of an API file
@@ -354,17 +467,215 @@ paths:
         type: string
       responses:
         "200":
-          description: The Commits list of the given SourceRepository for the given
-            branch
+          description: The Build list of the given Pipeline for the given branch
           schema:
             type: array
             items:
-              $ref: '#/definitions/Commit'
+              $ref: '#/definitions/Build'
         "401":
           description: Unauthorized
       security:
       - kathra_auth:
         - read
+    post:
+      operationId: executePipeline
+      summary: Execute pipeline
+      tags:
+      - pipelines
+      parameters:
+      - in: path
+        name: pipelineId
+        required: true
+        description: The ID of the Pipeline to get the builds of
+        type: string
+      - in: query
+        name: branch
+        required: true
+        description: The name of the branch to get the builds of
+        type: string
+      responses:
+        "200":
+          description: The Implementation having the given id
+          schema:
+            $ref: '#/definitions/Build'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+  /catalog-entries-packages/{catalogEntryPackageId}/versions/{version}:
+    get:
+      operationId: getCatalogEntryPackageFromVersion
+      summary: Get the CatalogEntryPackage having the given id
+      tags:
+      - catalog-entries
+      parameters:
+      - in: path
+        name: catalogEntryPackageId
+        required: true
+        description: The ID of the CatalogEntryPackage to get
+        type: string
+      - in: path
+        name: version
+        required: true
+        description: The Version of the CatalogEntryPackage to get
+        type: string
+      responses:
+        "200":
+          description: The CatalogEntryPackage having the given id and version
+          schema:
+            $ref: '#/definitions/CatalogEntryPackage'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+  /catalog-entries-packages/{catalogEntryPackageId}:
+    get:
+      operationId: getCatalogEntryPackage
+      summary: Get the CatalogEntryPackage having the given id
+      tags:
+      - catalog-entries
+      parameters:
+      - in: path
+        name: catalogEntryPackageId
+        required: true
+        description: The ID of the CatalogEntryPackage to get
+        type: string
+      responses:
+        "200":
+          description: The CatalogEntryPackage having the given id
+          schema:
+            $ref: '#/definitions/CatalogEntryPackage'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+  /catalog-entries/{catalogEntryId}:
+    get:
+      operationId: getCatalogEntry
+      summary: Get the catalogEntry having the given id
+      tags:
+      - catalog-entries
+      parameters:
+      - in: path
+        name: catalogEntryId
+        required: true
+        description: The ID of the CatalogEntryId to get
+        type: string
+      responses:
+        "200":
+          description: The CatalogEntryId having the given id
+          schema:
+            $ref: '#/definitions/CatalogEntry'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+    delete:
+      operationId: deleteCatalogEntryById
+      summary: Delete the CatalogEntry having the given id
+      tags:
+      - catalog-entries
+      parameters:
+      - in: path
+        name: catalogEntryId
+        required: true
+        description: The ID of the CatalogEntry to delete
+        type: string
+      responses:
+        "200":
+          description: The CatalogEntry having the given id
+          schema:
+            $ref: '#/definitions/CatalogEntry'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write
+  /package-templates:
+    get:
+      operationId: getPackageTemplate
+      summary: Get the catalog entries package templates list
+      tags:
+      - catalog-entries
+      responses:
+        "200":
+          description: The package templates list
+          schema:
+            type: array
+            items:
+              type: object
+              required:
+                - parameters
+                - catalogEntry
+              properties:
+                parameters:
+                  type: array
+                  items:
+                    $ref: '#/definitions/PackageTemplateArgument'
+                name:
+                  type: string
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+  /catalog-entries:
+    get:
+      operationId: getCatalogEntries
+      summary: Get the catalog entries list
+      tags:
+      - catalog-entries
+      responses:
+        "200":
+          description: The catalog entries list
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/CatalogEntry'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+    post:
+      operationId: addEntryToCatalog
+      summary: Add a new entry to catalog
+      tags:
+      - catalog-entries
+      parameters:
+      - in: body
+        name: catalogEntry
+        description: The catalog entry to create
+        schema:
+          type: object
+          required:
+            - parameters
+            - catalogEntry
+          properties:
+            parameters:
+              type: array
+              items:
+                $ref: '#/definitions/PackageTemplateArgument'
+            name:
+              type: string
+            entry:
+              type: object
+              items:
+                $ref: '#/definitions/CatalogEntry'
+      responses:
+        "200":
+          description: The CatalogEntry that have just been created
+          schema:
+            $ref: '#/definitions/CatalogEntry'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write
 definitions:
   Group:
     type: object
@@ -376,6 +687,24 @@ definitions:
     type: object
     x-artifactId: kathra-core-model
   Implementation:
+    type: object
+    x-artifactId: kathra-core-model
+  CatalogEntry:
+    type: object
+    x-artifactId: kathra-core-model
+  CatalogEntryPackage:
+    type: object
+    x-artifactId: kathra-core-model
+  CatalogEntryArgument:
+    type: object
+    x-artifactId: kathra-core-model
+  PackageTemplate:
+    type: object
+    x-artifactId: kathra-core-model
+  PackageTemplateArgument:
+    type: object
+    x-artifactId: kathra-core-model
+  Build:
     type: object
     x-artifactId: kathra-core-model
   Commit:
