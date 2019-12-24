@@ -3,7 +3,7 @@ info:
   x-groupId: org.kathra
   x-artifactName: resourceManager
   description: Kathra Resources Manager
-  version: 1.1.0-SNAPSHOT
+  version: 1.0.0-RC-SNAPSHOT
   title: Kathra Resource Manager
 securityDefinitions:
   kathra_auth:
@@ -19,6 +19,8 @@ securityDefinitions:
 tags:
   - name: Components
     description: Components management API
+  - name: BinaryRepositories
+    description: BinaryRepositories management API
   - name: Libraries
     description: Libraries management API
   - name: Implementations
@@ -161,6 +163,127 @@ paths:
         - Components
       summary: Delete a registered component
       operationId: deleteComponent
+      parameters:
+        - $ref: '#/parameters/resourceId'
+      responses:
+        '200':
+          description: Object is deleted
+          schema:
+            type: string
+        '401':
+          description: Unauthorized
+      security:
+        - kathra_auth:
+            - write
+  /binaryrepositories:
+    get:
+      tags:
+        - BinaryRepositories
+      operationId: getBinaryRepositories
+      summary: Retrieve a list of accessible binaryrepositories for authenticated user
+      responses:
+        '200':
+          description: List of accessible binaryrepositories for the authenticated user
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/BinaryRepository'
+        '401':
+          description: Unauthorized
+      security:
+        - kathra_auth:
+            - read
+    post:
+      tags:
+        - BinaryRepositories
+      summary: Add a new binaryrepository
+      operationId: addBinaryRepository
+      parameters:
+        - name: binaryrepository
+          in: body
+          description: BinaryRepository object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+      responses:
+        '200':
+          description: Returns the created object
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+        '401':
+          description: Unauthorized
+      security:
+        - kathra_auth:
+            - write
+  '/binaryrepositories/{resourceId}':
+    get:
+      tags:
+        - BinaryRepositories
+      summary: Retrieve a specific binaryrepository object
+      operationId: getBinaryRepository
+      parameters:
+        - $ref: '#/parameters/resourceId'
+      responses:
+        '200':
+          description: Returns the object
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+        '401':
+          description: Unauthorized
+      security:
+        - kathra_auth:
+            - read
+    patch:
+      tags:
+        - BinaryRepositories
+      summary: Partially update a registered binaryrepository
+      operationId: updateBinaryRepositoryAttributes
+      parameters:
+        - $ref: '#/parameters/resourceId'
+        - name: binaryrepository
+          in: body
+          description: BinaryRepository object to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+      responses:
+        '200':
+          description: Returns the modified object
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+        '401':
+          description: Unauthorized
+      security:
+        - kathra_auth:
+            - write
+    put:
+      tags:
+        - BinaryRepositories
+      summary: Fully update a registered binaryrepository
+      operationId: updateBinaryRepository
+      parameters:
+        - $ref: '#/parameters/resourceId'
+        - name: binaryrepository
+          in: body
+          description: BinaryRepository object to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+      responses:
+        '200':
+          description: Returns the modified object
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+        '401':
+          description: Unauthorized
+      security:
+        - kathra_auth:
+            - write
+    delete:
+      tags:
+        - BinaryRepositories
+      summary: Delete a registered binaryrepository
+      operationId: deleteBinaryRepository
       parameters:
         - $ref: '#/parameters/resourceId'
       responses:
@@ -1784,6 +1907,9 @@ parameters:
     pattern: '^[a-zA-Z0-9-_]+$'
 definitions:
   Component:
+    type: object
+    x-artifactId: kathra-core-model
+  BinaryRepository:
     type: object
     x-artifactId: kathra-core-model
   Library:

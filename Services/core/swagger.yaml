@@ -21,7 +21,7 @@ definitions:
     - PYTHON
   BINARY_REPOSITORY_TYPE:
     type: string
-    enum: &PROGRAMMING_LANGUAGE
+    enum: &BINARY_REPOSITORY_TYPE
     - JAVA
     - PYTHON
     - DOCKER_IMAGE
