@@ -8,119 +8,6 @@ skinparam class {
 	BorderColor DimGray
 }
 
-/'
-ResourceParameter <|-- SimpleResourceParameter
-ResourceParameter <|-- ApiDependencyParameter
-ResourceParameter <|-- ApplicationDependencyParameter
-
-
-
-
-class  CatalogResource {
-         - application <b>:Application</b>
-         - version <b>:String</b>
-         - licence <b>:String</b>
-         - teaser <b>:String</b>
-         - description <b>:String</b>
-         - websiteUrl <b>:String</b>
-         - iconUrl <b>:String</b>
-         - categories <b>:String[]</b>
-}
-
-class  ResourceParameterDependency {
-         - name <b>:String</b>
-         - condition <b>:String</b>
-         - value <b>:String</b>
-}
-
-class  ResourceParameterValidationRule {
-         - type <b>:String</b>
-         - value <b>:String</b>
-         - prompt <b>:String</b>
-}
-
-class  Environment {
-         - resources <b>:EnvironmentResource[]</b>
-         - status <b>:String</b>
-}
-
-class  ResourceParameterValue {
-         - name <b>:String</b>
-         - value <b>:String</b>
-         - parameter <b>:ResourceParameter</b>
-}
-
-class  EnvironmentResource {
-         - application <b>:Application</b>
-         - parameters <b>:ResourceParameterValue[]</b>
-}
-
-class  ResourceParameter {
-         - name <b>:String</b>
-         - type <b>:String</b>
-         - defaultValue <b>:String</b>
-         - description <b>:String</b>
-         - label <b>:String</b>
-         - rules <b>:ResourceParameterValidationRule[]</b>
-}
-
-class  SimpleResourceParameter {
-         - optional <b>:Boolean</b>
-         - depends <b>:ResourceParameterDependency[]</b>
-}
-
-class  ApiDependencyParameter {
-         - api <b>:Api</b>
-}
-
-class  ApplicationDependencyParameter {
-         - app <b>:Application</b>
-}
-
-class  Application {
-         - parameters <b>:ResourceParameter[]</b>
-}
-
-
-class  Model {
-         - description <b>:String</b>
-         - title <b>:String</b>
-         - sourceRepo <b>:SourceRepository</b>
-         - versions <b>:ModelVersion[]</b>
-}
-
-class  ModelVersion {
-         - sourceRepo <b>:SourceRepository</b>
-         - version <b>:String</b>
-         - modelDependencies <b>:Model[]</b>
-}
-
-class  User {
-         - firstName <b>:String</b>
-         - lastName <b>:String</b>
-         - username : <b>:String</b>
-}
-
-class  RoleMapping {
-         - user <b>:User</b>
-         - Group <b>:Group<b>
-         - role <b>:Role</b>
-}
-RoleMapping  o-- "1"   Group : group
-RoleMapping  o-- "1"   User : user
-RoleMapping  o-- "1"   Role : role
-
-Model  o-- "0..1"   Library : library
-Model  o-- "1"   MODEL_STATUS : status
-Model  "1" o-- "0..*"   ModelVersion
-ModelVersion  o-- "0..1"   Library : library : <i>status</i>
-
-ApiVersion  *-- "0..1"  ModelVersion : model
-ApiVersion  *-- "0..*"  ModelVersion : modelDependencies
-
-Application  *-- "0..*"  ResourceParameter
-'/
-
 class  Resource {
          - id <b>: String</b>
          - name <b>: String</b>
@@ -261,6 +148,9 @@ class  Pipeline {
 }
 Pipeline "1" o-- SourceRepository
 
+!include ./BinaryRepository/model.puml
+BinaryRepository  "0..*" --o "1" Asset : binaryRepository
+Group  "0..*" --o "1" BinaryRepository : group
 
 
 LibraryApiVersion "0..6" --* "1"  ApiVersion

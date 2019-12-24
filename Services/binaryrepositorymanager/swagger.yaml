@@ -23,7 +23,7 @@ paths:
       - name: id
         in: path
         required: true
-        description: The id of the containers repository to retrieve
+        description: The id of the binary repository to retrieve
         type: string
       responses:
         '200':
@@ -31,37 +31,37 @@ paths:
           schema:
             $ref: '#/definitions/Credential'
 
-  /containersRepositories/:
+  /binaryRepositories/:
     get:
-      operationId: getContainersRepositories
-      summary: Retrieve a list of existing containers repositories for authenticated
+      operationId: getBinaryRepositories
+      summary: Retrieve a list of existing binary repositories for authenticated
         user
       responses:
         "200":
-          description: List of existing containers repositories for authenticated
+          description: List of existing binary repositories for authenticated
             user
           schema:
             type: array
             items:
-              $ref: '#/definitions/ContainersRepository'
+              $ref: '#/definitions/BinaryRepository'
         "401":
           description: Unauthorized
       security:
       - kathra_auth:
         - read
     post:
-      summary: Add a containers repository
-      operationId: addContainersRepository
+      summary: Add a binary repository
+      operationId: addBinaryRepository
       parameters:
-      - name: containersRepository
+      - name: binaryRepository
         in: body
-        description: Containers repository object to be created
+        description: Binary repository object to be created
         required: true
         schema:
-          $ref: '#/definitions/ContainersRepository'
+          $ref: '#/definitions/BinaryRepository'
       responses:
         "200":
-          description: Success message containing the id of the newly created containers
+          description: Success message containing the id of the newly created binary
             repository
           schema:
             $ref: '#/definitions/ApiResponse'
@@ -70,44 +70,44 @@ paths:
       security:
       - kathra_auth:
         - write
-  /containersRepositories/{containersRepoId}:
+  /binaryRepositories/{binaryRepoId}:
     get:
-      summary: Retrieve a specific containers repository
-      operationId: getContainersRepository
+      summary: Retrieve a specific binary repository
+      operationId: getBinaryRepository
       parameters:
-      - name: containersRepoId
+      - name: binaryRepoId
         in: path
         required: true
-        description: The id of the containers repository to retrieve
+        description: The id of the binary repository to retrieve
         type: string
       responses:
         "200":
           description: Expected response to a valid request
           schema:
-            $ref: '#/definitions/ContainersRepository'
+            $ref: '#/definitions/BinaryRepository'
         "401":
           description: Unauthorized
       security:
       - kathra_auth:
         - read
     patch:
-      summary: Partially update a registered containers repository
-      operationId: updateContainersRepositoryAttributes
+      summary: Partially update a registered binary repository
+      operationId: updateBinaryRepositoryAttributes
       parameters:
-      - name: containersRepoId
+      - name: binaryRepoId
         in: path
         required: true
-        description: The id of the containers repository to partially update
+        description: The id of the binary repository to partially update
         type: string
-      - name: containersRepository
+      - name: binaryRepository
         in: body
-        description: Containers repository object to use to patch existing resource
+        description: Binary repository object to use to patch existing resource
         required: true
         schema:
-          $ref: '#/definitions/ContainersRepository'
+          $ref: '#/definitions/BinaryRepository'
       responses:
         "200":
-          description: Success message containing the id of the modified containers
+          description: Success message containing the id of the modified binary
             repository
           schema:
             $ref: '#/definitions/ApiResponse'
@@ -117,23 +117,23 @@ paths:
       - kathra_auth:
         - write
     put:
-      summary: Fully update a registered containers repository
-      operationId: updateContainersRepository
+      summary: Fully update a registered binary repository
+      operationId: updateBinaryRepository
       parameters:
-      - name: containersRepoId
+      - name: binaryRepoId
         in: path
         required: true
-        description: The id of the containers repository to replace
+        description: The id of the binary repository to replace
         type: string
-      - name: containersRepository
+      - name: binaryRepository
         in: body
-        description: Containers repository object to use to replace existing resource
+        description: Binary repository object to use to replace existing resource
         required: true
         schema:
-          $ref: '#/definitions/ContainersRepository'
+          $ref: '#/definitions/BinaryRepository'
       responses:
         "200":
-          description: Success message containing the id of the modified containers
+          description: Success message containing the id of the modified binary
             repository
           schema:
             $ref: '#/definitions/ApiResponse'
@@ -142,21 +142,21 @@ paths:
       security:
       - kathra_auth:
         - write
-  /containersRepositories/{containersRepoId}/membership:
+  /binaryRepositories/{binaryRepoId}/membership:
     get:
       summary: Retrieve a list of users and groups membership values for the specified
-        containers repository
-      operationId: getContainersRepositoryMembership
+        binary repository
+      operationId: getBinaryRepositoryMembership
       parameters:
-      - name: containersRepoId
+      - name: binaryRepoId
         in: path
         required: true
-        description: The id of the containers repository to retrieve
+        description: The id of the binary repository to retrieve
         type: string
       responses:
         "200":
           description: List of users and groups membership values for the specified
-            containers repository
+            binary repository
           schema:
             type: array
             items:
@@ -167,23 +167,23 @@ paths:
       - kathra_auth:
         - read
     post:
-      summary: Add a containers repository membership for a user or group
-      operationId: addContainersRepositoryMembership
+      summary: Add a binary repository membership for a user or group
+      operationId: addBinaryRepositoryMembership
       parameters:
-      - name: containersRepoId
+      - name: binaryRepoId
         in: path
         required: true
-        description: The id of the containers repository to retrieve
+        description: The id of the binary repository to retrieve
         type: string
-      - name: containersRepositoryMembership
+      - name: binaryRepositoryMembership
         in: body
-        description: Membership object to add to the containers repository
+        description: Membership object to add to the binary repository
         required: true
         schema:
           $ref: '#/definitions/Membership'
       responses:
         "200":
-          description: Success message containing the id of the newly created containers
+          description: Success message containing the id of the newly created binary
             repository
           schema:
             $ref: '#/definitions/ApiResponse'
@@ -200,34 +200,10 @@ definitions:
         type: string
       password:
         type: string
-  ContainersRepository:
-    type: object
-    properties:
-      name:
-        type: string
-      metadata:
-        type: object
-        properties:
-          isPublic:
-            type: string
-            default: "false"
-          scanImagesOnPush:
-            type: string
-            default: "true"
-          contentTrustEnabled:
-            type: string
-            default: "false"
-          preventVulnerableFromRunning:
-            type: string
-            default: "false"
-          vulnerableThreshold:
-            type: string
-            enum:
-            - low
-            - medium
-            - high
-            default: medium
   Membership:
+    type: object
+    x-artifactId: kathra-core-model
+  BinaryRepository:
     type: object
     x-artifactId: kathra-core-model
 x-dependencies:

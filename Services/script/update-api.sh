@@ -12,9 +12,9 @@ function updateSwaggerSpecsToSourceRepository() {
         echo "Update $fileApi to $PROJECT_BASE/kathra-$apiName-api/swagger.yaml"
         cp $fileApi $PROJECT_BASE/kathra-$apiName-api/swagger.yaml
         [ $? -ne 0 ] && echo "Error" && exit 1
-        #[ -d $PROJECT_BASE/kathra-$apiName-model ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-model/swagger.yaml $VERSION $apiName "model"
-        #[ -d $PROJECT_BASE/kathra-$apiName-client ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-client/swagger.yaml $VERSION $apiName "client"
-        #[ -d $PROJECT_BASE/kathra-$apiName-interface ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-interface/swagger.yaml $VERSION $apiName "interface"
+        [ -d $PROJECT_BASE/kathra-$apiName-model ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-model $VERSION $apiName "model"
+        [ -d $PROJECT_BASE/kathra-$apiName-client ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-client $VERSION $apiName "client"
+        [ -d $PROJECT_BASE/kathra-$apiName-interface ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-interface $VERSION $apiName "interface"
     done
 }
 export -f updateSwaggerSpecsToSourceRepository
@@ -26,18 +26,19 @@ function codegen() {
     local artifactName=$4
     local type=$5
 
-    mv $dirLib
+    cd $dirLib
     [ $? -ne 0 ] && echo "Error" && exit 1
 
-    curl -X POST \
+    curl --fail -X POST \
     "${CODEGEN_URL}/${type}?language=JAVA&artifactName=${artifactName}&groupId=org.kathra&artifactVersion=${version}" \
     -H 'Content-Type: multipart/form-data' \
     -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
-    -F "apiFile=@$apiFile" > code.zip
+    -F "apiFile=@$apiFile" > generated-code.zip
     [ $? -ne 0 ] && echo "Error" && exit 1
     
-    unzip -o code.zip
+    unzip -o generated-code.zip
     [ $? -ne 0 ] && echo "Error" && exit 1
+    rm generated-code.zip
 }
 export -f codegen
 

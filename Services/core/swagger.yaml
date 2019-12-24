@@ -19,6 +19,13 @@ definitions:
     enum: &PROGRAMMING_LANGUAGE
     - JAVA
     - PYTHON
+  BINARY_REPOSITORY_TYPE:
+    type: string
+    enum: &PROGRAMMING_LANGUAGE
+    - JAVA
+    - PYTHON
+    - DOCKER_IMAGE
+    - HELM
   LIBRARY_TYPE:
     type: string
     enum: &LIBRARY_TYPE
@@ -91,6 +98,8 @@ definitions:
     - $ref: '#/definitions/Resource'
     - type: object
       properties:
+        binaryRepository:
+          $ref: '#/definitions/BinaryRepository'
         sourceRepository:
           $ref: '#/definitions/SourceRepository'
         pipeline:
@@ -99,6 +108,23 @@ definitions:
           type: "array"
           items:
             $ref: "#/definitions/CatalogEntry"
+  BinaryRepository:
+    allOf:
+    - $ref: '#/definitions/Resource'
+    - type: object
+      properties:
+        group:
+          $ref: '#/definitions/Group'
+        type:
+          enum: *BINARY_REPOSITORY_TYPE
+        public:
+          type: boolean
+        provider:
+          type: string
+        providerId:
+          type: string
+        url:
+          type: string
   Library:
     allOf:
     - $ref: '#/definitions/Asset'
@@ -123,6 +149,8 @@ definitions:
           $ref: '#/definitions/Component'
         description:
           type: string
+        language:
+          enum: *PROGRAMMING_LANGUAGE
         title:
           type: string
         versions:
@@ -271,6 +299,10 @@ definitions:
           description: Technical user
           items:
             $ref: "#/definitions/User"
+        binaryRepositories:
+          type: "array"
+          items:
+            $ref: "#/definitions/BinaryRepository"
         members:
           type: "array"
           items:

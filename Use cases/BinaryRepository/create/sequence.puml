@@ -1,0 +1,34 @@
+@startuml
+
+participant AppManager.BinaryRepositoryService
+participant ResourceManager
+participant BinaryRepositoryManager
+actor BinaryRepositoryProvider as "BinaryRepositoryProvider \n Nexus, Artifactory, Harbor"
+
+activate AppManager.BinaryRepositoryService
+    AppManager.BinaryRepositoryService -> ResourceManager: POST /binaryrepositories \n [BinaryRepository w/ type, group]
+    activate ResourceManager
+    ResourceManager -> ResourceManager: create BinaryRepository into db
+    AppManager.BinaryRepositoryService <- ResourceManager: BinaryRepository w/ id and status=PENDING
+    deactivate ResourceManager
+    "BinaryRepositoryServiceCaller" <-- AppManager.BinaryRepositoryService : BinaryRepository  w/ id and status=PENDING
+
+    AppManager.BinaryRepositoryService -> BinaryRepositoryManager: POST /binaryrepositories \n [BinaryRepository  w/ type, group ]
+    activate BinaryRepositoryManager
+    BinaryRepositoryManager -> BinaryRepositoryProvider : Create Repository
+    activate BinaryRepositoryProvider
+    BinaryRepositoryManager <- BinaryRepositoryProvider : Return repository
+    deactivate BinaryRepositoryProvider
+    AppManager.BinaryRepositoryService <- BinaryRepositoryManager : BinaryRepository /w provider, providerId and url
+    deactivate BinaryRepositoryManager
+
+    AppManager.BinaryRepositoryService -> ResourceManager: PATCH /binaryrepositories \n [BinaryRepository w/ provider, providerId, url, status=READY]
+    activate ResourceManager
+    ResourceManager -> ResourceManager: Update BinaryRepository into db
+    AppManager.BinaryRepositoryService <- ResourceManager: BinaryRepository updated
+    deactivate ResourceManager
+
+deactivate AppManager.BinaryRepositoryService
+
+
+@enduml
