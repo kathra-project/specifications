@@ -266,6 +266,11 @@ definitions:
         path:
           type: string
           description: Group's path in case of subgroup
+        technicalUser:
+          type: "object"
+          description: Technical user
+          items:
+            $ref: "#/definitions/User"
         members:
           type: "array"
           items:
