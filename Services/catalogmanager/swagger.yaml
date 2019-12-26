@@ -5,7 +5,7 @@ info:
     \ packages from templates \n * Insert catalog entry from template  \n \n * Insert\
     \ catalog entry from file  \n\n * Insert catalog entry from source repository\
     \  \n * Read catalog entries from catalog \n "
-  version: "1.1.0-RC-SNAPSHOT"
+  version: "1.1.0-SNAPSHOT"
   title: "Kathra Catalog Manager"
   x-artifactName: "catalogManager"
   x-groupId: "org.kathra"
@@ -16,7 +16,7 @@ paths:
       tags:
         - "Templating"
       summary: "Get all templates for catalog generation"
-      operationId: "getTemplates"
+      operationId: "getPackageTemplates"
       produces:
         - "application/json"
       parameters: []
@@ -26,7 +26,7 @@ paths:
           schema:
             type: "array"
             items:
-              $ref: "#/definitions/Template"
+              $ref: "#/definitions/PackageTemplate"
   /generateFromTemplate:
     post:
       tags:
@@ -37,12 +37,12 @@ paths:
         - "application/json"
       parameters:
         - in: "body"
-          name: "Template"
-          description: "CatalogEntryPackage to create from Template"
+          name: "PackageTemplate"
+          description: "CatalogEntryPackage to create from PackageTemplate"
           required: true
           schema:
-            $ref: "#/definitions/Template"
-          x-exportParamName: "Template"
+            $ref: "#/definitions/PackageTemplate"
+          x-exportParamName: "PackageTemplate"
       responses:
         200:
           description: "CatalogEntryPackage wtih providerId"
@@ -140,12 +140,12 @@ paths:
         - "application/json"
       parameters:
         - in: "body"
-          name: "Template"
-          description: "CatalogEntryPackage to create from Template"
+          name: "PackageTemplate"
+          description: "CatalogEntryPackage to create from PackageTemplate"
           required: true
           schema:
-            $ref: "#/definitions/Template"
-          x-exportParamName: "Template"
+            $ref: "#/definitions/PackageTemplate"
+          x-exportParamName: "PackageTemplate"
       responses:
         200:
           description: "Output type"
