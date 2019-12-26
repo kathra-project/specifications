@@ -439,8 +439,6 @@ definitions:
         description:
           type: "string"
           description: "Description"
-        asset:
-          $ref: "#/definitions/Asset"
         packageTemplate:
           enum: *PACKAGE_TEMPLATE
         packages:
