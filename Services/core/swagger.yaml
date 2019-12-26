@@ -117,8 +117,6 @@ definitions:
           $ref: '#/definitions/Group'
         type:
           enum: *BINARY_REPOSITORY_TYPE
-        public:
-          type: boolean
         provider:
           type: string
         providerId:
@@ -295,10 +293,7 @@ definitions:
           type: string
           description: Group's path in case of subgroup
         technicalUser:
-          type: "object"
-          description: Technical user
-          items:
-            $ref: "#/definitions/User"
+          $ref: '#/definitions/User'
         binaryRepositories:
           type: "array"
           items:
@@ -322,9 +317,9 @@ definitions:
     - $ref: "#/definitions/Resource"
     - type: "object"
       properties:
-        private:
+        privateKey:
           type: string
-        public:
+        publicKey:
           type: string
         group:
           $ref: '#/definitions/Group'
@@ -445,9 +440,7 @@ definitions:
           type: "string"
           description: "Description"
         asset:
-          type: "object"
-          items:
-            $ref: "#/definitions/Asset"
+          $ref: "#/definitions/Asset"
         packageTemplate:
           enum: *PACKAGE_TEMPLATE
         packages:
