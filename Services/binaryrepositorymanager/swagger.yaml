@@ -64,7 +64,7 @@ paths:
           description: Success message containing the id of the newly created binary
             repository
           schema:
-            $ref: '#/definitions/ApiResponse'
+            $ref: '#/definitions/BinaryRepository'
         "401":
           description: Unauthorized
       security:
@@ -110,7 +110,7 @@ paths:
           description: Success message containing the id of the modified binary
             repository
           schema:
-            $ref: '#/definitions/ApiResponse'
+            $ref: '#/definitions/BinaryRepository'
         "401":
           description: Unauthorized
       security:
@@ -136,7 +136,7 @@ paths:
           description: Success message containing the id of the modified binary
             repository
           schema:
-            $ref: '#/definitions/ApiResponse'
+            $ref: '#/definitions/BinaryRepository'
         "401":
           description: Unauthorized
       security:
@@ -186,7 +186,7 @@ paths:
           description: Success message containing the id of the newly created binary
             repository
           schema:
-            $ref: '#/definitions/ApiResponse'
+            $ref: '#/definitions/Membership'
         "401":
           description: Unauthorized
       security:
