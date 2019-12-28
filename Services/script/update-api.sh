@@ -77,14 +77,14 @@ function findInArgs() {
 function updateSwaggerSpecsToSourceRepository() {
     for apiName in "${APIS[@]}"
     do
+        printInfo "Update API $apiName"
         fileApi=$SCRIPT_DIR/../$apiName/swagger.yaml
-        echo "Update $fileApi to $PROJECT_BASE/kathra-$apiName-api/swagger.yml"
-        cp $fileApi $PROJECT_BASE/kathra-$apiName-api/swagger.yml
-        
+        cp $fileApi $PROJECT_BASE/kathra-$apiName-api/swagger.yaml
+
         [ $? -ne 0 ] && echo "Error" && exit 1
         [ -d $PROJECT_BASE/kathra-$apiName-model ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-model "model"
-        [ ! "$apiName" == "core" ] && [ -d $PROJECT_BASE/kathra-$apiName-client ] && codegen $fileApi $PROJECT_BASE/kathra-$apiDirectory-client "client"
-        [ ! "$apiName" == "core" ] && [ -d $PROJECT_BASE/kathra-$apiName-interface ] && codegen $fileApi $PROJECT_BASE/kathra-$apiDirectory-interface "interface"
+        [ ! "$apiName" == "core" ] && [ -d $PROJECT_BASE/kathra-$apiName-client ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-client "client"
+        [ ! "$apiName" == "core" ] && [ -d $PROJECT_BASE/kathra-$apiName-interface ] && codegen $fileApi $PROJECT_BASE/kathra-$apiName-interface "interface"
     done
 }
 export -f updateSwaggerSpecsToSourceRepository
@@ -106,6 +106,7 @@ function resourceManagerGenerateSrc() {
 export -f resourceManagerGenerateSrc
 
 function codegen() {
+    printInfo "codegen($*)"
     local apiFile=$1
     local dirLib=$2
     local type=$3

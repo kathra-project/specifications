@@ -183,10 +183,7 @@ paths:
           $ref: '#/definitions/Membership'
       responses:
         "200":
-          description: Success message containing the id of the newly created binary
-            repository
-          schema:
-            $ref: '#/definitions/Membership'
+          description: Success message
         "401":
           description: Unauthorized
       security:
