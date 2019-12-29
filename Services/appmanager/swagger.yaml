@@ -641,13 +641,7 @@ paths:
         name: catalogEntry
         description: The catalog entry to create from template
         schema:
-          type: object
-          required:
-            - parameters
-            - catalogEntry
-          properties:
-            template:
-              $ref: '#/definitions/CodeGenTemplate'
+          $ref: '#/definitions/CodeGenTemplate'
       responses:
         "200":
           description: The CatalogEntry that have just been created
