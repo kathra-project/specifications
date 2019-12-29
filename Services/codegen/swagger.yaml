@@ -10,8 +10,6 @@ basePath: "/api/v1"
 paths:
   /templates:
     get:
-      tags:
-        - "Templating"
       summary: "Get all templates for codegen generation"
       operationId: "getTemplates"
       produces:
@@ -26,8 +24,6 @@ paths:
               $ref: "#/definitions/CodeGenTemplate"
   /generateFromTemplate:
     post:
-      tags:
-        - "Templating"
       summary: "Generate archive from template"
       operationId: "generateFromTemplate"
       produces:
@@ -56,7 +52,7 @@ definitions:
         type: "array"
         description: "CodeGen Argument"
         items:
-          $ref: "#/definitions/CodeGenTemplate"
+          $ref: "#/definitions/CodeGenTemplateArgument"
     example:
       - name: JavaClient
         arguments:

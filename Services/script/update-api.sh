@@ -2,7 +2,7 @@
 export SCRIPT_DIR=$(dirname $(readlink -f "$0"))
 export CODEGEN_URL="http://localhost:8080/api/v1"
 export VERSION="1.1.0-SNAPSHOT"
-export APIS=(core resourcemanager appmanager binaryrepositorymanager catalogmanager pipelinemanager)
+export APIS=(core resourcemanager appmanager binaryrepositorymanager catalogmanager pipelinemanager codegen)
 export PROJECT_BASE=$SCRIPT_DIR/../../../
 export CODE_MODEL_CLAZZ_MANAGED=Group,ApiVersion,Assignation,BinaryRepository,CatalogEntry,CatalogEntryPackage,Component,Implementation,ImplementationVersion,KeyPair,Library,LibraryApiVersion,Pipeline,SourceRepository,User
 
@@ -20,7 +20,15 @@ function main() {
         component=$(findInArgs "--component" $*)
         lib=$(findInArgs "--lib" $*)
         [ "$component" == "" ] && [ "$lib" == "" ] && updateSwaggerSpecsToSourceRepository && return 0
-        [ ! "$component" == "" ] && [ ! "$lib" == "" ] && updateComponent "$component" "$lib"
+        if [ ! "$component" == "" ] && [ ! "$lib" == "" ] 
+        then
+            updateComponent "$component" "$lib"
+        elif [ ! "$component" == "" ] && [ "$lib" == "" ] 
+        then
+            updateComponent "$component" "model"
+            updateComponent "$component" "client"
+            updateComponent "$component" "interface"
+        fi
         return 0
     fi
     if [ $(findInArgs "--resourceManagerUpdateApiFromCoreApi" $*) ]
