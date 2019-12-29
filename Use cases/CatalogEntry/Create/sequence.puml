@@ -102,10 +102,10 @@ loop (package types) :packageType={HELM, KUSTOMIZE, ...}
 
     AppManager.CatalogEntryPackageService <-- AppManager.CatalogEntryPackageVersionService : CatalogEntryPackageVersion w/ id
 
-    AppManager.CatalogEntryPackageVersionService -> CatalogCodeGen: POST /generate [formdata: template:catalogEntry.template, parameters: parameters]
-    activate CatalogCodeGen
-    CatalogCodeGen -> AppManager.CatalogEntryPackageVersionService: zip file w/ source code generated
-    deactivate CatalogCodeGen
+    AppManager.CatalogEntryPackageVersionService -> CodeGen: POST /generateFromTemplate [formdata: template:catalogEntry.template, parameters: parameters]
+    activate CodeGen
+    CodeGen -> AppManager.CatalogEntryPackageVersionService: zip file w/ source code generated
+    deactivate CodeGen
 
 
     AppManager.CatalogEntryPackageVersionService -> AppManager.RepositoryService: RepositoryService.updateSourceRepository( \n SourceRepository sourceRepository, String version, File archiveFile)

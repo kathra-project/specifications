@@ -1,0 +1,102 @@
+---
+swagger: "2.0"
+info:
+  description: "KATHRA CodeGenerator API permetting generate sources"
+  version: "1.1.0-SNAPSHOT"
+  title: "Kathra CodeGenerator Manager"
+  x-artifactName: "codegen"
+  x-groupId: "org.kathra"
+basePath: "/api/v1"
+paths:
+  /templates:
+    get:
+      tags:
+        - "Templating"
+      summary: "Get all templates for codegen generation"
+      operationId: "getTemplates"
+      produces:
+        - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Get all CodeGenTemplate"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CodeGenTemplate"
+  /generateFromTemplate:
+    post:
+      tags:
+        - "Templating"
+      summary: "Generate archive from template"
+      operationId: "generateFromTemplate"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "CodeGenTemplate"
+          description: "CodeGenTemplate to generate code"
+          required: true
+          schema:
+            $ref: "#/definitions/CodeGenTemplate"
+          x-exportParamName: "CodeGenTemplate"
+      responses:
+        200:
+          description: "Archive file"
+          schema:
+            type: "file"
+definitions:
+  CodeGenTemplate:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Template Name"
+      arguments:
+        type: "array"
+        description: "CodeGen Argument"
+        items:
+          $ref: "#/definitions/CodeGenTemplate"
+    example:
+      - name: JavaClient
+        arguments:
+          - key: GROUP_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: ARTIFACT_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: OPEN_API_SPEC
+            contrainst: ".*"
+      - name: RestApiService
+        arguments:
+          - key: CHART_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: CHART_VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: CHART_DESCRIPTION
+            contrainst: "[A-Za-z0-9]"
+          - key: APP_VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: IMAGE_NAME
+            value: ".+"
+          - key: IMAGE_TAG
+            value: ".+"
+          - key: REGISTRY_HOST
+            value: ".+"
+  CodeGenTemplateArgument:
+    type: "object"
+    properties:
+      key:
+        type: "string"
+        description: "Argument key to generate codegen"
+      value:
+        type: "string"
+        description: "Argument value to generate codegen"
+      contrainst:
+        type: "string"
+        description: "Argument constraint"
+    example:
+      contrainst: "[A-Za-z0-9]"
+      value: "MyFirstChart"
+      key: "CHART_NAME"
