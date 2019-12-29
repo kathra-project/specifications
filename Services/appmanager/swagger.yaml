@@ -595,29 +595,19 @@ paths:
       security:
       - kathra_auth:
         - write
-  /package-templates:
+  /codegen-templates:
     get:
-      operationId: getPackageTemplate
-      summary: Get the catalog entries package templates list
+      operationId: getCodeGenTemplates
+      summary: Get codegen templates
       tags:
-      - catalog-entries
+      - codegen
       responses:
         "200":
-          description: The package templates list
+          description: The templates list
           schema:
             type: array
             items:
-              type: object
-              required:
-                - parameters
-                - catalogEntry
-              properties:
-                parameters:
-                  type: array
-                  items:
-                    $ref: '#/definitions/PackageTemplateArgument'
-                name:
-                  type: string
+              $ref: '#/definitions/CodeGenTemplate'
         "401":
           description: Unauthorized
       security:
@@ -642,30 +632,22 @@ paths:
       - kathra_auth:
         - read
     post:
-      operationId: addEntryToCatalog
-      summary: Add a new entry to catalog
+      operationId: addEntryToCatalogFromTemplate
+      summary: Add a new entry to catalog from template
       tags:
       - catalog-entries
       parameters:
       - in: body
         name: catalogEntry
-        description: The catalog entry to create
+        description: The catalog entry to create from template
         schema:
           type: object
           required:
             - parameters
             - catalogEntry
           properties:
-            parameters:
-              type: array
-              items:
-                $ref: '#/definitions/PackageTemplateArgument'
-            name:
-              type: string
-            entry:
-              type: object
-              items:
-                $ref: '#/definitions/CatalogEntry'
+            template:
+              $ref: '#/definitions/CodeGenTemplate'
       responses:
         "200":
           description: The CatalogEntry that have just been created
@@ -698,12 +680,9 @@ definitions:
   CatalogEntryArgument:
     type: object
     x-artifactId: kathra-core-model
-  PackageTemplate:
+  CodeGenTemplate:
     type: object
-    x-artifactId: kathra-core-model
-  PackageTemplateArgument:
-    type: object
-    x-artifactId: kathra-core-model
+    x-artifactId: kathra-codegen-model
   Build:
     type: object
     x-artifactId: kathra-core-model
@@ -746,6 +725,10 @@ definitions:
         description: Contains model
 x-dependencies:
 - artifactId: kathra-core-model
+  groupId: org.kathra
+  artifactVersion: 1.1.0-SNAPSHOT
+  modelPackage: core.model
+- artifactId: kathra-codegen-model
   groupId: org.kathra
   artifactVersion: 1.1.0-SNAPSHOT
   modelPackage: core.model

@@ -75,7 +75,7 @@ deactivate ResourceManager
 
 AppManager.ImplementationService <-- AppManager.ImplementationVersionService : ImplementationVersion w/ id
 
-AppManager.ImplementationVersionService -> Codegen: POST /generate [formdata: lang:implementation.language]
+AppManager.ImplementationVersionService -> Codegen: POST /generateFromTemplate?[CodeGenTemplate [ name:implementation.language, \n parameters= \n [GROUP_ID= :group.name,\n ARTIFACT_NAME=:component.name,\n VERSION=:implementationVersion.version, OPENAPI_SPEC: :apiFile.getContent()] 
     activate Codegen
     Codegen -> AppManager.ImplementationVersionService: zip file w/ source code generated
     deactivate Codegen
