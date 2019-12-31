@@ -595,19 +595,19 @@ paths:
       security:
       - kathra_auth:
         - write
-  /codegen-templates:
+  /catalog-entries-templates:
     get:
-      operationId: getCodeGenTemplates
+      operationId: getCatalogEntryTemplates
       summary: Get codegen templates
       tags:
-      - codegen
+      - catalog-entries
       responses:
         "200":
           description: The templates list
           schema:
             type: array
             items:
-              $ref: '#/definitions/CodeGenTemplate'
+              $ref: '#/definitions/CatalogEntryTemplate'
         "401":
           description: Unauthorized
       security:
@@ -641,7 +641,7 @@ paths:
         name: catalogEntry
         description: The catalog entry to create from template
         schema:
-          $ref: '#/definitions/CodeGenTemplate'
+          $ref: '#/definitions/CatalogEntryTemplate'
       responses:
         "200":
           description: The CatalogEntry that have just been created
@@ -717,6 +717,55 @@ definitions:
       model:
         type: boolean
         description: Contains model
+
+  CatalogEntryTemplate:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Template Name"
+      arguments:
+        type: "array"
+        description: "CodeGen Argument"
+        items:
+          $ref: "#/definitions/CatalogEntryTemplateArgument"
+    example:
+      - name: RestApiFromImplementation
+        arguments:
+          - key: NAME
+            contrainst: "[A-Za-z0-9]+"
+          - key: DESCRIPTION
+            contrainst: ".*"
+          - key: IMPLEMENTATION_ID
+            contrainst: "[A-Za-z0-9]+"
+      - name: RestApiFromDocker
+        arguments:
+          - key: NAME
+            contrainst: "[A-Za-z0-9]+"
+          - key: DESCRIPTION
+            contrainst: ".*"
+          - key: IMAGE_NAME
+            value: ".+"
+          - key: IMAGE_TAG
+            value: ".+"
+          - key: IMAGE_REGISTRY
+            value: ".+"
+  CatalogEntryTemplateArgument:
+    type: "object"
+    properties:
+      key:
+        type: "string"
+        description: "Argument key to generate codegen"
+      value:
+        type: "string"
+        description: "Argument value to generate codegen"
+      contrainst:
+        type: "string"
+        description: "Argument constraint"
+    example:
+      contrainst: "[A-Za-z0-9]"
+      value: "MyFirstChart"
+      key: "CHART_NAME"
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra

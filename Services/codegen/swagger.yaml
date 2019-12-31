@@ -64,7 +64,7 @@ definitions:
             contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
           - key: OPEN_API_SPEC
             contrainst: ".*"
-      - name: RestApiService
+      - name: HelmRestApiService
         arguments:
           - key: CHART_NAME
             contrainst: "[A-Za-z0-9]"
