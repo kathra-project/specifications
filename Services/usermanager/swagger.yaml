@@ -33,7 +33,7 @@ paths:
       summary: Create a new user
       operationId: createUser
       parameters:
-        - name: component
+        - name: user
           in: body
           description: User object to be created
           required: true
@@ -176,7 +176,7 @@ paths:
       summary: Create a new group
       operationId: createGroup
       parameters:
-        - name: component
+        - name: group
           in: body
           description: Group object to be created
           required: true
