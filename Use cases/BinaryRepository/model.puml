@@ -5,7 +5,7 @@ class  BinaryRepository {
      - url <b>:string</b>
      - provider <b>:string</b>
      - providerId <b>:string</b>
-     - public <b>:boolean</b>
+     - snapshot <b>:boolean</b>
 }
 
 enum  BinaryRepositoryType {

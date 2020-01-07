@@ -97,9 +97,19 @@ definitions:
   CatalogEntryPackage:
     type: object
     x-artifactId: kathra-core-model
+    x-go-type:
+      import:
+        package: "github.com/kathra-project/kathra-core-model-go"
+        alias: "CatalogEntryPackageVersion"
+      type: "CatalogEntryPackageVersion"
   CatalogEntryPackageVersion:
     type: object
     x-artifactId: kathra-core-model
+    x-go-type:
+      import:
+        package: "github.com/kathra-project/kathra-core-model-go"
+        alias: "CatalogEntryPackageVersion"
+      type: "CatalogEntryPackageVersion"
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
