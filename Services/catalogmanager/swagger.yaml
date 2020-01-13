@@ -16,7 +16,7 @@ paths:
       tags:
         - "Read catalog entries"
       summary: "Get all entries in the catalog"
-      operationId: "getAllCatalogServices"
+      operationId: "getAllCatalogEntryPackages"
       produces:
         - "application/json"
       parameters: []
@@ -27,6 +27,10 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/CatalogEntryPackage"
+        500:
+          description: "Internal error"
+          schema:
+            type: string
   /catalogEntries/{providerId}:
     get:
       tags:
@@ -47,6 +51,14 @@ paths:
           description: "CatalogEntryPackage with details"
           schema:
             $ref: "#/definitions/CatalogEntryPackage"
+        404:
+          description: "CatalogEntryPackage not found"
+          schema:
+            type: string
+        500:
+          description: "Internal error"
+          schema:
+            type: string
   /catalogEntries/{providerId}/versions/{version}:
     get:
       tags:
@@ -73,6 +85,14 @@ paths:
           description: "CatalogEntryVersion with details"
           schema:
             $ref: "#/definitions/CatalogEntryPackageVersion"
+        404:
+          description: "CatalogEntryVersion not found"
+          schema:
+            type: string
+        500:
+          description: "Internal error"
+          schema:
+            type: string
   /catalogEntries/{providerId}/versions:
     get:
       tags:
@@ -92,22 +112,32 @@ paths:
         200:
           description: "All versions for CatalogEntryPackage"
           schema:
-            $ref: "#/definitions/CatalogEntryPackageVersion"
+            type: "array"
+            items:
+              $ref: "#/definitions/CatalogEntryPackageVersion"
+        404:
+          description: "CatalogEntryPackage not found"
+          schema:
+            type: string
+        500:
+          description: "Internal error"
+          schema:
+            type: string
 definitions:
   CatalogEntryPackage:
     type: object
     x-artifactId: kathra-core-model
     x-go-type:
       import:
-        package: "github.com/kathra-project/kathra-core-model-go"
-        alias: "CatalogEntryPackageVersion"
-      type: "CatalogEntryPackageVersion"
+        package: "github.com/kathra-project/kathra-core-model-go/models"
+        alias: "CatalogEntryPackage"
+      type: "CatalogEntryPackage"
   CatalogEntryPackageVersion:
     type: object
     x-artifactId: kathra-core-model
     x-go-type:
       import:
-        package: "github.com/kathra-project/kathra-core-model-go"
+        package: "github.com/kathra-project/kathra-core-model-go/models"
         alias: "CatalogEntryPackageVersion"
       type: "CatalogEntryPackageVersion"
 x-dependencies:

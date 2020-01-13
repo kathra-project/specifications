@@ -58,9 +58,9 @@ definitions:
     type: string
     enum: &PACKAGE_TYPE
     - HELM
-  PACKAGE_TEMPLATE:
+  PACKAGE_TEMPLATE_TYPE:
     type: string
-    enum: &PACKAGE_TEMPLATE
+    enum: &PACKAGE_TEMPLATE_TYPE
     - REST_SERVICE
   Resource:
     type: object
@@ -454,8 +454,11 @@ definitions:
         description:
           type: "string"
           description: "Description"
+        icon:
+          type: "string"
+          description: "Icon's URL"
         packageTemplate:
-          enum: *PACKAGE_TEMPLATE
+          enum: *PACKAGE_TEMPLATE_TYPE
         packages:
           type: "array"
           items:

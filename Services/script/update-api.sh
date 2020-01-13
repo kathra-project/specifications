@@ -1,6 +1,6 @@
 #!/bin/bash
 export SCRIPT_DIR=$(dirname $(readlink -f "$0"))
-export CODEGEN_URL="http://localhost:8080/api/v1"
+export CODEGEN_URL="http://localhost:8085/api/v1"
 export VERSION="1.1.0-SNAPSHOT"
 export APIS=(core resourcemanager appmanager binaryrepositorymanager catalogmanager pipelinemanager codegen)
 export PROJECT_BASE=$SCRIPT_DIR/../../../
@@ -13,7 +13,7 @@ function main() {
         help
         return 0
     fi
-    [ $(findInArgs "--start-codegen" $*) ] && docker run -p 8080:8080 -e ARTIFACT_REPOSITORY_URL="none" -e ARTIFACT_PIP_REPOSITORY_NAME="none" kathra/codegen-swagger:dev
+    [ $(findInArgs "--start-codegen" $*) ] && docker run --detach -p 8085:8080 -e ARTIFACT_REPOSITORY_URL="none" -e ARTIFACT_PIP_REPOSITORY_NAME="none" kathra/codegen-swagger:dev
 
     if [ $(findInArgs "--generateSource" $*) ]
     then
@@ -40,6 +40,7 @@ function main() {
         resourceManagerGenerateSrc
     fi
 }
+export -f main
 
 function help() {
     printInfo "Kathra - Specifications to API"
@@ -51,23 +52,88 @@ function help() {
     printInfo "Generate source for all components"
     printInfo "Options : "
     printInfo "     --component=<$(printf "%s|" "${APIS[@]}")>"
-    printInfo "     --lib=<client|model|interface>"
+    printInfo "     --lib=<client|model|interface|implementation>"
     printInfo ""
     printInfo "--resourceManagerUpdateApiFromCoreApi" 
     printInfo "Update $(realpath --relative-to=. $SCRIPT_DIR/../resourcemanager/swagger.yaml) from $(realpath --relative-to=. $SCRIPT_DIR/../core/swagger.yaml) " 
     printInfo ""
     printInfo "--resourceManagerGenerateSrc"
     printInfo "Update ResourceManager ArangoDB [$(realpath --relative-to=. $SCRIPT_DIR/../../kathra-resourcemanager-arangodb)] from Kathra-Core Model [$(realpath --relative-to=. $SCRIPT_DIR/../../kathra-core-model)] [clazz: $CODE_MODEL_CLAZZ_MANAGED] "
+    printInfo ""
+    printInfo "--start-codegen"
+    printInfo "Start codegen"
+    printInfo ""
 }
-export -f help
 
 function updateComponent() {
     local component=$1
     local lib=$2
     local fileApi=$SCRIPT_DIR/../$component/swagger.yaml
     local srcDirectory=$PROJECT_BASE/kathra-$component-$lib
-    codegen "$fileApi" "$srcDirectory" "$lib"
+
+    if [ "$lib" == "implementation" ]
+    then
+        [ "$component" == "catalogmanager" ] && updateImplementationGo "kathra-$component-helm" "$PROJECT_BASE/kathra-$component-helm" "$fileApi"
+    elif [ "$component" == "core" ]
+    then
+        #codegen "$fileApi" "$srcDirectory" "model"
+        updateModelGo "$fileApi" "$srcDirectory-go" "kathra-$component-model-go"
+    else
+        codegen "$fileApi" "$srcDirectory" "$lib"
+        [ "$lib" == "client" ] && [ -d "$srcDirectory-go" ] && updateClientGo "$fileApi" "$srcDirectory-go" "kathra-$component-client-go"
+        [ "$lib" == "model" ]  && [ -d "$srcDirectory-go" ] && updateModelGo "$fileApi" "$srcDirectory-go" "kathra-$component-model-go"
+    fi
 }
+export -f updateComponent
+
+function updateModelGo() {
+    local fileApi=$1
+    local srcDirectory=$2
+    local component=$3
+
+    cd $srcDirectory
+    [ $? -ne 0 ] && echo "Error $srcDirectory not found" && exit 1
+    # backup init code
+    [ -d models ] && rm -Rf models
+    # generate code
+    swagger generate model -f $fileApi
+    return $?
+}
+export -f updateModelGo
+
+function updateClientGo() {
+    local fileApi=$1
+    local srcDirectory=$2
+    local component=$3
+
+    cd $srcDirectory
+    [ $? -ne 0 ] && echo "Error $srcDirectory not found" && exit 1
+    [ ! -f go.mod ] && go mod init github.com/kathra-project/$component
+    swagger generate client -f $fileApi -A $component
+    return $?
+}
+export -f updateClientGo
+
+
+function updateImplementationGo() {
+    local implementationName=$1
+    local srcDirectory=$2
+    local fileApi=$3
+
+    cd $srcDirectory
+    [ $? -ne 0 ] && echo "Error" && exit 1
+
+    # backup init code
+    [ -d cmd ] && mv cmd cmd-backup
+    [ -d restapi ] && rm -Rf restapi
+
+    # generate code
+    swagger generate server -f $fileApi -A $implementationName
+
+    # restore init code
+    [ -d cmd-backup ] && rm -Rf cmd && mv cmd-backup cmd
+}
+export -f updateImplementationGo
 
 function findInArgs() {
     local keyToFind=$1

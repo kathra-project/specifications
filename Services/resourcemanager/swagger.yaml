@@ -1909,123 +1909,48 @@ definitions:
   Component:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "Component"
-      type: "Component"
   BinaryRepository:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "BinaryRepository"
-      type: "BinaryRepository"
   Library:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "Library"
-      type: "Library"
   Implementation:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "Implementation"
-      type: "Implementation"
   ImplementationVersion:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "ImplementationVersion"
-      type: "ImplementationVersion"
   ApiVersion:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "ImplementationVersion"
-      type: "ImplementationVersion"
   LibraryApiVersion:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "LibraryApiVersion"
-      type: "LibraryApiVersion"
   SourceRepository:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "SourceRepository"
-      type: "SourceRepository"
   Pipeline:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "Pipeline"
-      type: "Pipeline"
   Group:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "Group"
-      type: "Group"
   KeyPair:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "KeyPair"
-      type: "KeyPair"
   User:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "User"
-      type: "User"
   Assignation:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "Assignation"
-      type: "Assignation"
   CatalogEntry:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "CatalogEntry"
-      type: "CatalogEntry"
   CatalogEntryPackage:
     type: object
     x-artifactId: kathra-core-model
-    x-go-type:
-      import:
-        package: "github.com/kathra-project/kathra-core-model-go/models"
-        alias: "CatalogEntryPackage"
-      type: "CatalogEntryPackage"
 x-dependencies:
   - artifactId: kathra-core-model
     groupId: org.kathra

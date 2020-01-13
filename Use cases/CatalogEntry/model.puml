@@ -2,6 +2,7 @@
 
 class  CatalogEntry {
      - packageTemplate <b>: PACKAGE_TEMPLATE</b>
+     - icon <b>: String</b>
 }
 
 enum PACKAGE_TEMPLATE {
