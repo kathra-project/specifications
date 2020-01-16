@@ -12,6 +12,8 @@ paths:
     get:
       summary: "Get all templates for codegen generation"
       operationId: "getTemplates"
+      consumes:
+        - "application/json"
       produces:
         - "application/json"
       parameters: []
@@ -22,12 +24,18 @@ paths:
             type: "array"
             items:
               $ref: "#/definitions/CodeGenTemplate"
+        500:
+          description: "Internal error"
+          schema:
+            type: "string"
   /generateFromTemplate:
     post:
       summary: "Generate archive from template"
       operationId: "generateFromTemplate"
-      produces:
+      consumes:
         - "application/json"
+      produces:
+        - application/octet-stream
       parameters:
         - in: "body"
           name: "CodeGenTemplate"
@@ -41,6 +49,14 @@ paths:
           description: "Archive file"
           schema:
             type: "file"
+        400:
+          description: "Bad request"
+          schema:
+            type: "string"
+        500:
+          description: "Internal error"
+          schema:
+            type: "string"
 definitions:
   CodeGenTemplate:
     type: "object"
