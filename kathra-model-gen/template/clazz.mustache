@@ -1,0 +1,77 @@
+swagger: '2.0'
+info:
+  title: Kathra Core Model
+  version: 1.1.0-SNAPSHOT
+  x-artifactName: core
+  x-groupId: org.kathra
+definitions:
+{{#enums}}
+  {{enumName}}:
+    type: {{enumType}}
+    enum: &{{enumName}}
+      {{#values}}
+    - {{.}}
+      {{/values}}
+{{/enums}}
+{{#clazz}}
+  {{clazzName}}:
+    {{#parentClazz}}
+    allOf:
+    - $ref: '#/definitions/{{parentClazz}}'
+    - type: object
+      properties:
+      {{#fields}}
+        {{name}}:
+        {{#type}}
+          type: {{type}}
+        {{/type}}
+        {{#objectRef}}
+          $ref: '#/definitions/{{objectRef}}'
+        {{/objectRef}}
+        {{#arrayType}}
+          type: array
+          items:
+            type: {{arrayType}}
+        {{/arrayType}}
+        {{#arrayRef}}
+          type: array
+          items:
+            $ref: '#/definitions/{{arrayRef}}'
+        {{/arrayRef}}
+        {{#additionalProperties}}
+          type: object
+          additionalProperties:
+            type: object
+        {{/additionalProperties}}
+      {{/fields}}
+    {{/parentClazz}}
+    {{#noParentClazz}}
+    type: object
+    properties:
+    {{#fields}}
+      {{name}}:
+        {{#type}}
+          type: {{type}}
+        {{/type}}
+        {{#objectRef}}
+          $ref: '#/definitions/{{objectRef}}'
+        {{/objectRef}}
+        {{#arrayType}}
+          type: array
+          items:
+            type: {{arrayType}}
+        {{/arrayType}}
+        {{#arrayRef}}
+          type: array
+          items:
+            $ref: '#/definitions/{{arrayRef}}'
+        {{/arrayRef}}
+        {{#additionalProperties}}
+          type: object
+          additionalProperties:
+            type: object
+        {{/additionalProperties}}
+      {{/fields}}
+    {{/noParentClazz}}
+{{/clazz}}
+paths: {}

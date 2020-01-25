@@ -8,6 +8,7 @@ participant AppManager
 participant AppManager.CatalogEntryService as "AppManager.CatalogEntryService"
 participant AppManager.CatalogEntryPackageService
 participant AppManager.CatalogEntryPackageVersionService
+participant AppManager.BinaryRepositoryService
 participant AppManager.RepositoryService
 participant AppManager.PipelineService
 participant ResourceManager
@@ -68,8 +69,14 @@ loop (package types) :packageType={HELM, KUSTOMIZE, ...}
   AppManager.CatalogEntryPackageService <- ResourceManager : CatalogEntryPackage
   deactivate ResourceManager
 
+
+  !define BinaryRepositoryServiceCaller AppManager.CatalogEntryPackageService
+  "BinaryRepositoryServiceCaller" -> AppManager.BinaryRepositoryService : getUserCredential( \n User user = :catalogEntry.group.technicalUser, \n PackageType packageType = :packageType) : Credential
+  !include ./../../BinaryRepository/getCredential.sequence.puml
+
+
   !define PipelineServiceCaller AppManager.CatalogEntryPackageService
-  "PipelineServiceCaller" -> AppManager.PipelineService: PipelineService.createPipeline(\n String path, SourceRepository sourceRepository, PipelineTemplate pipelineTemplate) : Pipeline  \n path=groupId/:catalogEntry.name/implementations/:packageType/:implementationName \n sourceRepository=:sourceRepository \n metadata.CATALOG_URL=HARBOR_URL+"/"+:catalogEntry.group.name \n metadata.CATALOG_LOGIN=:catalogEntry.group.technicalUser.login \n metadata.CATALOG_PASSWORD=:catalogEntry.group.technicalUser.password \n metadata.KATHRA_WEBHOOK=:KATHRA_WEBHOOK \n PipelineTemplate=:packageType
+  "PipelineServiceCaller" -> AppManager.PipelineService: PipelineService.createPipeline(\n String path, SourceRepository sourceRepository, PipelineTemplate pipelineTemplate) : Pipeline  \n path=groupId/:catalogEntry.name/implementations/:packageType/:implementationName \n sourceRepository=:sourceRepository \n metadata.CATALOG_URL=HARBOR_URL+"/"+:catalogEntry.group.name \n metadata.CATALOG_LOGIN=:credential.username \n metadata.CATALOG_PASSWORD=:credential.password \n metadata.KATHRA_WEBHOOK=:KATHRA_WEBHOOK \n PipelineTemplate=:packageType
   !include ./../../Pipeline/create-sequence-from-pathSourceRepositoryPipelineTemplate.puml
 
 
@@ -95,10 +102,10 @@ loop (package types) :packageType={HELM, KUSTOMIZE, ...}
 
     AppManager.CatalogEntryPackageService <-- AppManager.CatalogEntryPackageVersionService : CatalogEntryPackageVersion w/ id
 
-    AppManager.CatalogEntryPackageVersionService -> CatalogCodeGen: POST /generate [formdata: template:catalogEntry.template, parameters: parameters]
-    activate CatalogCodeGen
-    CatalogCodeGen -> AppManager.CatalogEntryPackageVersionService: zip file w/ source code generated
-    deactivate CatalogCodeGen
+    AppManager.CatalogEntryPackageVersionService -> CodeGen: POST /generateFromTemplate [formdata: template:catalogEntry.template, parameters: parameters]
+    activate CodeGen
+    CodeGen -> AppManager.CatalogEntryPackageVersionService: zip file w/ source code generated
+    deactivate CodeGen
 
 
     AppManager.CatalogEntryPackageVersionService -> AppManager.RepositoryService: RepositoryService.updateSourceRepository( \n SourceRepository sourceRepository, String version, File archiveFile)

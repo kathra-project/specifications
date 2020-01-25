@@ -1,0 +1,147 @@
+---
+swagger: "2.0"
+info:
+  description: "KATHRA Catalog Management API permetting : \n * Generate source's\
+    \ packages from templates \n * Insert catalog entry from template  \n \n * Insert\
+    \ catalog entry from file  \n\n * Insert catalog entry from source repository\
+    \  \n * Read catalog entries from catalog \n "
+  version: "1.1.0-SNAPSHOT"
+  title: "Kathra Catalog Manager"
+  x-artifactName: "catalogManager"
+  x-groupId: "org.kathra"
+basePath: "/api/v1"
+paths:
+  /catalogEntries:
+    get:
+      tags:
+        - "Read catalog entries"
+      summary: "Get all entries in the catalog"
+      operationId: "getAllCatalogEntryPackages"
+      produces:
+        - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "CatalogEntryPackage with providerId"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CatalogEntryPackage"
+        500:
+          description: "Internal error"
+          schema:
+            type: string
+  /catalogEntries/{providerId}:
+    get:
+      tags:
+        - "Read catalog entries"
+      summary: "Get an entry in the catalog"
+      operationId: "getCatalogEntryPackage"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "providerId"
+          in: "path"
+          description: "CatalogEntryPackage providerId"
+          required: true
+          type: "string"
+          x-exportParamName: "ProviderId"
+      responses:
+        200:
+          description: "CatalogEntryPackage with details"
+          schema:
+            $ref: "#/definitions/CatalogEntryPackage"
+        404:
+          description: "CatalogEntryPackage not found"
+          schema:
+            type: string
+        500:
+          description: "Internal error"
+          schema:
+            type: string
+  /catalogEntries/{providerId}/versions/{version}:
+    get:
+      tags:
+        - "Read catalog entries"
+      summary: "Get an entry in the catalog for specific version"
+      operationId: "getCatalogEntryFromVersion"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "providerId"
+          in: "path"
+          description: "CatalogEntryPackage providerId"
+          required: true
+          type: "string"
+          x-exportParamName: "ProviderId"
+        - name: "version"
+          in: "path"
+          description: "CatalogEntryPackage version"
+          required: true
+          type: "string"
+          x-exportParamName: "Version"
+      responses:
+        200:
+          description: "CatalogEntryVersion with details"
+          schema:
+            $ref: "#/definitions/CatalogEntryPackageVersion"
+        404:
+          description: "CatalogEntryVersion not found"
+          schema:
+            type: string
+        500:
+          description: "Internal error"
+          schema:
+            type: string
+  /catalogEntries/{providerId}/versions:
+    get:
+      tags:
+        - "Read catalog entries"
+      summary: "Get all version for an entry in the catalog"
+      operationId: "getCatalogEntryPackageVersions"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "providerId"
+          in: "path"
+          description: "CatalogEntryPackage providerId"
+          required: true
+          type: "string"
+          x-exportParamName: "ProviderId"
+      responses:
+        200:
+          description: "All versions for CatalogEntryPackage"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CatalogEntryPackageVersion"
+        404:
+          description: "CatalogEntryPackage not found"
+          schema:
+            type: string
+        500:
+          description: "Internal error"
+          schema:
+            type: string
+definitions:
+  CatalogEntryPackage:
+    type: object
+    x-artifactId: kathra-core-model
+    x-go-type:
+      import:
+        package: "github.com/kathra-project/kathra-core-model-go/models"
+        alias: "CatalogEntryPackage"
+      type: "CatalogEntryPackage"
+  CatalogEntryPackageVersion:
+    type: object
+    x-artifactId: kathra-core-model
+    x-go-type:
+      import:
+        package: "github.com/kathra-project/kathra-core-model-go/models"
+        alias: "CatalogEntryPackageVersion"
+      type: "CatalogEntryPackageVersion"
+x-dependencies:
+- artifactId: kathra-core-model
+  groupId: org.kathra
+  artifactVersion: 1.1.0-SNAPSHOT
+  modelPackage: core.model

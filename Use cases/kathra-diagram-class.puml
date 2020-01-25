@@ -9,14 +9,14 @@ skinparam class {
 }
 
 class  Resource {
-         - id <b>: String</b>
-         - name <b>: String</b>
-         - metadata <b>: Object</b>
-         - status <b>: RESOURCE_STATUS</b>
-         - createdBy <b>: String</b>
-         - updatedBy <b>: String</b>
-         - createAt <b>: timestamp</b>
-         - updatedAt <b>: timestamp</b>
+  String path
+  String role
+  MapOfObject metadata
+  RESOURCE_STATUS status
+  String createdBy
+  String updatedBy
+  String createdAt
+  String updatedAt
 }
 
 enum MEMBERSHIP_ROLE {
@@ -29,13 +29,14 @@ enum MEMBERSHIP_MEMBERTYPE {
          - GROUP
 }
 class  Membership {
-         - path <b>: String</b>
-         - role <b>: MEMBERSHIP_ROLE </b>
-         - memberType <b>: MEMBERSHIP_MEMBERTYPE</b>
-         - memberName <b>: String</b>
+  String path
+  MEMBERSHIP_ROLE role
+  MEMBERSHIP_MEMBERTYPE memberType
+  String memberName
 }
 
 
+<<<<<<< HEAD
 class  Component <extends Resource> {
          - description <b>: String</b>
          - title <b>: String</b>
@@ -43,9 +44,20 @@ class  Component <extends Resource> {
          - versions <b>: ApiVersion[]</b>
          - implementations <b>: Implementation[]</b>
          - libraries <b>: Library[]</b>
+=======
+class  Component {
+  String description
+  String title
+  SourceRepository apiRepository
+  ListOfApiVersion versions
+  ListOfImplementation implementations
+  ListOfLibrary libraries
+>>>>>>> feature/catalogManager
 }
-Component  o-- "0..1"   SourceRepository
+Component  "1"  o-- "0..1"   SourceRepository
+Resource <|-- Component
 
+<<<<<<< HEAD
 class  ApiVersion <extends Resource> {
          - component <b>:  Component</b>
          - version <b>: String</b>
@@ -53,15 +65,34 @@ class  ApiVersion <extends Resource> {
          - apiRepositoryStatus <b>: RESOURCE_STATUS</b>
          - implementationVersions <b>: ImplementationVersion[]</b>
          - librariesApiVersions <b>: LibraryApiVersion[]</b>
+=======
+class  ApiVersion {
+  Component component
+  String version
+  Boolean released
+  RESOURCE_STATUS apiRepositoryStatus
+  ListOfImplementationVersion implementationVersions
+  ListOfLibraryApiVersion librariesApiVersions
+>>>>>>> feature/catalogManager
 }
-Component "1" *-- "0..*"  ApiVersion
+Component "1" *-- "0..N"  ApiVersion
+Resource <|-- ApiVersion
 
+<<<<<<< HEAD
 class LibraryApiVersion <extends Resource> {
          - apiVersion <b>: ApiVersion</b>
          - library <b>: Library</b>
          - sourceRepositoryStatus <b>: RESOURCE_STATUS</b>
          - pipelineStatus <b>: RESOURCE_STATUS</b>
+=======
+class LibraryApiVersion {
+  ApiVersion apiVersion
+  Library library
+  RESOURCE_STATUS sourceRepositoryStatus
+  RESOURCE_STATUS pipelineStatus
+>>>>>>> feature/catalogManager
 }
+Resource <|-- LibraryApiVersion
 
 enum PIPELINE_TEMPLATE {
          - JAVA_LIBRARY
@@ -79,9 +110,18 @@ enum RESOURCE_STATUS {
          - DELETED
 }
 
+<<<<<<< HEAD
+=======
+class Asset {
+  SourceRepository sourceRepository
+  Pipeline pipeline
+}
+>>>>>>> feature/catalogManager
 Asset "1..0"  o-- "0..1"   Pipeline
 Asset "1..0" o-- "0..1"   SourceRepository
+Resource <|-- Asset
 
+<<<<<<< HEAD
 class  Group <extends Resource> {
          - path <b>: String</b>
          - parent : <b>Group</b>
@@ -99,21 +139,56 @@ class User <extends Resource> {
          - lastName <b>: String</b>
          - email <b>: String</b>
          - password <b>: String</b>
+=======
+class  Group {
+  String path
+  Group parent
+  RESOURCE_STATUS sourceRepositoryStatus
+  RESOURCE_STATUS sourceMembershipStatus
+  RESOURCE_STATUS pipelineFolderStatus
+  RESOURCE_STATUS binaryRepositoryStatus
+}
+Group  "o-- "0..1"   Group : parent
+Group  "1" <--   User : technicalUser
+Assignation  "1" o-- "0..N"   Group : assignations
+
+class User {
+  String firstName
+  String lastName
+  String email
+  String password
+>>>>>>> feature/catalogManager
 }
 Assignation  "1" o-- "0..N"   User : assignations
+Resource <|-- User
 
+<<<<<<< HEAD
 class Assignation <extends Resource> {
         - role <b>: String</b>
         - fte <b>: String</b>
+=======
+class Assignation {
+  String role
+  String fte
+>>>>>>> feature/catalogManager
 }
+Resource <|-- Assignation
 
+<<<<<<< HEAD
 class KeyPair <extends Resource> {
          - private <b>: String</b>
          - public <b>: String </b>
+=======
+class KeyPair {
+  String privateKey
+  String publicKey
+>>>>>>> feature/catalogManager
 }
+Resource <|-- KeyPair
 
 Group  "1" <-- "0..1"   KeyPair : group
 
+<<<<<<< HEAD
 class Asset <extends Resource> {
     sourceRepository <b>:SourceRepository</b>
     pipeline <b>:Pipeline</b>
@@ -129,8 +204,20 @@ class  SourceRepository <extends Resource> {
          - httpUrl <b>: String</b>
          - webUrl <b>: String</b>
          - branchs <b>: String[]</b>
+=======
+class  SourceRepository {
+  String provider
+  String providerId
+  String path
+  String sshUrl
+  String httpUrl
+  String webUrl
+  ListOfString branchs
+>>>>>>> feature/catalogManager
 }
+Resource <|-- SourceRepository
 
+<<<<<<< HEAD
 class  Pipeline <extends Resource> {
          - provider <b>: String</b>
          - providerId <b>: String</b>
@@ -140,21 +227,44 @@ class  Pipeline <extends Resource> {
          - template <b>: PIPELINE_TEMPLATE</b>
 }
 Pipeline "1" o-- SourceRepository : sourceRepositorys
+=======
+class  Pipeline {
+  String provider
+  String providerId
+  String credentialId
+  SourceRepository sourceRepository
+  String path
+  PIPELINE_TEMPLATE template
+  Asset asset
+}
+SourceRepository "1" o-- "0..N" Pipeline
+Pipeline "1" o-- "0..N" Asset
+Resource <|-- Pipeline
+>>>>>>> feature/catalogManager
+
+!include ./BinaryRepository/model.puml
+BinaryRepository  "0..N" --o "1" Asset : binaryRepository
+Group  "0..N" --o "1" BinaryRepository : group
 
 
-
-LibraryApiVersion "0..6" --* "1"  ApiVersion
+LibraryApiVersion "0..N" --* "1"  ApiVersion
 LibraryApiVersion "0..N" --o "1" Library
 
 
 Asset <|-- Library
 class  Library {
+<<<<<<< HEAD
          - type  <b>: LIBRARY_TYPE</b>
          - component <b>: Component</b>
          - versions <b>: LibraryApiVersion[]</b>
          - langage  <b>: PROGRAMMING_LANGUAGE</b>
+=======
+  LIBRARY_TYPE type
+  Component component
+  ListOfLibraryApiVersion versions
+>>>>>>> feature/catalogManager
 }
-Component "1" *-- "0..6" Library
+Component "1" *-- "0..N" Library
 
 enum PROGRAMMING_LANGUAGE {
          - JAVA
@@ -171,28 +281,49 @@ enum LIBRARY_TYPE {
 
 Asset <|-- Implementation
 class  Implementation {
+<<<<<<< HEAD
          - description <b>: String</b>
          - title <b>: String</b>
          - component <b>: Component</b>
          - versions <b>: ImplementationVersion[]</b>
          - langage  <b>: PROGRAMMING_LANGUAGE</b>
+=======
+  String description
+  String title
+  Component component
+  ListOfImplementationVersion versions
+>>>>>>> feature/catalogManager
 }
-Implementation  "1" *-- "0..*"  ImplementationVersion
-Component  "0..*" *-- "1"  Implementation
+Implementation "1" o-- "0..N" ImplementationVersion
+Implementation  "0..N" --o "1"  Component
 
+<<<<<<< HEAD
 class  ImplementationVersion <extends Resource> {
          - version <b>: String</b>
          - implementation <b>: Implementation</b>
          - apiVersion <b>: ApiVersion</b>
+=======
+class  ImplementationVersion {
+  string version
+  Implementation implementation
+  ApiVersion apiVersion
+>>>>>>> feature/catalogManager
 }
-ImplementationVersion  "0..*" --o "1" ApiVersion
+ImplementationVersion  "0..N" --o "1" ApiVersion
+Resource <|-- ImplementationVersion
 
 
 !include ./CatalogEntry/model.puml
+<<<<<<< HEAD
 Asset  --- "1" CatalogEntry
+=======
+Asset  "0..N" --o "1" CatalogEntry
+>>>>>>> feature/catalogManager
 Asset <|-- CatalogEntryPackage
+Resource <|-- CatalogEntry
 
 
+<<<<<<< HEAD
 !include ./RuntimeEnvironment/model.puml
 CatalogEntryPackage  "0..*" --o "1" RuntimeAppInstance
 Group  "0..*" --- "0..1" RuntimeEnvironment : owner
@@ -204,4 +335,6 @@ note as N1
   Name: <b><color:royalBlue>Kathra Core Model</color>
   Version: <b><color:royalBlue>1.1.0-SNAPSHOT</color>
 end note
+=======
+>>>>>>> feature/catalogManager
 @enduml
