@@ -11,6 +11,7 @@ class RuntimeEnvironment < extends Resources> {
      - providerId <b>: String</b>
      - provider <b>: String</b>
      - description <b>: String</b>
+     - labels <b>: String[]</b>
 }
 
 RuntimeAppInstance  "1" --o "0..*" RuntimeEnvironment

@@ -1951,6 +1951,12 @@ definitions:
   CatalogEntryPackage:
     type: object
     x-artifactId: kathra-core-model
+  RuntimeEnvironment:
+    type: object
+    x-artifactId: kathra-core-model
+  Cluster:
+    type: object
+    x-artifactId: kathra-core-model
 x-dependencies:
   - artifactId: kathra-core-model
     groupId: org.kathra

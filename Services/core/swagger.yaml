@@ -560,4 +560,76 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
       contrainst: ".*"
       value: ""
       key: "global.postgresql.postgresqlDatabase"
+  Cluster:
+    allOf:
+    - $ref: "#/definitions/Resource"
+    - type: "object"
+      properties:
+        name:
+          type: string
+          description: Cluster name
+        provider:
+          type: string
+          description: Cluster provider
+        providerId:
+          type: string
+          description: Cluster providerId
+        providerId:
+          type: string
+          description: Cluster providerId
+        packageManagerManaged:
+          type: "array"
+          items:
+            enum: *PACKAGE_TYPE
+        
+  RuntimeEnvironment:
+    allOf:
+    - $ref: "#/definitions/Resource"
+    - type: "object"
+      properties:
+        providerId:
+          type: string
+          description: RuntimeEnvironment providerId
+        name:
+          type: string
+          description: RuntimeEnvironment name
+        description:
+          type: string
+          description: RuntimeEnvironment description
+        cluster:
+          description: Cluster
+          $ref: '#/definitions/Cluster'
+        labels:
+          type: "array"
+          description: "RuntimeEnvironment labels"
+          items:
+            type: string
+        group:
+          description: Group owner
+          $ref: '#/definitions/Group'
 
+  ContinuousDelivery:
+    allOf:
+    - $ref: "#/definitions/Resource"
+    - type: "object"
+      properties:
+        runtimeEnvironmentLabels:
+          type: "array"
+          description: "RuntimeEnvironment labels target"
+          items:
+            type: string
+        catalogEntryPackage:
+          description: CatalogEntryPackage to deploy
+          $ref: '#/definitions/CatalogEntryPackage'
+        packageVersion:
+          type: string
+          description: Version of catalogEntryPackage
+        refCommitMatcher:
+          type: string
+          description: Branch/Tag/Commit regex
+        parameters:
+          type: object
+          description: Deployment settings
+          additionalProperties:
+            type: object
+        

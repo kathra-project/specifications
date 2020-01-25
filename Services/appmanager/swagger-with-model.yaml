@@ -28,6 +28,29 @@ tags:
 - name: pipelines
   description: Pipelines
 paths:
+  /webhook:
+    post:
+      operationId: receiveMessageFromWebHook
+      summary: Send message to webhook
+      tags:
+        - webhook
+      consumes:
+      - multipart/form-data
+      parameters:
+      - in: formData
+        name: message
+        description: Message to consume
+        type: string
+      responses:
+        "200":
+          description: Message received
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+            
   /groups:
     get:
       operationId: getGroups

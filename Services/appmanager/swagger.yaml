@@ -27,7 +27,825 @@ tags:
   description: Repositories
 - name: pipelines
   description: Pipelines
+- name: runtimes
+  description: Runtimes
+- name: continuousdeliveries
+  description: ContinuousDeliveries
 paths:
+  /webhook:
+    post:
+      operationId: consumeWebHookMessage
+      summary: Send message to webhook
+      tags:
+        - webhook
+      consumes:
+      - multipart/form-data
+      parameters:
+      - in: formData
+        name: message
+        description: Message to send
+        type: string
+      responses:
+        "200":
+          description: Message received
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+
+
+  /clusters:
+    get:
+      tags:
+      - runtimes
+      summary: Get all clusters
+      operationId: getClusters
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Return clusters
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Cluster'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments:
+    get:
+      tags:
+      - runtimes
+      summary: Get all RuntimeEnvironments
+      operationId: getRuntimeEnvironments
+      produces:
+      - application/json
+      parameters: []
+      responses:
+        "200":
+          description: Return runtimes environments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RuntimeEnvironment'
+        "500":
+          description: Internal error
+          schema:
+            type: string
+    post:
+      tags:
+      - runtimes
+      summary: Create RuntimeEnvironment
+      operationId: addRuntimeEnvironment
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: RuntimeEnvironment
+        description: RuntimeEnvironment to deploy
+        required: true
+        schema:
+          $ref: '#/definitions/RuntimeEnvironment'
+        x-exportParamName: RuntimeEnvironment
+      responses:
+        "200":
+          description: RuntimeEnvironment deployed with success
+          schema:
+            $ref: '#/definitions/RuntimeEnvironment'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}:
+    get:
+      tags:
+      - runtimes
+      summary: Get RuntimeEnvironment
+      operationId: getRuntimeEnvironment
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      responses:
+        "200":
+          description: RuntimeEnvironments
+          schema:
+            $ref: '#/definitions/RuntimeEnvironment'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+    delete:
+      tags:
+      - runtimes
+      summary: Delete RuntimeEnvironment
+      operationId: deleteRuntimeEnvironment
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      responses:
+        "200":
+          description: RuntimeEnvironment deleted
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  
+  /runtimeEnvironments/{runtimeEnvironmentId}/backups:
+    get:
+      tags:
+      - runtimes
+      summary: Get backups from RuntimeEnvironment
+      operationId: getBackupRuntimeEnvironments
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      responses:
+        "200":
+          description: Runtimes environments backups
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RuntimeEnvironmentBackup'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+    post:
+      tags:
+      - runtimes
+      summary: Create backup from current RuntimeEnvironment
+      operationId: addBackupRuntimeEnvironments
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - in: body
+        name: RuntimeEnvironmentBackup
+        description: RuntimeEnvironmentBackup to create
+        required: true
+        schema:
+          $ref: '#/definitions/RuntimeEnvironmentBackup'
+        x-exportParamName: RuntimeEnvironmentBackup
+      responses:
+        "200":
+          description: RuntimeAppInstance deployed with success
+          schema:
+            $ref: '#/definitions/RuntimeEnvironmentBackup'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/backups/import:
+    post:
+      tags:
+      - runtimes
+      summary: Import backup archive fromuploaded file or url
+      operationId: importBackupRuntimeEnvironments
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: File
+        in: formData
+        description: Backup archive to upload
+        required: false
+        type: file
+        x-exportParamName: File
+      - name: Url
+        in: formData
+        description: Backup archive to download from microservice
+        required: false
+        type: string
+        x-exportParamName: Url
+        x-optionalDataType: String
+      responses:
+        "200":
+          description: RuntimeAppInstance deployed with success
+          schema:
+            $ref: '#/definitions/RuntimeEnvironmentBackup'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/backups/{providerIdBackup}:
+    delete:
+      tags:
+      - runtimes
+      summary: Delete backup
+      operationId: deleteBackupRuntimeEnvironments
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdBackup
+        in: path
+        description: RuntimeEnvironmentBackup providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdBackup
+      responses:
+        "200":
+          description: RuntimeAppInstance deleted with success
+          schema:
+            $ref: '#/definitions/RuntimeEnvironmentBackup'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/backups/{providerIdBackup}/restore:
+    post:
+      tags:
+      - runtimes
+      summary: Restore backup into RuntimeEnvironment
+      operationId: restoreBackupRuntimeEnvironments
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdBackup
+        in: path
+        description: RuntimeEnvironmentBackup providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdBackup
+      responses:
+        "200":
+          description: RuntimeAppInstance restored with success
+          schema:
+            $ref: '#/definitions/RuntimeEnvironmentBackup'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/backups/{providerIdBackup}/download:
+    post:
+      tags:
+      - runtimes
+      summary: Download backup
+      operationId: downloadBackupRuntimeEnvironments
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdBackup
+        in: path
+        description: RuntimeEnvironmentBackup providerId
+        required: true
+        type: string
+        x-exportParamName: providerIdBackup
+      responses:
+        "200":
+          description: Backup downloaded with success
+          schema:
+            type: file
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/applications:
+    get:
+      tags:
+      - runtimes
+      summary: Get application instances from RuntimeEnvironment
+      operationId: getApplicationsFromRuntimeEnvironment
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      responses:
+        "200":
+          description: Runtimes environments
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/RuntimeAppInstance'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+    post:
+      tags:
+      - runtimes
+      summary: Add application to RuntimeEnvironment
+      operationId: addApplicationToRuntimeEnvironment
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment runtimeEnvironmentId
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - in: body
+        name: RuntimeAppInstance
+        description: RuntimeAppInstance to deploy
+        required: true
+        schema:
+          $ref: '#/definitions/RuntimeAppInstance'
+        x-exportParamName: RuntimeAppInstance
+      responses:
+        "200":
+          description: RuntimeAppInstance deployed with success
+          schema:
+            $ref: '#/definitions/RuntimeAppInstance'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/applications/{providerIdAI}:
+    get:
+      tags:
+      - runtimes
+      summary: Get RuntimeAppInstance
+      operationId: getApplication
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdAI
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdAI
+      responses:
+        "200":
+          description: RuntimeAppInstance
+          schema:
+            $ref: '#/definitions/RuntimeAppInstance'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+    delete:
+      tags:
+      - Application management
+      summary: Delete application
+      operationId: deleteApplication
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdAI
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdAI
+      responses:
+        "200":
+          description: RuntimeAppInstance deleted
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/applications/{providerIdAI}/services:
+    get:
+      tags:
+      - runtimes
+      summary: Get RuntimeAppServices
+      operationId: getRuntimeAppServices
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdAI
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdAI
+      responses:
+        "200":
+          description: RuntimeAppService from RuntimeAppInstance
+          schema:
+            $ref: '#/definitions/RuntimeAppService'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/applications/{providerIdAI}/containers:
+    get:
+      tags:
+      - runtimes
+      summary: Get RuntimeContainer
+      operationId: getRuntimeContainer
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdAI
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdAI
+      responses:
+        "200":
+          description: RuntimeContainer from RuntimeAppInstance
+          schema:
+            $ref: '#/definitions/RuntimeContainer'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/applications/{providerIdAI}/containers/{providerIdContainer}:
+    delete:
+      tags:
+      - runtimes
+      summary: Kill RuntimeContainer
+      operationId: deleteRuntimeContainer
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdAI
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdAI
+      - name: providerIdContainer
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdContainer
+      responses:
+        "200":
+          description: RuntimeContainer killed
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/applications/{providerIdAI}/jobs:
+    get:
+      tags:
+      - runtimes
+      summary: Get RuntimeJobs
+      operationId: getRuntimeJobs
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment Id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdAI
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdAI
+      responses:
+        "200":
+          description: RuntimeJob from RuntimeAppInstance
+          schema:
+            $ref: '#/definitions/RuntimeJob'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/applications/{providerIdAI}/volumes:
+    get:
+      tags:
+      - runtimes
+      summary: Get RuntimeVolume
+      operationId: getRuntimeVolume
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment Id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdAI
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdAI
+      responses:
+        "200":
+          description: RuntimeVolume from RuntimeAppInstance
+          schema:
+            $ref: '#/definitions/RuntimeVolume'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/loadbalancers:
+    get:
+      tags:
+      - runtimes
+      summary: Get RuntimeAppServices
+      operationId: getLoadBalancersFromRuntime
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      responses:
+        "200":
+          description: RuntimeLoadBalancer from RuntimeEnvironment
+          schema:
+            $ref: '#/definitions/RuntimeHttpLoadBalancer'
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+  /runtimeEnvironments/{runtimeEnvironmentId}/applications/{providerIdAI}/logs:
+    get:
+      tags:
+      - runtimes
+      summary: Get RuntimeAppServices
+      operationId: getLogs
+      consumes:
+      - multipart/form-data
+      produces:
+      - application/json
+      parameters:
+      - name: runtimeEnvironmentId
+        in: path
+        description: RuntimeEnvironment Id
+        required: true
+        type: string
+        x-exportParamName: runtimeEnvironmentId
+      - name: providerIdAI
+        in: path
+        description: RuntimeAppInstance providerId
+        required: true
+        type: string
+        x-exportParamName: ProviderIdAI
+      - name: maxLines
+        in: formData
+        description: N latest lines
+        required: false
+        type: string
+        x-exportParamName: MaxLines
+        x-optionalDataType: String
+      - name: filters
+        in: formData
+        description: Regex filters
+        required: false
+        type: array
+        items:
+          type: string
+        collectionFormat: multi
+        x-exportParamName: Filters
+      responses:
+        "200":
+          description: RuntimeAppService
+          schema:
+            type: string
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+
+
   /groups:
     get:
       operationId: getGroups
@@ -375,6 +1193,106 @@ paths:
       security:
       - kathra_auth:
         - write
+  /implementations/{implementationId}/continuous-deliveries:
+    get:
+      operationId: getContinuousDeliveriesFromImplementation
+      summary: Get the continuous deliveries defined from implementation
+      tags:
+      - implementations
+      parameters:
+      - in: path
+        name: implementationId
+        required: true
+        description: The ID of the Implementation to get
+        type: string
+      responses:
+        "200":
+          description: The Implementation having the given id
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/ContinuousDelivery'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - read
+    post:
+      tags:
+      - implementations
+      summary: Add a new ContinuousDelivery to Implementation
+      operationId: addContinuousDeliveryToImplementation
+      parameters:
+        - in: path
+          name: implementationId
+          required: true
+          description: The ID of the Implementation
+          type: string
+        - name: continuousdelivery
+          in: body
+          description: ContinuousDelivery object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/ContinuousDelivery'
+      responses:
+        '200':
+          description: Returns the created object
+          schema:
+            $ref: '#/definitions/ContinuousDelivery'
+        '401':
+          description: Unauthorized
+      security:
+        - kathra_auth:
+            - write
+  /continuous-deliveries/{continuousDeliveryId}:
+    put:
+      tags:
+      - ContinuousDeliveries
+      summary: Fully update a registered ContinuousDelivery
+      operationId: updateContinuousDelivery
+      parameters:
+        - in: path
+          name: continuousDeliveryId
+          required: true
+          description: The ID of the ContinuousDelivery to delete
+          type: string
+        - name: libraryapiversion
+          in: body
+          description: ContinuousDelivery object to be updated
+          required: true
+          schema:
+            $ref: '#/definitions/ContinuousDelivery'
+      responses:
+        '200':
+          description: Returns the modified object
+          schema:
+            $ref: '#/definitions/ContinuousDelivery'
+        '401':
+          description: Unauthorized
+      security:
+        - kathra_auth:
+            - write
+    delete:
+      operationId: deleteContinuousDeliveryById
+      summary: Delete the ContinuousDelivery having the given id
+      tags:
+      - ContinuousDeliveries
+      parameters:
+      - in: path
+        name: continuousDeliveryId
+        required: true
+        description: The ID of the ContinuousDelivery to delete
+        type: string
+      responses:
+        "200":
+          description: The ContinuousDelivery having the given id
+          schema:
+            $ref: '#/definitions/ContinuousDelivery'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write
   /sourceRepositories/branches/{sourceRepositoryId}:
     get:
       operationId: getRepositoryBranches
@@ -692,9 +1610,44 @@ definitions:
   CatalogEntryArgument:
     type: object
     x-artifactId: kathra-core-model
+  ContinuousDelivery:
+    type: object
+    x-artifactId: kathra-core-model
   CodeGenTemplate:
     type: object
     x-artifactId: kathra-codegen-model
+
+  Cluster:
+    type: object
+    x-artifactId: kathra-core-model
+  RuntimeEnvironment:
+    type: object
+    x-artifactId: kathra-core-model
+  RuntimeEnvironmentBackup:
+    type: object
+    x-artifactId: kathra-runtimeenviromnent-model
+  RuntimeAppInstance:
+    type: object
+    x-artifactId: kathra-runtimeenviromnent-model
+  RuntimeAppService:
+    type: object
+    x-artifactId: kathra-runtimeenviromnent-model
+  RuntimeVolume:
+    type: object
+    x-artifactId: kathra-runtimeenviromnent-model
+  RuntimeJob:
+    type: object
+    x-artifactId: kathra-runtimeenviromnent-model
+  RuntimeContainer:
+    type: object
+    x-artifactId: kathra-runtimeenviromnent-model
+  RuntimeHttpLoadBalancer:
+    type: object
+    x-artifactId: kathra-runtimeenviromnent-model
+  RuntimeHttpLoadBalancerForwarding:
+    type: object
+    x-artifactId: kathra-runtimeenviromnent-model
+
   Build:
     type: object
     x-artifactId: kathra-core-model
