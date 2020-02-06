@@ -76,8 +76,8 @@ function updateComponent() {
         [ "$component" == "catalogmanager" ] && updateImplementationGo "kathra-$component-helm" "$PROJECT_BASE/kathra-$component-helm" "$fileApi"
     elif [ "$component" == "core" ]
     then
-        #codegen "$fileApi" "$srcDirectory" "model"
-        updateModelGo "$fileApi" "$srcDirectory-go" "kathra-$component-model-go"
+        codegen "$fileApi" "$srcDirectory" "model"
+        #updateModelGo "$fileApi" "$srcDirectory-go" "kathra-$component-model-go"
     else
         codegen "$fileApi" "$srcDirectory" "$lib"
         [ "$lib" == "client" ] && [ -d "$srcDirectory-go" ] && updateClientGo "$fileApi" "$srcDirectory-go" "kathra-$component-client-go"

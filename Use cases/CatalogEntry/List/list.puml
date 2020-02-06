@@ -34,7 +34,7 @@ activate ResourceManager
 ResourceManager -> ResourceManager : get catalog-entries-packages
 AppManager <- ResourceManager : CatalogEntry[] [mandatories: name: name, asset:Asset, group:Group]
 deactivate ResourceManager
-AppManager -> AppManager : Merge catalog entries from CatalogManager and ResourceManager and filter : if entry.public = true OR use is membership of group entry owner
+AppManager -> AppManager : Merge catalog entries from CatalogManager and ResourceManager
 User <- AppManager : CatalogEntry[]
 deactivate AppManager
 

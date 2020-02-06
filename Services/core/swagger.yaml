@@ -117,10 +117,6 @@ definitions:
           $ref: '#/definitions/SourceRepository'
         pipeline:
           $ref: '#/definitions/Pipeline'
-        catalogEntries:
-          type: "array"
-          items:
-            $ref: "#/definitions/CatalogEntry"
   BinaryRepository:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -170,6 +166,10 @@ definitions:
           type: array
           items:
             $ref: '#/definitions/ImplementationVersion'
+        catalogEntries:
+          type: "array"
+          items:
+            $ref: "#/definitions/CatalogEntry"
   ImplementationVersion:
     allOf:
     - $ref: '#/definitions/Resource'
