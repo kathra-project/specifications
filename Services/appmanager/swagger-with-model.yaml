@@ -1257,6 +1257,9 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
       name:
         type: "string"
         description: "Template Name"
+      label:
+        type: "string"
+        description: "Template Label"
       arguments:
         type: "array"
         description: "CodeGen Argument"
@@ -1264,6 +1267,7 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
           $ref: "#/definitions/CatalogEntryTemplateArgument"
     example:
       - name: RestApiFromImplementation
+        label: "Rest Api from Implementation"
         arguments:
           - key: NAME
             contrainst: "[A-Za-z0-9]+"
@@ -1272,6 +1276,7 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
           - key: IMPLEMENTATION_ID
             contrainst: "[A-Za-z0-9]+"
       - name: RestApiFromDocker
+        label: "Rest Api from Docker Image"
         arguments:
           - key: NAME
             contrainst: "[A-Za-z0-9]+"
@@ -1289,6 +1294,9 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
       key:
         type: "string"
         description: "Argument key to generate codegen"
+      label:
+        type: "string"
+        description: "Argument label"
       value:
         type: "string"
         description: "Argument value to generate codegen"
