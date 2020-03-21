@@ -1,0 +1,31 @@
+@startuml
+state "Create a new catalog entry" as insertCatalogEntry : packageTemplate and implementationVersion should be setted
+[*] --> insertCatalogEntry
+insertCatalogEntry --> PENDING
+PENDING : Catalog entry existing in DB with status PENDING
+ERROR : An error has occured during initialization
+state PENDING {
+    state "Generate collections of CatalogEntryPackage for each PACKAGE_TYPE avaliables" as generatesPackages
+    [*] --> generatesPackages
+    generatesPackages --> [*]
+}
+ERROR -> [*]
+PENDING -> OK : Catalog entry is fully initialized
+PENDING -> ERROR
+OK : Update CatalogEntry to OK
+OK --> UNSTABLE : An error exception is detected
+state UNSTABLE {
+    state "Check all catalog entry packages is OK" as checkPackages
+    [*] --> checkPackages
+    checkPackages --> [*]
+}
+UNSTABLE -> OK : Catalog entry is available
+OK --> DELETED
+state DELETED {
+    state "Delete catalog entry packages" as deletePackages
+    [*] --> deletePackages
+    deletePackages --> [*]
+}
+DELETED -> [*]
+
+@enduml

@@ -1,0 +1,17 @@
+{
+  "name": "kathra-model-generator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fs-extra": "^8.1.0",
+    "mustache": "^3.2.0",
+    "plantuml-parser": "0.0.9",
+    "rimraf": "^3.0.0"
+  }
+}

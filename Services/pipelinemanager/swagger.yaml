@@ -1,0 +1,263 @@
+swagger: "2.0"
+info:
+  description: KATHRA CI/CD pipeline Management API
+  version: 1.1.0-SNAPSHOT
+  title: Kathra Pipeline Manager
+  x-artifactName: pipelineManager
+  x-groupId: org.kathra
+securityDefinitions:
+  kathra_auth:
+    type: oauth2
+    authorizationUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth
+    tokenUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token
+    flow: accessCode
+    scopes:
+      read:everything: read everything
+      write:everything: create everything
+x-dependencies:
+- artifactId: kathra-core-model
+  groupId: org.kathra
+  artifactVersion: 1.1.0-SNAPSHOT
+  modelPackage: core.model
+definitions:
+  Pipeline:
+    type: object
+    x-artifactId: kathra-core-model
+  Membership:
+    type: object
+    x-artifactId: kathra-core-model
+  Build:
+    type: object
+    x-artifactId: kathra-core-model
+  BuildArgument:
+    type: object
+    x-artifactId: kathra-core-model
+  Credential:
+    type: object
+    properties:
+      path:
+        description: Pipeline path
+        type: string
+      credentialId:
+        description: Credential ID
+        type: string
+      username:
+        description: Username associated to the credential
+        type: string
+      description:
+        description: Credential description
+        type: string
+      password:
+        description: Password
+        type: string
+      privateKey:
+        description: Private key content
+        type: string
+paths:
+  /folders:
+    post:
+      summary: Create a new folder
+      operationId: createFolder
+      parameters:
+      - name: path
+        in: body
+        description: Folder path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: Return true if successful
+          schema:
+            type: boolean
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write:everything
+  /folders/{path}/memberships:
+    get:
+      summary: Get memberships for specified folder
+      operationId: getMemberships
+      parameters:
+      - name: path
+        in: path
+        description: Pipeline path
+        type: string
+        required: true
+      responses:
+        "200":
+          description: Returns the created credential
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Membership'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write:everything
+  /credentials:
+    post:
+      summary: Creates a credential for a specified folder
+      operationId: addCredential
+      parameters:
+      - name: credential
+        in: body
+        description: Credential to create
+        required: true
+        schema:
+          $ref: '#/definitions/Credential'
+      responses:
+        "200":
+          description: Returns the created credential
+          schema:
+            $ref: '#/definitions/Credential'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write:everything
+  /memberships:
+    post:
+      summary: Creates a membership for specified folder
+      operationId: addMembership
+      produces:
+      - application/json
+      parameters:
+      - name: membership
+        in: body
+        description: Credential to create
+        required: true
+        schema:
+          $ref: '#/definitions/Membership'
+      responses:
+        "200":
+          description: Returns the created credential
+          schema:
+            $ref: '#/definitions/Membership'
+        "401":
+          description: Unauthorized
+      security:
+      - kathra_auth:
+        - write:everything
+  /pipelines:
+    post:
+      summary: Create CI/CD pipeline for an existing source
+      operationId: createPipeline
+      produces:
+      - application/json
+      parameters:
+      - name: pipeline
+        in: body
+        description: Pipeline to create, must contain path & source repository
+        required: true
+        schema:
+          $ref: '#/definitions/Pipeline'
+      responses:
+        "200":
+          description: Output type
+          schema:
+            $ref: '#/definitions/Pipeline'
+      security:
+      - kathra_auth:
+        - write:everything
+  /pipelines/{path}:
+    delete:
+      summary: Delete pipeline
+      operationId: deletePipeline
+      produces:
+      - application/json
+      parameters:
+      - name: path
+        in: path
+        description: Pipeline path
+        type: string
+        required: true
+      responses:
+        "200":
+          description: Builds
+          schema:
+            type: string
+      security:
+      - kathra_auth:
+        - write:everything
+        - null
+  /pipelines/{path}/builds:
+    get:
+      summary: Gets a list of Builds
+      operationId: getBuilds
+      produces:
+      - application/json
+      parameters:
+      - name: path
+        in: path
+        description: Pipeline path
+        type: string
+        required: true
+      - name: branch
+        in: query
+        description: Builded branch
+        type: string
+      - name: maxResult
+        in: query
+        description: Max results
+        type: integer
+        format: int32
+        default: 5
+      responses:
+        "200":
+          description: Builds
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Build'
+      security:
+      - kathra_auth:
+        - write:everything
+  /pipelines/{path}/builds/{buildNumber}:
+    get:
+      summary: Gets a Build
+      operationId: getBuild
+      produces:
+      - application/json
+      parameters:
+      - name: path
+        in: path
+        description: Build identifier
+        type: string
+        required: true
+      - name: buildNumber
+        in: path
+        description: Build identifier
+        type: string
+        required: true
+      responses:
+        "200":
+          description: Build execution log
+          schema:
+            $ref: '#/definitions/Build'
+      security:
+      - kathra_auth:
+        - write:everything
+  /builds:
+    post:
+      summary: Creates a Build
+      operationId: createBuild
+      produces:
+      - application/json
+      parameters:
+      - name: build
+        in: body
+        description: Build to run, must contain path & branch
+        required: true
+        schema:
+          $ref: '#/definitions/Build'
+      responses:
+        "200":
+          description: Build with id
+          schema:
+            $ref: '#/definitions/Build'
+      security:
+      - kathra_auth:
+        - write:everything

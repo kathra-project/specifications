@@ -1,0 +1,30 @@
+@startuml
+start
+if (Group's catalog entry exists?) then (yes)
+    :Group exists;
+    :Insert catalog entry into DB;
+else (no)
+    :Group doesn't exist;
+    end
+endif
+:Catalog entry is PENDING;
+
+
+:Create CatalogEntryPackage for each X PACKAGE_TYPE [Helm, APT, etc.. ];
+fork
+    :Create CatalogEntryPackage from CatalogEntry and X as PACKAGE_TYPE;
+fork again
+    :Other PACKAGE_TYPE;
+end fork
+
+
+
+if (All packages are READY) then (yes)
+    :Catalog entry is READY;
+    end
+else (no)
+    :Catalog entry is ERROR;
+    end
+endif
+
+@enduml

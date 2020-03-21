@@ -4,17 +4,26 @@ left to right direction
 
 
 :developer: as "Developer"
+:experimenter: as "Experimenter"
+:productionManager: as "Production Manager"
 
 (development) as "Make developments"
 (componentFeature) as "View & create component"
 (apiVersionFeature) as "View, create & update api version"
 (implementationFeature) as "View, create & update implementation"
+(catalogFeatureManage) as "View, create & update catalog entries"
+(catalogFeatureView) as "View catalog entries"
 
 
-(development) .> (componentFeature) : include
-(development) .> (apiVersionFeature) : include
-(development) .> (implementationFeature) : include
+(development) --> (componentFeature) : include
+(development) --> (apiVersionFeature) : include
+(development) --> (implementationFeature) : include
+(development) --> (catalogFeatureManage) : include
 
 developer --> (development)
+
+experimenter --> (catalogFeatureView)
+productionManager --> (catalogFeatureView)
+
 
 @enduml

@@ -1,0 +1,20 @@
+@startuml
+
+class  CatalogEntryPackage {
+     - packageType <b>:PACKAGE_TYPE</b>
+     - provider <b>: String</b>
+     - providerId <b>: String</b>
+     - url <b>: String</b>
+}
+CatalogEntryVersion "1" --o  "0..*" CatalogEntryPackage
+
+enum PACKAGE_TYPE {
+     - HELM
+     - KUSTOMIZE
+     - APT
+     - SNAP
+}
+
+!include ../CatalogEntryVersion/model.puml
+
+@enduml

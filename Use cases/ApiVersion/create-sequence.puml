@@ -62,7 +62,7 @@ loop component.libaries
     AppManager.ApiVersionLibraryService --> AppManager.ApiVersionService : ApiVersionLibrary w/ id
     activate AppManager
 
-        AppManager.ApiVersionLibraryService -> Codegen: POST /generate?library=library.type&language=library.language \n [body: apiFile]
+        AppManager.ApiVersionLibraryService -> Codegen: POST /generateFromTemplate?[CodeGenTemplate [ name:library.type+library.language, \n parameters= \n [GROUP_ID= :group.name,\n ARTIFACT_NAME=:component.name,\n VERSION=:apiVersion.version, OPENAPI_SPEC: :apiFile.getContent()] 
         activate Codegen
         Codegen -> AppManager.ApiVersionLibraryService: zip file w/ source code generated
         deactivate Codegen

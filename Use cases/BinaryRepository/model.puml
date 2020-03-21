@@ -1,0 +1,18 @@
+@startuml
+
+class  BinaryRepository {
+     - binaryRepositoryType <b>:BinaryRepositoryType</b>
+     - url <b>:string</b>
+     - provider <b>:string</b>
+     - providerId <b>:string</b>
+     - snapshot <b>:boolean</b>
+}
+
+enum  BinaryRepositoryType {
+     JAVA
+     PYTHON
+     DOCKER
+     HELM
+}
+
+@enduml

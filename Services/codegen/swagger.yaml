@@ -1,0 +1,114 @@
+---
+swagger: "2.0"
+info:
+  description: "KATHRA CodeGenerator API permetting generate sources"
+  version: "1.1.0-SNAPSHOT"
+  title: "Kathra CodeGenerator Manager"
+  x-artifactName: "codegen"
+  x-groupId: "org.kathra"
+basePath: "/api/v1"
+paths:
+  /templates:
+    get:
+      summary: "Get all templates for codegen generation"
+      operationId: "getTemplates"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "Get all CodeGenTemplate"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/CodeGenTemplate"
+        500:
+          description: "Internal error"
+          schema:
+            type: "string"
+  /generateFromTemplate:
+    post:
+      summary: "Generate archive from template"
+      operationId: "generateFromTemplate"
+      consumes:
+        - "application/json"
+      produces:
+        - application/octet-stream
+      parameters:
+        - in: "body"
+          name: "CodeGenTemplate"
+          description: "CodeGenTemplate to generate code"
+          required: true
+          schema:
+            $ref: "#/definitions/CodeGenTemplate"
+          x-exportParamName: "CodeGenTemplate"
+      responses:
+        200:
+          description: "Archive file"
+          schema:
+            type: "file"
+        400:
+          description: "Bad request"
+          schema:
+            type: "string"
+        500:
+          description: "Internal error"
+          schema:
+            type: "string"
+definitions:
+  CodeGenTemplate:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        description: "Template Name"
+      arguments:
+        type: "array"
+        description: "CodeGen Argument"
+        items:
+          $ref: "#/definitions/CodeGenTemplateArgument"
+    example:
+      - name: JavaClient
+        arguments:
+          - key: GROUP_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: ARTIFACT_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: OPEN_API_SPEC
+            contrainst: ".*"
+      - name: HelmRestApiService
+        arguments:
+          - key: CHART_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: CHART_VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: CHART_DESCRIPTION
+            contrainst: "[A-Za-z0-9]"
+          - key: APP_VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: IMAGE_NAME
+            value: ".+"
+          - key: IMAGE_TAG
+            value: ".+"
+          - key: REGISTRY_HOST
+            value: ".+"
+  CodeGenTemplateArgument:
+    type: "object"
+    properties:
+      key:
+        type: "string"
+        description: "Argument key to generate codegen"
+      value:
+        type: "string"
+        description: "Argument value to generate codegen"
+      contrainst:
+        type: "string"
+        description: "Argument constraint"
+    example:
+      contrainst: "[A-Za-z0-9]"
+      value: "MyFirstChart"
+      key: "CHART_NAME"

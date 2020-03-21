@@ -1,0 +1,16 @@
+@startuml
+
+class  CatalogEntry {
+     - packageTemplate <b>: PACKAGE_TEMPLATE</b>
+     - icon <b>: String</b>
+}
+
+enum PACKAGE_TEMPLATE {
+     - REST_API
+}
+CatalogEntry  "0..*" --o "1" CatalogEntryPackage
+
+!include ../CatalogEntryPackage/model.puml
+
+
+@enduml

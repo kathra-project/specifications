@@ -1,0 +1,88 @@
+@startuml
+title "view details catalog entry - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant Dashboard as UI
+participant AppManager
+participant ResourceManager
+
+activate User
+User -> UI: LINK: goto /catalog-entries page
+activate UI
+UI -> User:
+deactivate UI
+
+note over User
+  Requirements:
+  User logged
+end note
+
+User -> AppManager: GET /catalog-entries/:catalogEntryId
+activate AppManager
+AppManager -> ResourceManager: GET /catalog-entries/:catalogEntryId
+activate ResourceManager
+ResourceManager -> ResourceManager : get catalogEntry
+AppManager <- ResourceManager : CatalogEntry
+deactivate ResourceManager
+User <- AppManager : CatalogEntry [mandatories: id, name, description, \n catalog-entriesVersions[mandatories: id, version, apiVersion[mandatories: id, name]], \n library[mandatories: sourceRepository, pipeline], \n component[mandatories: id, name, group]]
+deactivate AppManager
+
+User -> AppManager: GET /sourceRepositories/branchs/:sourceRepositoryId
+activate AppManager
+AppManager -> ResourceManager: GET /sourceRepositories/:sourceRepositoryId
+activate ResourceManager
+ResourceManager -> ResourceManager : get sourceRepository
+AppManager <- ResourceManager : SourceRepository
+deactivate ResourceManager
+
+AppManager -> SourceManager: GET /sourceRepositories/branchs/?urlRepository=SourceRepository.sshUrl
+activate SourceManager
+AppManager <- SourceManager : Branch [name]
+deactivate SourceManager
+deactivate ResourceManager
+User <- AppManager: Branch [name]
+deactivate AppManager
+
+User -> AppManager: GET /commits/:sourceRepositoryId?branch=:branch-selected:
+activate AppManager
+AppManager -> ResourceManager: GET /sourceRepositories/:sourceRepositoryId
+activate ResourceManager
+ResourceManager -> ResourceManager : get sourceRepository
+AppManager <- ResourceManager : SourceRepository
+deactivate ResourceManager
+
+AppManager -> SourceManager: GET /commits?urlRepository=SourceRepository.sshUrl&branch=:branch-selected:[default:dev]
+activate SourceManager
+AppManager <- SourceManager : Commit [id, author, message, hash, date]
+deactivate SourceManager
+deactivate ResourceManager
+
+User <- AppManager: Commit [id, author, message, hash, date]
+deactivate AppManager
+
+
+
+User -> AppManager: GET /pipelines/builds/:pipelineId?branch=:branch-selected:
+activate AppManager
+AppManager -> ResourceManager: GET /pipeline/:pipelineId
+activate ResourceManager
+ResourceManager -> ResourceManager : get pipeline
+AppManager <- ResourceManager : Pipeline
+deactivate ResourceManager
+
+AppManager -> PipelineManager: GET /builds?jobName=Pipeline.jobName&jobFolder=Pipeline.jobFolder&branch=:branch-selected:[default:dev]
+activate PipelineManager
+AppManager <- PipelineManager : Build [number, status, date, commitId(hash)]
+deactivate PipelineManager
+deactivate ResourceManager
+
+User <- AppManager: Build [number, status, date]
+deactivate AppManager
+
+
+
+deactivate User
+
+
+@enduml

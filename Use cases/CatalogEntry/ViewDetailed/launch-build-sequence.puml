@@ -1,0 +1,32 @@
+@startuml
+title "launch build - Sequence Diagram"
+
+actor User
+'boundary Proxy
+participant Dashboard as UI
+participant AppManager
+participant ResourceManager
+
+
+
+User -> AppManager: POST /pipelines/builds/:pipelineId?branch=:branch-selected:
+activate AppManager
+AppManager -> ResourceManager: GET /pipeline/:pipelineId
+activate ResourceManager
+ResourceManager -> ResourceManager : get pipeline
+AppManager <- ResourceManager : Pipeline
+deactivate ResourceManager
+
+AppManager -> PipelineManager: POST /builds?jobName=Pipeline.jobName&jobFolder=Pipeline.jobFolder&branch=:branch-selected:[default:dev]
+activate PipelineManager
+AppManager <- PipelineManager : Build(number, status, date, commitId(hash))
+deactivate PipelineManager
+deactivate ResourceManager
+
+User <- AppManager: Build(number, status, date)
+deactivate AppManager
+
+
+deactivate User
+
+@enduml
