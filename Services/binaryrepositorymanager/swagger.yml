@@ -3,7 +3,7 @@ info:
   x-groupId: org.kathra
   x-artifactName: binaryRepositoryManager
   description: Kathra Binary Repository Manager
-  version: 1.1.0-SNAPSHOT
+  version: 1.1.0
   title: Kathra Binary Repository Manager
 securityDefinitions:
   kathra_auth:
@@ -18,7 +18,7 @@ paths:
   /credentials/{id}:
     get:
       summary: Return credentials for a user
-      description: getCredentials      
+      description: getCredentials
       parameters:
       - name: id
         in: path
@@ -30,16 +30,13 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Credential'
-
   /binaryRepositories/:
     get:
       operationId: getBinaryRepositories
-      summary: Retrieve a list of existing binary repositories for authenticated
-        user
+      summary: Retrieve a list of existing binary repositories for authenticated user
       responses:
         "200":
-          description: List of existing binary repositories for authenticated
-            user
+          description: List of existing binary repositories for authenticated user
           schema:
             type: array
             items:
@@ -107,8 +104,7 @@ paths:
           $ref: '#/definitions/BinaryRepository'
       responses:
         "200":
-          description: Success message containing the id of the modified binary
-            repository
+          description: Success message containing the id of the modified binary repository
           schema:
             $ref: '#/definitions/BinaryRepository'
         "401":
@@ -133,8 +129,7 @@ paths:
           $ref: '#/definitions/BinaryRepository'
       responses:
         "200":
-          description: Success message containing the id of the modified binary
-            repository
+          description: Success message containing the id of the modified binary repository
           schema:
             $ref: '#/definitions/BinaryRepository'
         "401":
@@ -206,5 +201,5 @@ definitions:
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
-  artifactVersion: 1.1.0-SNAPSHOT
+  artifactVersion: 1.1.0
   modelPackage: core.model

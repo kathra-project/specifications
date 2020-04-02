@@ -3,7 +3,7 @@ info:
   x-groupId: org.kathra
   x-artifactName: resourceManager
   description: Kathra Resources Manager
-  version: 1.0.0-RC-SNAPSHOT
+  version: 1.1.0
   title: Kathra Resource Manager
 securityDefinitions:
   kathra_auth:
@@ -17,41 +17,41 @@ securityDefinitions:
       read: read everything
       write: create everything
 tags:
-  - name: Components
-    description: Components management API
-  - name: BinaryRepositories
-    description: BinaryRepositories management API
-  - name: Libraries
-    description: Libraries management API
-  - name: Implementations
-    description: Implementations management API
-  - name: ImplementationVersions
-    description: ImplementationVersions management API
-  - name: ApiVersions
-    description: ApiVersions management API
-  - name: LibraryApiVersions
-    description: LibraryApiVersions management API
-  - name: SourceRepositories
-    description: SourceRepositories management API
-  - name: Pipelines
-    description: Pipelines management API
-  - name: Groups
-    description: Groups management API
-  - name: KeyPairs
-    description: KeyPairs management API
-  - name: Users
-    description: Users management API
-  - name: Assignations
-    description: Assignations management API
-  - name: CatalogEntries
-    description: CatalogEntries management API
-  - name: CatalogEntryPackages
-    description: CatalogEntryPackages management API
+- name: Components
+  description: Components management API
+- name: BinaryRepositories
+  description: BinaryRepositories management API
+- name: Libraries
+  description: Libraries management API
+- name: Implementations
+  description: Implementations management API
+- name: ImplementationVersions
+  description: ImplementationVersions management API
+- name: ApiVersions
+  description: ApiVersions management API
+- name: LibraryApiVersions
+  description: LibraryApiVersions management API
+- name: SourceRepositories
+  description: SourceRepositories management API
+- name: Pipelines
+  description: Pipelines management API
+- name: Groups
+  description: Groups management API
+- name: KeyPairs
+  description: KeyPairs management API
+- name: Users
+  description: Users management API
+- name: Assignations
+  description: Assignations management API
+- name: CatalogEntries
+  description: CatalogEntries management API
+- name: CatalogEntryPackages
+  description: CatalogEntryPackages management API
 paths:
   /components:
     get:
       tags:
-        - Components
+      - Components
       operationId: getComponents
       summary: Retrieve a list of accessible components for authenticated user
       responses:
@@ -64,26 +64,26 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - Components
+      - Components
       summary: Add a new component
       operationId: addComponent
       parameters:
-        - name: component
-          in: body
-          description: Component object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/Component'
-        - name: groupPath
-          description: group's path
-          in: query
-          type: string
-          required: true
-          pattern: '^[a-zA-Z0-9-_/]+$'
+      - name: component
+        in: body
+        description: Component object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/Component'
+      - name: groupPath
+        description: group's path
+        in: query
+        type: string
+        required: true
+        pattern: '^[a-zA-Z0-9-_/]+$'
       responses:
         '200':
           description: Returns the created object
@@ -92,16 +92,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/components/{resourceId}':
     get:
       tags:
-        - Components
+      - Components
       summary: Retrieve a specific component object
       operationId: getComponent
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -110,21 +110,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - Components
+      - Components
       summary: Partially update a registered component
       operationId: updateComponentAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: component
-          in: body
-          description: Component object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Component'
+      - $ref: '#/parameters/resourceId'
+      - name: component
+        in: body
+        description: Component object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Component'
       responses:
         '200':
           description: Returns the modified object
@@ -133,21 +133,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - Components
+      - Components
       summary: Fully update a registered component
       operationId: updateComponent
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: component
-          in: body
-          description: Component object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Component'
+      - $ref: '#/parameters/resourceId'
+      - name: component
+        in: body
+        description: Component object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Component'
       responses:
         '200':
           description: Returns the modified object
@@ -156,15 +156,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - Components
+      - Components
       summary: Delete a registered component
       operationId: deleteComponent
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -173,17 +173,19 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /binaryrepositories:
     get:
       tags:
-        - BinaryRepositories
+      - BinaryRepositories
       operationId: getBinaryRepositories
-      summary: Retrieve a list of accessible binaryrepositories for authenticated user
+      summary: Retrieve a list of accessible binaryrepositories for authenticated
+        user
       responses:
         '200':
-          description: List of accessible binaryrepositories for the authenticated user
+          description: List of accessible binaryrepositories for the authenticated
+            user
           schema:
             type: array
             items:
@@ -191,20 +193,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - BinaryRepositories
+      - BinaryRepositories
       summary: Add a new binaryrepository
       operationId: addBinaryRepository
       parameters:
-        - name: binaryrepository
-          in: body
-          description: BinaryRepository object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/BinaryRepository'
+      - name: binaryrepository
+        in: body
+        description: BinaryRepository object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/BinaryRepository'
       responses:
         '200':
           description: Returns the created object
@@ -213,16 +215,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/binaryrepositories/{resourceId}':
     get:
       tags:
-        - BinaryRepositories
+      - BinaryRepositories
       summary: Retrieve a specific binaryrepository object
       operationId: getBinaryRepository
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -231,21 +233,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - BinaryRepositories
+      - BinaryRepositories
       summary: Partially update a registered binaryrepository
       operationId: updateBinaryRepositoryAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: binaryrepository
-          in: body
-          description: BinaryRepository object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/BinaryRepository'
+      - $ref: '#/parameters/resourceId'
+      - name: binaryrepository
+        in: body
+        description: BinaryRepository object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/BinaryRepository'
       responses:
         '200':
           description: Returns the modified object
@@ -254,21 +256,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - BinaryRepositories
+      - BinaryRepositories
       summary: Fully update a registered binaryrepository
       operationId: updateBinaryRepository
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: binaryrepository
-          in: body
-          description: BinaryRepository object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/BinaryRepository'
+      - $ref: '#/parameters/resourceId'
+      - name: binaryrepository
+        in: body
+        description: BinaryRepository object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/BinaryRepository'
       responses:
         '200':
           description: Returns the modified object
@@ -277,15 +279,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - BinaryRepositories
+      - BinaryRepositories
       summary: Delete a registered binaryrepository
       operationId: deleteBinaryRepository
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -294,12 +296,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /libraries:
     get:
       tags:
-        - Libraries
+      - Libraries
       operationId: getLibraries
       summary: Retrieve a list of accessible libraries for authenticated user
       responses:
@@ -312,20 +314,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - Libraries
+      - Libraries
       summary: Add a new library
       operationId: addLibrary
       parameters:
-        - name: library
-          in: body
-          description: Library object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/Library'
+      - name: library
+        in: body
+        description: Library object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/Library'
       responses:
         '200':
           description: Returns the created object
@@ -334,16 +336,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/libraries/{resourceId}':
     get:
       tags:
-        - Libraries
+      - Libraries
       summary: Retrieve a specific library object
       operationId: getLibrary
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -352,21 +354,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - Libraries
+      - Libraries
       summary: Partially update a registered library
       operationId: updateLibraryAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: library
-          in: body
-          description: Library object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Library'
+      - $ref: '#/parameters/resourceId'
+      - name: library
+        in: body
+        description: Library object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Library'
       responses:
         '200':
           description: Returns the modified object
@@ -375,21 +377,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - Libraries
+      - Libraries
       summary: Fully update a registered library
       operationId: updateLibrary
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: library
-          in: body
-          description: Library object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Library'
+      - $ref: '#/parameters/resourceId'
+      - name: library
+        in: body
+        description: Library object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Library'
       responses:
         '200':
           description: Returns the modified object
@@ -398,15 +400,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - Libraries
+      - Libraries
       summary: Delete a registered library
       operationId: deleteLibrary
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -415,12 +417,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /implementations:
     get:
       tags:
-        - Implementations
+      - Implementations
       operationId: getImplementations
       summary: Retrieve a list of accessible implementations for authenticated user
       responses:
@@ -433,20 +435,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - Implementations
+      - Implementations
       summary: Add a new implementation
       operationId: addImplementation
       parameters:
-        - name: implementation
-          in: body
-          description: Implementation object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/Implementation'
+      - name: implementation
+        in: body
+        description: Implementation object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/Implementation'
       responses:
         '200':
           description: Returns the created object
@@ -455,16 +457,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/implementations/{resourceId}':
     get:
       tags:
-        - Implementations
+      - Implementations
       summary: Retrieve a specific implementation object
       operationId: getImplementation
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -473,21 +475,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - Implementations
+      - Implementations
       summary: Partially update a registered implementation
       operationId: updateImplementationAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: implementation
-          in: body
-          description: Implementation object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Implementation'
+      - $ref: '#/parameters/resourceId'
+      - name: implementation
+        in: body
+        description: Implementation object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Implementation'
       responses:
         '200':
           description: Returns the modified object
@@ -496,21 +498,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - Implementations
+      - Implementations
       summary: Fully update a registered implementation
       operationId: updateImplementation
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: implementation
-          in: body
-          description: Implementation object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Implementation'
+      - $ref: '#/parameters/resourceId'
+      - name: implementation
+        in: body
+        description: Implementation object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Implementation'
       responses:
         '200':
           description: Returns the modified object
@@ -519,15 +521,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - Implementations
+      - Implementations
       summary: Delete a registered implementation
       operationId: deleteImplementation
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -536,19 +538,19 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /implementationversions:
     get:
       tags:
-        - ImplementationVersions
+      - ImplementationVersions
       operationId: getImplementationVersions
       summary: >-
-        Retrieve a list of accessible implementationversions for authenticated
-        user
+        Retrieve a list of accessible implementationversions for authenticated user
       responses:
         '200':
-          description: List of accessible implementationversions for the authenticated user
+          description: List of accessible implementationversions for the authenticated
+            user
           schema:
             type: array
             items:
@@ -556,20 +558,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - ImplementationVersions
+      - ImplementationVersions
       summary: Add a new implementationversion
       operationId: addImplementationVersion
       parameters:
-        - name: implementationversion
-          in: body
-          description: ImplementationVersion object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/ImplementationVersion'
+      - name: implementationversion
+        in: body
+        description: ImplementationVersion object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/ImplementationVersion'
       responses:
         '200':
           description: Returns the created object
@@ -578,16 +580,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/implementationversions/{resourceId}':
     get:
       tags:
-        - ImplementationVersions
+      - ImplementationVersions
       summary: Retrieve a specific implementationversion object
       operationId: getImplementationVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -596,21 +598,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - ImplementationVersions
+      - ImplementationVersions
       summary: Partially update a registered implementationversion
       operationId: updateImplementationVersionAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: implementationversion
-          in: body
-          description: ImplementationVersion object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/ImplementationVersion'
+      - $ref: '#/parameters/resourceId'
+      - name: implementationversion
+        in: body
+        description: ImplementationVersion object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/ImplementationVersion'
       responses:
         '200':
           description: Returns the modified object
@@ -619,21 +621,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - ImplementationVersions
+      - ImplementationVersions
       summary: Fully update a registered implementationversion
       operationId: updateImplementationVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: implementationversion
-          in: body
-          description: ImplementationVersion object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/ImplementationVersion'
+      - $ref: '#/parameters/resourceId'
+      - name: implementationversion
+        in: body
+        description: ImplementationVersion object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/ImplementationVersion'
       responses:
         '200':
           description: Returns the modified object
@@ -642,15 +644,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - ImplementationVersions
+      - ImplementationVersions
       summary: Delete a registered implementationversion
       operationId: deleteImplementationVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -659,12 +661,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /apiversions:
     get:
       tags:
-        - ApiVersions
+      - ApiVersions
       operationId: getApiVersions
       summary: Retrieve a list of accessible apiversions for authenticated user
       responses:
@@ -677,20 +679,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - ApiVersions
+      - ApiVersions
       summary: Add a new apiversion
       operationId: addApiVersion
       parameters:
-        - name: apiversion
-          in: body
-          description: ApiVersion object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/ApiVersion'
+      - name: apiversion
+        in: body
+        description: ApiVersion object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/ApiVersion'
       responses:
         '200':
           description: Returns the created object
@@ -699,16 +701,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/apiversions/{resourceId}':
     get:
       tags:
-        - ApiVersions
+      - ApiVersions
       summary: Retrieve a specific apiversion object
       operationId: getApiVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -717,21 +719,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - ApiVersions
+      - ApiVersions
       summary: Partially update a registered apiversion
       operationId: updateApiVersionAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: apiversion
-          in: body
-          description: ApiVersion object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/ApiVersion'
+      - $ref: '#/parameters/resourceId'
+      - name: apiversion
+        in: body
+        description: ApiVersion object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/ApiVersion'
       responses:
         '200':
           description: Returns the modified object
@@ -740,21 +742,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - ApiVersions
+      - ApiVersions
       summary: Fully update a registered apiversion
       operationId: updateApiVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: apiversion
-          in: body
-          description: ApiVersion object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/ApiVersion'
+      - $ref: '#/parameters/resourceId'
+      - name: apiversion
+        in: body
+        description: ApiVersion object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/ApiVersion'
       responses:
         '200':
           description: Returns the modified object
@@ -763,15 +765,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - ApiVersions
+      - ApiVersions
       summary: Delete a registered apiversion
       operationId: deleteApiVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -780,17 +782,19 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /libraryapiversions:
     get:
       tags:
-        - LibraryApiVersions
+      - LibraryApiVersions
       operationId: getLibraryApiVersions
-      summary: Retrieve a list of accessible libraryapiversions for authenticated user
+      summary: Retrieve a list of accessible libraryapiversions for authenticated
+        user
       responses:
         '200':
-          description: List of accessible libraryapiversions for the authenticated user
+          description: List of accessible libraryapiversions for the authenticated
+            user
           schema:
             type: array
             items:
@@ -798,20 +802,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - LibraryApiVersions
+      - LibraryApiVersions
       summary: Add a new libraryapiversion
       operationId: addLibraryApiVersion
       parameters:
-        - name: libraryapiversion
-          in: body
-          description: LibraryApiVersion object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/LibraryApiVersion'
+      - name: libraryapiversion
+        in: body
+        description: LibraryApiVersion object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/LibraryApiVersion'
       responses:
         '200':
           description: Returns the created object
@@ -820,16 +824,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/libraryapiversions/{resourceId}':
     get:
       tags:
-        - LibraryApiVersions
+      - LibraryApiVersions
       summary: Retrieve a specific libraryapiversion object
       operationId: getLibraryApiVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -838,21 +842,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - LibraryApiVersions
+      - LibraryApiVersions
       summary: Partially update a registered libraryapiversion
       operationId: updateLibraryApiVersionAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: libraryapiversion
-          in: body
-          description: LibraryApiVersion object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/LibraryApiVersion'
+      - $ref: '#/parameters/resourceId'
+      - name: libraryapiversion
+        in: body
+        description: LibraryApiVersion object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/LibraryApiVersion'
       responses:
         '200':
           description: Returns the modified object
@@ -861,21 +865,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - LibraryApiVersions
+      - LibraryApiVersions
       summary: Fully update a registered libraryapiversion
       operationId: updateLibraryApiVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: libraryapiversion
-          in: body
-          description: LibraryApiVersion object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/LibraryApiVersion'
+      - $ref: '#/parameters/resourceId'
+      - name: libraryapiversion
+        in: body
+        description: LibraryApiVersion object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/LibraryApiVersion'
       responses:
         '200':
           description: Returns the modified object
@@ -884,15 +888,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - LibraryApiVersions
+      - LibraryApiVersions
       summary: Delete a registered libraryapiversion
       operationId: deleteLibraryApiVersion
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -901,17 +905,19 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /sourcerepositories:
     get:
       tags:
-        - SourceRepositories
+      - SourceRepositories
       operationId: getSourceRepositories
-      summary: Retrieve a list of accessible sourcerepositories for authenticated user
+      summary: Retrieve a list of accessible sourcerepositories for authenticated
+        user
       responses:
         '200':
-          description: List of accessible sourcerepositories for the authenticated user
+          description: List of accessible sourcerepositories for the authenticated
+            user
           schema:
             type: array
             items:
@@ -919,20 +925,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - SourceRepositories
+      - SourceRepositories
       summary: Add a new sourcerepository
       operationId: addSourceRepository
       parameters:
-        - name: sourcerepository
-          in: body
-          description: SourceRepository object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/SourceRepository'
+      - name: sourcerepository
+        in: body
+        description: SourceRepository object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/SourceRepository'
       responses:
         '200':
           description: Returns the created object
@@ -941,16 +947,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/sourcerepositories/{resourceId}':
     get:
       tags:
-        - SourceRepositories
+      - SourceRepositories
       summary: Retrieve a specific sourcerepository object
       operationId: getSourceRepository
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -959,21 +965,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - SourceRepositories
+      - SourceRepositories
       summary: Partially update a registered sourcerepository
       operationId: updateSourceRepositoryAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: sourcerepository
-          in: body
-          description: SourceRepository object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/SourceRepository'
+      - $ref: '#/parameters/resourceId'
+      - name: sourcerepository
+        in: body
+        description: SourceRepository object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/SourceRepository'
       responses:
         '200':
           description: Returns the modified object
@@ -982,21 +988,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - SourceRepositories
+      - SourceRepositories
       summary: Fully update a registered sourcerepository
       operationId: updateSourceRepository
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: sourcerepository
-          in: body
-          description: SourceRepository object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/SourceRepository'
+      - $ref: '#/parameters/resourceId'
+      - name: sourcerepository
+        in: body
+        description: SourceRepository object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/SourceRepository'
       responses:
         '200':
           description: Returns the modified object
@@ -1005,15 +1011,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - SourceRepositories
+      - SourceRepositories
       summary: Delete a registered sourcerepository
       operationId: deleteSourceRepository
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -1022,12 +1028,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /pipelines:
     get:
       tags:
-        - Pipelines
+      - Pipelines
       operationId: getPipelines
       summary: Retrieve a list of accessible pipelines for authenticated user
       responses:
@@ -1040,20 +1046,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - Pipelines
+      - Pipelines
       summary: Add a new pipeline
       operationId: addPipeline
       parameters:
-        - name: pipeline
-          in: body
-          description: Pipeline object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/Pipeline'
+      - name: pipeline
+        in: body
+        description: Pipeline object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/Pipeline'
       responses:
         '200':
           description: Returns the created object
@@ -1062,16 +1068,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/pipelines/{resourceId}':
     get:
       tags:
-        - Pipelines
+      - Pipelines
       summary: Retrieve a specific pipeline object
       operationId: getPipeline
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -1080,21 +1086,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - Pipelines
+      - Pipelines
       summary: Partially update a registered pipeline
       operationId: updatePipelineAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: pipeline
-          in: body
-          description: Pipeline object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Pipeline'
+      - $ref: '#/parameters/resourceId'
+      - name: pipeline
+        in: body
+        description: Pipeline object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Pipeline'
       responses:
         '200':
           description: Returns the modified object
@@ -1103,21 +1109,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - Pipelines
+      - Pipelines
       summary: Fully update a registered pipeline
       operationId: updatePipeline
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: pipeline
-          in: body
-          description: Pipeline object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Pipeline'
+      - $ref: '#/parameters/resourceId'
+      - name: pipeline
+        in: body
+        description: Pipeline object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Pipeline'
       responses:
         '200':
           description: Returns the modified object
@@ -1126,15 +1132,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - Pipelines
+      - Pipelines
       summary: Delete a registered pipeline
       operationId: deletePipeline
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -1143,12 +1149,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /groups:
     get:
       tags:
-        - Groups
+      - Groups
       operationId: getGroups
       summary: Retrieve a list of accessible groups for authenticated user
       responses:
@@ -1161,20 +1167,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - Groups
+      - Groups
       summary: Add a new group
       operationId: addGroup
       parameters:
-        - name: group
-          in: body
-          description: Group object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/Group'
+      - name: group
+        in: body
+        description: Group object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/Group'
       responses:
         '200':
           description: Returns the created object
@@ -1183,16 +1189,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/groups/{resourceId}':
     get:
       tags:
-        - Groups
+      - Groups
       summary: Retrieve a specific group object
       operationId: getGroup
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -1201,21 +1207,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - Groups
+      - Groups
       summary: Partially update a registered group
       operationId: updateGroupAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: group
-          in: body
-          description: Group object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Group'
+      - $ref: '#/parameters/resourceId'
+      - name: group
+        in: body
+        description: Group object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Group'
       responses:
         '200':
           description: Returns the modified object
@@ -1224,21 +1230,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - Groups
+      - Groups
       summary: Fully update a registered group
       operationId: updateGroup
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: group
-          in: body
-          description: Group object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Group'
+      - $ref: '#/parameters/resourceId'
+      - name: group
+        in: body
+        description: Group object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Group'
       responses:
         '200':
           description: Returns the modified object
@@ -1247,15 +1253,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - Groups
+      - Groups
       summary: Delete a registered group
       operationId: deleteGroup
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -1264,12 +1270,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /keypairs:
     get:
       tags:
-        - KeyPairs
+      - KeyPairs
       operationId: getKeyPairs
       summary: Retrieve a list of accessible keypairs for authenticated user
       responses:
@@ -1282,20 +1288,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - KeyPairs
+      - KeyPairs
       summary: Add a new keypair
       operationId: addKeyPair
       parameters:
-        - name: keypair
-          in: body
-          description: KeyPair object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/KeyPair'
+      - name: keypair
+        in: body
+        description: KeyPair object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/KeyPair'
       responses:
         '200':
           description: Returns the created object
@@ -1304,16 +1310,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/keypairs/{resourceId}':
     get:
       tags:
-        - KeyPairs
+      - KeyPairs
       summary: Retrieve a specific keypair object
       operationId: getKeyPair
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -1322,21 +1328,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - KeyPairs
+      - KeyPairs
       summary: Partially update a registered keypair
       operationId: updateKeyPairAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: keypair
-          in: body
-          description: KeyPair object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/KeyPair'
+      - $ref: '#/parameters/resourceId'
+      - name: keypair
+        in: body
+        description: KeyPair object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/KeyPair'
       responses:
         '200':
           description: Returns the modified object
@@ -1345,21 +1351,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - KeyPairs
+      - KeyPairs
       summary: Fully update a registered keypair
       operationId: updateKeyPair
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: keypair
-          in: body
-          description: KeyPair object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/KeyPair'
+      - $ref: '#/parameters/resourceId'
+      - name: keypair
+        in: body
+        description: KeyPair object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/KeyPair'
       responses:
         '200':
           description: Returns the modified object
@@ -1368,15 +1374,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - KeyPairs
+      - KeyPairs
       summary: Delete a registered keypair
       operationId: deleteKeyPair
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -1385,12 +1391,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /users:
     get:
       tags:
-        - Users
+      - Users
       operationId: getUsers
       summary: Retrieve a list of accessible users for authenticated user
       responses:
@@ -1403,20 +1409,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - Users
+      - Users
       summary: Add a new user
       operationId: addUser
       parameters:
-        - name: user
-          in: body
-          description: User object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/User'
+      - name: user
+        in: body
+        description: User object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/User'
       responses:
         '200':
           description: Returns the created object
@@ -1425,16 +1431,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/users/{resourceId}':
     get:
       tags:
-        - Users
+      - Users
       summary: Retrieve a specific user object
       operationId: getUser
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -1443,21 +1449,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - Users
+      - Users
       summary: Partially update a registered user
       operationId: updateUserAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: user
-          in: body
-          description: User object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/User'
+      - $ref: '#/parameters/resourceId'
+      - name: user
+        in: body
+        description: User object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/User'
       responses:
         '200':
           description: Returns the modified object
@@ -1466,21 +1472,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - Users
+      - Users
       summary: Fully update a registered user
       operationId: updateUser
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: user
-          in: body
-          description: User object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/User'
+      - $ref: '#/parameters/resourceId'
+      - name: user
+        in: body
+        description: User object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/User'
       responses:
         '200':
           description: Returns the modified object
@@ -1489,15 +1495,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - Users
+      - Users
       summary: Delete a registered user
       operationId: deleteUser
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -1506,12 +1512,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /assignations:
     get:
       tags:
-        - Assignations
+      - Assignations
       operationId: getAssignations
       summary: Retrieve a list of accessible assignations for authenticated user
       responses:
@@ -1524,20 +1530,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - Assignations
+      - Assignations
       summary: Add a new assignation
       operationId: addAssignation
       parameters:
-        - name: assignation
-          in: body
-          description: Assignation object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/Assignation'
+      - name: assignation
+        in: body
+        description: Assignation object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/Assignation'
       responses:
         '200':
           description: Returns the created object
@@ -1546,16 +1552,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/assignations/{resourceId}':
     get:
       tags:
-        - Assignations
+      - Assignations
       summary: Retrieve a specific assignation object
       operationId: getAssignation
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -1564,21 +1570,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - Assignations
+      - Assignations
       summary: Partially update a registered assignation
       operationId: updateAssignationAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: assignation
-          in: body
-          description: Assignation object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Assignation'
+      - $ref: '#/parameters/resourceId'
+      - name: assignation
+        in: body
+        description: Assignation object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Assignation'
       responses:
         '200':
           description: Returns the modified object
@@ -1587,21 +1593,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - Assignations
+      - Assignations
       summary: Fully update a registered assignation
       operationId: updateAssignation
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: assignation
-          in: body
-          description: Assignation object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/Assignation'
+      - $ref: '#/parameters/resourceId'
+      - name: assignation
+        in: body
+        description: Assignation object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/Assignation'
       responses:
         '200':
           description: Returns the modified object
@@ -1610,15 +1616,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - Assignations
+      - Assignations
       summary: Delete a registered assignation
       operationId: deleteAssignation
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -1627,12 +1633,12 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /catalogentries:
     get:
       tags:
-        - CatalogEntries
+      - CatalogEntries
       operationId: getCatalogEntries
       summary: Retrieve a list of accessible catalogentries for authenticated user
       responses:
@@ -1645,20 +1651,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - CatalogEntries
+      - CatalogEntries
       summary: Add a new catalogentry
       operationId: addCatalogEntry
       parameters:
-        - name: catalogentry
-          in: body
-          description: CatalogEntry object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/CatalogEntry'
+      - name: catalogentry
+        in: body
+        description: CatalogEntry object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/CatalogEntry'
       responses:
         '200':
           description: Returns the created object
@@ -1667,16 +1673,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/catalogentries/{resourceId}':
     get:
       tags:
-        - CatalogEntries
+      - CatalogEntries
       summary: Retrieve a specific catalogentry object
       operationId: getCatalogEntry
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -1685,21 +1691,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - CatalogEntries
+      - CatalogEntries
       summary: Partially update a registered catalogentry
       operationId: updateCatalogEntryAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: catalogentry
-          in: body
-          description: CatalogEntry object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/CatalogEntry'
+      - $ref: '#/parameters/resourceId'
+      - name: catalogentry
+        in: body
+        description: CatalogEntry object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/CatalogEntry'
       responses:
         '200':
           description: Returns the modified object
@@ -1708,21 +1714,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - CatalogEntries
+      - CatalogEntries
       summary: Fully update a registered catalogentry
       operationId: updateCatalogEntry
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: catalogentry
-          in: body
-          description: CatalogEntry object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/CatalogEntry'
+      - $ref: '#/parameters/resourceId'
+      - name: catalogentry
+        in: body
+        description: CatalogEntry object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/CatalogEntry'
       responses:
         '200':
           description: Returns the modified object
@@ -1731,15 +1737,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - CatalogEntries
+      - CatalogEntries
       summary: Delete a registered catalogentry
       operationId: deleteCatalogEntry
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -1748,19 +1754,19 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   /catalogentrypackages:
     get:
       tags:
-        - CatalogEntryPackages
+      - CatalogEntryPackages
       operationId: getCatalogEntryPackages
       summary: >-
-        Retrieve a list of accessible catalogentrypackages for authenticated
-        user
+        Retrieve a list of accessible catalogentrypackages for authenticated user
       responses:
         '200':
-          description: List of accessible catalogentrypackages for the authenticated user
+          description: List of accessible catalogentrypackages for the authenticated
+            user
           schema:
             type: array
             items:
@@ -1768,20 +1774,20 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     post:
       tags:
-        - CatalogEntryPackages
+      - CatalogEntryPackages
       summary: Add a new catalogentrypackage
       operationId: addCatalogEntryPackage
       parameters:
-        - name: catalogentrypackage
-          in: body
-          description: CatalogEntryPackage object to be created
-          required: true
-          schema:
-            $ref: '#/definitions/CatalogEntryPackage'
+      - name: catalogentrypackage
+        in: body
+        description: CatalogEntryPackage object to be created
+        required: true
+        schema:
+          $ref: '#/definitions/CatalogEntryPackage'
       responses:
         '200':
           description: Returns the created object
@@ -1790,16 +1796,16 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/catalogentrypackages/{resourceId}':
     get:
       tags:
-        - CatalogEntryPackages
+      - CatalogEntryPackages
       summary: Retrieve a specific catalogentrypackage object
       operationId: getCatalogEntryPackage
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Returns the object
@@ -1808,21 +1814,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
     patch:
       tags:
-        - CatalogEntryPackages
+      - CatalogEntryPackages
       summary: Partially update a registered catalogentrypackage
       operationId: updateCatalogEntryPackageAttributes
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: catalogentrypackage
-          in: body
-          description: CatalogEntryPackage object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/CatalogEntryPackage'
+      - $ref: '#/parameters/resourceId'
+      - name: catalogentrypackage
+        in: body
+        description: CatalogEntryPackage object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/CatalogEntryPackage'
       responses:
         '200':
           description: Returns the modified object
@@ -1831,21 +1837,21 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     put:
       tags:
-        - CatalogEntryPackages
+      - CatalogEntryPackages
       summary: Fully update a registered catalogentrypackage
       operationId: updateCatalogEntryPackage
       parameters:
-        - $ref: '#/parameters/resourceId'
-        - name: catalogentrypackage
-          in: body
-          description: CatalogEntryPackage object to be updated
-          required: true
-          schema:
-            $ref: '#/definitions/CatalogEntryPackage'
+      - $ref: '#/parameters/resourceId'
+      - name: catalogentrypackage
+        in: body
+        description: CatalogEntryPackage object to be updated
+        required: true
+        schema:
+          $ref: '#/definitions/CatalogEntryPackage'
       responses:
         '200':
           description: Returns the modified object
@@ -1854,15 +1860,15 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
     delete:
       tags:
-        - CatalogEntryPackages
+      - CatalogEntryPackages
       summary: Delete a registered catalogentrypackage
       operationId: deleteCatalogEntryPackage
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: Object is deleted
@@ -1871,23 +1877,23 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - write
+      - kathra_auth:
+        - write
   '/components/{resourceId}/implementations':
     get:
       tags:
-        - Components
+      - Components
       summary: >-
-        Retrieve a list of accessible implementations for specific component and
-        authenticated user
+        Retrieve a list of accessible implementations for specific component and authenticated
+        user
       operationId: getImplementationsComponent
       parameters:
-        - $ref: '#/parameters/resourceId'
+      - $ref: '#/parameters/resourceId'
       responses:
         '200':
           description: >-
-            List of accessible implementations for specific component and the
-            authenticated user
+            List of accessible implementations for specific component and the authenticated
+            user
           schema:
             type: array
             items:
@@ -1895,8 +1901,8 @@ paths:
         '401':
           description: Unauthorized
       security:
-        - kathra_auth:
-            - read
+      - kathra_auth:
+        - read
 parameters:
   resourceId:
     name: resourceId
@@ -2027,7 +2033,7 @@ definitions:
         alias: CatalogEntryPackage
       type: CatalogEntryPackage
 x-dependencies:
-  - artifactId: kathra-core-model
-    groupId: org.kathra
-    artifactVersion: 1.1.0-SNAPSHOT
-    modelPackage: core.model
+- artifactId: kathra-core-model
+  groupId: org.kathra
+  artifactVersion: 1.1.0
+  modelPackage: core.model

@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: Kathra Core Model
-  version: 1.1.0-SNAPSHOT
+  version: 1.1.0
   x-artifactName: core
   x-groupId: org.kathra
 definitions:
@@ -47,34 +47,34 @@ definitions:
     type: object
     properties:
       path:
-          type: string
+        type: string
       role:
-          type: string
+        type: string
       metadata:
+        type: object
+        additionalProperties:
           type: object
-          additionalProperties:
-            type: object
       status:
-          type: *RESOURCE_STATUS
+        type: *RESOURCE_STATUS
       createdBy:
-          type: string
+        type: string
       updatedBy:
-          type: string
+        type: string
       createdAt:
-          type: string
+        type: string
       updatedAt:
-          type: string
+        type: string
   Membership:
     type: object
     properties:
       path:
-          type: string
+        type: string
       role:
-          type: *MEMBERSHIP_ROLE
+        type: *MEMBERSHIP_ROLE
       memberType:
-          type: *MEMBERSHIP_MEMBERTYPE
+        type: *MEMBERSHIP_MEMBERTYPE
       memberName:
-          type: string
+        type: string
   Component:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -141,17 +141,17 @@ definitions:
     type: object
     properties:
       path:
-          type: string
+        type: string
       parent:
-          type: Group
+        type: Group
       sourceRepositoryStatus:
-          type: *RESOURCE_STATUS
+        type: *RESOURCE_STATUS
       sourceMembershipStatus:
-          type: *RESOURCE_STATUS
+        type: *RESOURCE_STATUS
       pipelineFolderStatus:
-          type: *RESOURCE_STATUS
+        type: *RESOURCE_STATUS
       binaryRepositoryStatus:
-          type: *RESOURCE_STATUS
+        type: *RESOURCE_STATUS
   User:
     allOf:
     - $ref: '#/definitions/Resource'

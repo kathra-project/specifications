@@ -3,7 +3,7 @@ info:
   x-groupId: org.kathra
   x-artifactName: appManager
   description: Kathra Applications Manager
-  version: 1.1.0-SNAPSHOT
+  version: 1.1.0
   title: Kathra Applications Manager
 securityDefinitions:
   kathra_auth:
@@ -735,7 +735,6 @@ definitions:
       model:
         type: boolean
         description: Contains model
-
   CatalogEntryTemplate:
     type: "object"
     properties:
@@ -751,28 +750,28 @@ definitions:
         items:
           $ref: "#/definitions/CatalogEntryTemplateArgument"
     example:
-      - name: RestApiFromImplementation
-        label: "Rest Api from Implementation"
-        arguments:
-          - key: NAME
-            contrainst: "[A-Za-z0-9]+"
-          - key: DESCRIPTION
-            contrainst: ".*"
-          - key: IMPLEMENTATION_ID
-            contrainst: "[A-Za-z0-9]+"
-      - name: RestApiFromDocker
-        label: "Rest Api from Docker Image"
-        arguments:
-          - key: NAME
-            contrainst: "[A-Za-z0-9]+"
-          - key: DESCRIPTION
-            contrainst: ".*"
-          - key: IMAGE_NAME
-            value: ".+"
-          - key: IMAGE_TAG
-            value: ".+"
-          - key: IMAGE_REGISTRY
-            value: ".+"
+    - name: RestApiFromImplementation
+      label: "Rest Api from Implementation"
+      arguments:
+      - key: NAME
+        contrainst: "[A-Za-z0-9]+"
+      - key: DESCRIPTION
+        contrainst: ".*"
+      - key: IMPLEMENTATION_ID
+        contrainst: "[A-Za-z0-9]+"
+    - name: RestApiFromDocker
+      label: "Rest Api from Docker Image"
+      arguments:
+      - key: NAME
+        contrainst: "[A-Za-z0-9]+"
+      - key: DESCRIPTION
+        contrainst: ".*"
+      - key: IMAGE_NAME
+        value: ".+"
+      - key: IMAGE_TAG
+        value: ".+"
+      - key: IMAGE_REGISTRY
+        value: ".+"
   CatalogEntryTemplateArgument:
     type: "object"
     properties:
@@ -795,9 +794,9 @@ definitions:
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
-  artifactVersion: 1.1.0-SNAPSHOT
+  artifactVersion: 1.1.0
   modelPackage: core.model
 - artifactId: kathra-codegen-model
   groupId: org.kathra
-  artifactVersion: 1.1.0-SNAPSHOT
+  artifactVersion: 1.1.0
   modelPackage: core.model

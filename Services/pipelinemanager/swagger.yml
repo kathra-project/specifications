@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: KATHRA CI/CD pipeline Management API
-  version: 1.1.0-SNAPSHOT
+  version: 1.1.0
   title: Kathra Pipeline Manager
   x-artifactName: pipelineManager
   x-groupId: org.kathra
@@ -17,7 +17,7 @@ securityDefinitions:
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
-  artifactVersion: 1.1.0-SNAPSHOT
+  artifactVersion: 1.1.0
   modelPackage: core.model
 definitions:
   Pipeline:

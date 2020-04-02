@@ -1,16 +1,16 @@
 swagger: '2.0'
 info:
   title: Kathra Core Model
-  version: 1.1.0-SNAPSHOT
+  version: 1.1.0
   x-artifactName: core
   x-groupId: org.kathra
-paths: 
+paths:
   /no-operation:
     get:
       summary: "empty"
       operationId: "empty"
       produces:
-        - "application/json"
+      - "application/json"
       parameters: []
       responses:
         200:
@@ -273,11 +273,11 @@ definitions:
       creationDate:
         description: Build date (UTC timestamp)
         type: integer
-        format : int64
+        format: int64
       duration:
         description: Duration in seconds
         type: integer
-        format : int32
+        format: int32
       status:
         description: Build status
         type: string
@@ -400,7 +400,6 @@ definitions:
       role:
         type: "string"
         enum: ["guest", "contributor", "manager"]
-
   PackageTemplate:
     type: "object"
     properties:
@@ -413,22 +412,22 @@ definitions:
         items:
           $ref: "#/definitions/PackageTemplateArgument"
     example:
-      - name: RestApiService
-        arguments:
-          - key: CHART_NAME
-            contrainst: "[A-Za-z0-9]"
-          - key: CHART_VERSION
-            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
-          - key: CHART_DESCRIPTION
-            contrainst: "[A-Za-z0-9]"
-          - key: APP_VERSION
-            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
-          - key: IMAGE_NAME
-            value: ".+"
-          - key: IMAGE_TAG
-            value: ".+"
-          - key: REGISTRY_HOST
-            value: ".+"
+    - name: RestApiService
+      arguments:
+      - key: CHART_NAME
+        contrainst: "[A-Za-z0-9]"
+      - key: CHART_VERSION
+        contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+      - key: CHART_DESCRIPTION
+        contrainst: "[A-Za-z0-9]"
+      - key: APP_VERSION
+        contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+      - key: IMAGE_NAME
+        value: ".+"
+      - key: IMAGE_TAG
+        value: ".+"
+      - key: REGISTRY_HOST
+        value: ".+"
   PackageTemplateArgument:
     type: "object"
     properties:
@@ -445,7 +444,6 @@ definitions:
       contrainst: "[A-Za-z0-9]"
       value: "MyFirstChart"
       key: "CHART_NAME"
-
   CatalogEntry:
     allOf:
     - $ref: "#/definitions/Resource"
@@ -466,7 +464,6 @@ definitions:
     example:
       name: "postgresql"
       description: "Chart for PostgreSQL, an object-relational database manag..."
-     
   CatalogEntryPackage:
     allOf:
     - $ref: "#/definitions/Asset"
@@ -494,8 +491,6 @@ definitions:
       repository: "http://harbor.kathra.org/chartrepo"
       provider: "helm"
       name: "postgresql"
-      
-        
   CatalogEntryPackageVersion:
     type: "object"
     properties:
@@ -505,8 +500,8 @@ definitions:
         type: "string"
         description: "Version"
       documentation:
-          type: "string"
-          description: "Documentation of catalog entry (Markdown)"
+        type: "string"
+        description: "Documentation of catalog entry (Markdown)"
       arguments:
         type: "array"
         description: "Catalog entry arguments"
@@ -514,17 +509,15 @@ definitions:
           $ref: "#/definitions/CatalogEntryArgument"
     example:
       version: "6.5.4"
-      documentation: "# PostgreSQL
-[PostgreSQL](https://www.postgresql.org/) is an object-relational database management system (ORDBMS) with an emphasis on extensibility and on standards-compliance.
-## TL;DR;
-```console
-$ helm install stable/postgresql
-```
-## Introduction
-This chart bootstraps a [PostgreSQL](https://github.com/bitnami/bitnami-docker-postgresql) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager.
-Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment and management of Helm Charts in clusters. This chart has been tested to work with NGINX Ingress, cert-manager, fluentd and Prometheus on top of the [BKPR](https://kubeprod.io/).
-.. .. .
-"
+      documentation: "# PostgreSQL [PostgreSQL](https://www.postgresql.org/) is an
+        object-relational database management system (ORDBMS) with an emphasis on
+        extensibility and on standards-compliance. ## TL;DR; ```console $ helm install
+        stable/postgresql ``` ## Introduction This chart bootstraps a [PostgreSQL](https://github.com/bitnami/bitnami-docker-postgresql)
+        deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh)
+        package manager. Bitnami charts can be used with [Kubeapps](https://kubeapps.com/)
+        for deployment and management of Helm Charts in clusters. This chart has been
+        tested to work with NGINX Ingress, cert-manager, fluentd and Prometheus on
+        top of the [BKPR](https://kubeprod.io/). .. .. . "
       arguments:
       - label: "global.postgresql.postgresqlDatabase"
         description: "PostgreSQL database (overrides postgresqlDatabase)"
@@ -560,4 +553,3 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
       contrainst: ".*"
       value: ""
       key: "global.postgresql.postgresqlDatabase"
-
