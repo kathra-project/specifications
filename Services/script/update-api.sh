@@ -1,7 +1,7 @@
 #!/bin/bash
 export SCRIPT_DIR=$(dirname $(readlink -f "$0"))
 export CODEGEN_URL="http://localhost:8085/api/v1"
-export VERSION="1.1.0-SNAPSHOT"
+export VERSION="1.2.0-SNAPSHOT"
 export APIS=(core resourcemanager appmanager binaryrepositorymanager catalogmanager pipelinemanager codegen)
 export PROJECT_BASE=$SCRIPT_DIR/../../../
 export CODE_MODEL_CLAZZ_MANAGED=Group,ApiVersion,Assignation,BinaryRepository,CatalogEntry,CatalogEntryPackage,Component,Implementation,ImplementationVersion,KeyPair,Library,LibraryApiVersion,Pipeline,SourceRepository,User
