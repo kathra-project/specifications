@@ -1,7 +1,6 @@
-swagger: "2.0"
 info:
   description: KATHRA CI/CD pipeline Management API
-  version: 1.1.0
+  version: 1.2.0
   title: Kathra Pipeline Manager
   x-artifactName: pipelineManager
   x-groupId: org.kathra

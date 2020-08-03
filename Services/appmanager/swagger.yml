@@ -1,9 +1,8 @@
-swagger: "2.0"
 info:
   x-groupId: org.kathra
   x-artifactName: appManager
   description: Kathra Applications Manager
-  version: 1.1.0
+  version: 1.2.0
   title: Kathra Applications Manager
 securityDefinitions:
   kathra_auth:
