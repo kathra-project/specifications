@@ -793,9 +793,9 @@ definitions:
 x-dependencies:
 - artifactId: kathra-core-model
   groupId: org.kathra
-  artifactVersion: 1.1.0
+  artifactVersion: 1.2.0
   modelPackage: core.model
 - artifactId: kathra-codegen-model
   groupId: org.kathra
-  artifactVersion: 1.1.0
+  artifactVersion: 1.2.0
   modelPackage: core.model
