@@ -1,7 +1,7 @@
 swagger: "2.0"
 info:
   description: "KATHRA CodeGenerator API permetting generate sources"
-  version: 1.2.0
+  version: 1.3.0-SNAPSHOT
   title: "Kathra CodeGenerator Manager"
   x-artifactName: "codegen"
   x-groupId: "org.kathra"
@@ -12,9 +12,9 @@ paths:
       summary: "Get all templates for codegen generation"
       operationId: "getTemplates"
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - "application/json"
+        - "application/json"
       parameters: []
       responses:
         200:
@@ -32,17 +32,17 @@ paths:
       summary: "Generate archive from template"
       operationId: "generateFromTemplate"
       consumes:
-      - "application/json"
+        - "application/json"
       produces:
-      - application/octet-stream
+        - application/octet-stream
       parameters:
-      - in: "body"
-        name: "CodeGenTemplate"
-        description: "CodeGenTemplate to generate code"
-        required: true
-        schema:
-          $ref: "#/definitions/CodeGenTemplate"
-        x-exportParamName: "CodeGenTemplate"
+        - in: "body"
+          name: "CodeGenTemplate"
+          description: "CodeGenTemplate to generate code"
+          required: true
+          schema:
+            $ref: "#/definitions/CodeGenTemplate"
+          x-exportParamName: "CodeGenTemplate"
       responses:
         200:
           description: "Archive file"
@@ -69,32 +69,32 @@ definitions:
         items:
           $ref: "#/definitions/CodeGenTemplateArgument"
     example:
-    - name: JavaClient
-      arguments:
-      - key: GROUP_NAME
-        contrainst: "[A-Za-z0-9]"
-      - key: ARTIFACT_NAME
-        contrainst: "[A-Za-z0-9]"
-      - key: VERSION
-        contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
-      - key: OPEN_API_SPEC
-        contrainst: ".*"
-    - name: HelmRestApiService
-      arguments:
-      - key: CHART_NAME
-        contrainst: "[A-Za-z0-9]"
-      - key: CHART_VERSION
-        contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
-      - key: CHART_DESCRIPTION
-        contrainst: "[A-Za-z0-9]"
-      - key: APP_VERSION
-        contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
-      - key: IMAGE_NAME
-        value: ".+"
-      - key: IMAGE_TAG
-        value: ".+"
-      - key: REGISTRY_HOST
-        value: ".+"
+      - name: JavaClient
+        arguments:
+          - key: GROUP_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: ARTIFACT_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: OPEN_API_SPEC
+            contrainst: ".*"
+      - name: HelmRestApiService
+        arguments:
+          - key: CHART_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: CHART_VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: CHART_DESCRIPTION
+            contrainst: "[A-Za-z0-9]"
+          - key: APP_VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: IMAGE_NAME
+            value: ".+"
+          - key: IMAGE_TAG
+            value: ".+"
+          - key: REGISTRY_HOST
+            value: ".+"
   CodeGenTemplateArgument:
     type: "object"
     properties:

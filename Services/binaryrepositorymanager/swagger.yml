@@ -2,7 +2,7 @@ info:
   x-groupId: org.kathra
   x-artifactName: binaryRepositoryManager
   description: Kathra Binary Repository Manager
-  version: 1.2.0
+  version: 1.3.0-SNAPSHOT
   title: Kathra Binary Repository Manager
 securityDefinitions:
   kathra_auth:
@@ -19,11 +19,11 @@ paths:
       summary: Return credentials for a user
       description: getCredentials
       parameters:
-      - name: id
-        in: path
-        required: true
-        description: The id of the binary repository to retrieve
-        type: string
+        - name: id
+          in: path
+          required: true
+          description: The id of the binary repository to retrieve
+          type: string
       responses:
         '200':
           description: OK
@@ -43,39 +43,38 @@ paths:
         "401":
           description: Unauthorized
       security:
-      - kathra_auth:
-        - read
+        - kathra_auth:
+            - read
     post:
       summary: Add a binary repository
       operationId: addBinaryRepository
       parameters:
-      - name: binaryRepository
-        in: body
-        description: Binary repository object to be created
-        required: true
-        schema:
-          $ref: '#/definitions/BinaryRepository'
+        - name: binaryRepository
+          in: body
+          description: Binary repository object to be created
+          required: true
+          schema:
+            $ref: '#/definitions/BinaryRepository'
       responses:
         "200":
-          description: Success message containing the id of the newly created binary
-            repository
+          description: Success message containing the id of the newly created binary repository
           schema:
             $ref: '#/definitions/BinaryRepository'
         "401":
           description: Unauthorized
       security:
-      - kathra_auth:
-        - write
+        - kathra_auth:
+            - write
   /binaryRepositories/{binaryRepoId}:
     get:
       summary: Retrieve a specific binary repository
       operationId: getBinaryRepository
       parameters:
-      - name: binaryRepoId
-        in: path
-        required: true
-        description: The id of the binary repository to retrieve
-        type: string
+        - name: binaryRepoId
+          in: path
+          required: true
+          description: The id of the binary repository to retrieve
+          type: string
       responses:
         "200":
           description: Expected response to a valid request
@@ -84,23 +83,23 @@ paths:
         "401":
           description: Unauthorized
       security:
-      - kathra_auth:
-        - read
+        - kathra_auth:
+            - read
     patch:
       summary: Partially update a registered binary repository
       operationId: updateBinaryRepositoryAttributes
       parameters:
-      - name: binaryRepoId
-        in: path
-        required: true
-        description: The id of the binary repository to partially update
-        type: string
-      - name: binaryRepository
-        in: body
-        description: Binary repository object to use to patch existing resource
-        required: true
-        schema:
-          $ref: '#/definitions/BinaryRepository'
+        - name: binaryRepoId
+          in: path
+          required: true
+          description: The id of the binary repository to partially update
+          type: string
+        - name: binaryRepository
+          in: body
+          description: Binary repository object to use to patch existing resource
+          required: true
+          schema:
+            $ref: '#/definitions/BinaryRepository'
       responses:
         "200":
           description: Success message containing the id of the modified binary repository
@@ -109,23 +108,23 @@ paths:
         "401":
           description: Unauthorized
       security:
-      - kathra_auth:
-        - write
+        - kathra_auth:
+            - write
     put:
       summary: Fully update a registered binary repository
       operationId: updateBinaryRepository
       parameters:
-      - name: binaryRepoId
-        in: path
-        required: true
-        description: The id of the binary repository to replace
-        type: string
-      - name: binaryRepository
-        in: body
-        description: Binary repository object to use to replace existing resource
-        required: true
-        schema:
-          $ref: '#/definitions/BinaryRepository'
+        - name: binaryRepoId
+          in: path
+          required: true
+          description: The id of the binary repository to replace
+          type: string
+        - name: binaryRepository
+          in: body
+          description: Binary repository object to use to replace existing resource
+          required: true
+          schema:
+            $ref: '#/definitions/BinaryRepository'
       responses:
         "200":
           description: Success message containing the id of the modified binary repository
@@ -134,23 +133,21 @@ paths:
         "401":
           description: Unauthorized
       security:
-      - kathra_auth:
-        - write
+        - kathra_auth:
+            - write
   /binaryRepositories/{binaryRepoId}/membership:
     get:
-      summary: Retrieve a list of users and groups membership values for the specified
-        binary repository
+      summary: Retrieve a list of users and groups membership values for the specified binary repository
       operationId: getBinaryRepositoryMembership
       parameters:
-      - name: binaryRepoId
-        in: path
-        required: true
-        description: The id of the binary repository to retrieve
-        type: string
+        - name: binaryRepoId
+          in: path
+          required: true
+          description: The id of the binary repository to retrieve
+          type: string
       responses:
         "200":
-          description: List of users and groups membership values for the specified
-            binary repository
+          description: List of users and groups membership values for the specified binary repository
           schema:
             type: array
             items:
@@ -158,31 +155,31 @@ paths:
         "401":
           description: Unauthorized
       security:
-      - kathra_auth:
-        - read
+        - kathra_auth:
+            - read
     post:
       summary: Add a binary repository membership for a user or group
       operationId: addBinaryRepositoryMembership
       parameters:
-      - name: binaryRepoId
-        in: path
-        required: true
-        description: The id of the binary repository to retrieve
-        type: string
-      - name: binaryRepositoryMembership
-        in: body
-        description: Membership object to add to the binary repository
-        required: true
-        schema:
-          $ref: '#/definitions/Membership'
+        - name: binaryRepoId
+          in: path
+          required: true
+          description: The id of the binary repository to retrieve
+          type: string
+        - name: binaryRepositoryMembership
+          in: body
+          description: Membership object to add to the binary repository
+          required: true
+          schema:
+            $ref: '#/definitions/Membership'
       responses:
         "200":
           description: Success message
         "401":
           description: Unauthorized
       security:
-      - kathra_auth:
-        - write
+        - kathra_auth:
+            - write
 definitions:
   Credential:
     type: object
@@ -198,7 +195,7 @@ definitions:
     type: object
     x-artifactId: kathra-core-model
 x-dependencies:
-- artifactId: kathra-core-model
-  groupId: org.kathra
-  artifactVersion: 1.2.0
-  modelPackage: core.model
+  - artifactId: kathra-core-model
+    groupId: org.kathra
+    artifactVersion: 1.3.0-SNAPSHOT
+    modelPackage: core.model

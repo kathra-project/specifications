@@ -1,6 +1,6 @@
 info:
   title: Kathra Core Model
-  version: 1.2.0
+  version: 1.3.0-SNAPSHOT
   x-artifactName: core
   x-groupId: org.kathra
 paths:
@@ -9,7 +9,7 @@ paths:
       summary: "empty"
       operationId: "empty"
       produces:
-      - "application/json"
+        - "application/json"
       parameters: []
       responses:
         200:
@@ -20,47 +20,47 @@ definitions:
   RESOURCE_STATUS:
     type: string
     enum: &RESOURCE_STATUS
-    - PENDING
-    - READY
-    - UPDATING
-    - UNSTABLE
-    - ERROR
-    - DELETED
+      - PENDING
+      - READY
+      - UPDATING
+      - UNSTABLE
+      - ERROR
+      - DELETED
   PROGRAMMING_LANGUAGE:
     type: string
     enum: &PROGRAMMING_LANGUAGE
-    - JAVA
-    - PYTHON
+      - JAVA
+      - PYTHON
   BINARY_REPOSITORY_TYPE:
     type: string
     enum: &BINARY_REPOSITORY_TYPE
-    - JAVA
-    - PYTHON
-    - DOCKER_IMAGE
-    - HELM
+      - JAVA
+      - PYTHON
+      - DOCKER_IMAGE
+      - HELM
   LIBRARY_TYPE:
     type: string
     enum: &LIBRARY_TYPE
-    - MODEL
-    - INTERFACE
-    - CLIENT
+      - MODEL
+      - INTERFACE
+      - CLIENT
   PIPELINE_TEMPLATE:
     type: string
     enum: &PIPELINE_TEMPLATE
-    - JAVA_LIBRARY
-    - PYTHON_LIBRARY
-    - JAVA_SERVICE
-    - PYTHON_SERVICE
-    - HELM_PACKAGE
-    - DOCKER_SERVICE
+      - JAVA_LIBRARY
+      - PYTHON_LIBRARY
+      - JAVA_SERVICE
+      - PYTHON_SERVICE
+      - HELM_PACKAGE
+      - DOCKER_SERVICE
   PACKAGE_TYPE:
     type: string
     enum: &PACKAGE_TYPE
-    - HELM
+      - HELM
   PACKAGE_TEMPLATE_TYPE:
     type: string
     enum: &PACKAGE_TEMPLATE_TYPE
-    - REST_SERVICE
+      - REST_SERVICE
   Resource:
     type: object
     properties:
@@ -84,176 +84,176 @@ definitions:
           type: object
   Component:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        description:
-          type: string
-        title:
-          type: string
-        versions:
-          type: array
-          items:
-            $ref: '#/definitions/ApiVersion'
-        libraries:
-          type: array
-          items:
-            $ref: '#/definitions/Library'
-        implementations:
-          type: array
-          items:
-            $ref: '#/definitions/Implementation'
-        apiRepository:
-          $ref: '#/definitions/SourceRepository'
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          description:
+            type: string
+          title:
+            type: string
+          versions:
+            type: array
+            items:
+              $ref: '#/definitions/ApiVersion'
+          libraries:
+            type: array
+            items:
+              $ref: '#/definitions/Library'
+          implementations:
+            type: array
+            items:
+              $ref: '#/definitions/Implementation'
+          apiRepository:
+            $ref: '#/definitions/SourceRepository'
   Asset:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        binaryRepository:
-          $ref: '#/definitions/BinaryRepository'
-        sourceRepository:
-          $ref: '#/definitions/SourceRepository'
-        pipeline:
-          $ref: '#/definitions/Pipeline'
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          binaryRepository:
+            $ref: '#/definitions/BinaryRepository'
+          sourceRepository:
+            $ref: '#/definitions/SourceRepository'
+          pipeline:
+            $ref: '#/definitions/Pipeline'
   BinaryRepository:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        group:
-          $ref: '#/definitions/Group'
-        type:
-          enum: *BINARY_REPOSITORY_TYPE
-        provider:
-          type: string
-        providerId:
-          type: string
-        url:
-          type: string
-        snapshot:
-          type: boolean
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          group:
+            $ref: '#/definitions/Group'
+          type:
+            enum: *BINARY_REPOSITORY_TYPE
+          provider:
+            type: string
+          providerId:
+            type: string
+          url:
+            type: string
+          snapshot:
+            type: boolean
   Library:
     allOf:
-    - $ref: '#/definitions/Asset'
-    - type: object
-      properties:
-        component:
-          $ref: '#/definitions/Component'
-        type:
-          enum: *LIBRARY_TYPE
-        language:
-          enum: *PROGRAMMING_LANGUAGE
-        versions:
-          type: array
-          items:
-            $ref: '#/definitions/LibraryApiVersion'
+      - $ref: '#/definitions/Asset'
+      - type: object
+        properties:
+          component:
+            $ref: '#/definitions/Component'
+          type:
+            enum: *LIBRARY_TYPE
+          language:
+            enum: *PROGRAMMING_LANGUAGE
+          versions:
+            type: array
+            items:
+              $ref: '#/definitions/LibraryApiVersion'
   Implementation:
     allOf:
-    - $ref: '#/definitions/Asset'
-    - type: object
-      properties:
-        component:
-          $ref: '#/definitions/Component'
-        description:
-          type: string
-        language:
-          enum: *PROGRAMMING_LANGUAGE
-        title:
-          type: string
-        versions:
-          type: array
-          items:
-            $ref: '#/definitions/ImplementationVersion'
-        catalogEntries:
-          type: "array"
-          items:
-            $ref: "#/definitions/CatalogEntry"
+      - $ref: '#/definitions/Asset'
+      - type: object
+        properties:
+          component:
+            $ref: '#/definitions/Component'
+          description:
+            type: string
+          language:
+            enum: *PROGRAMMING_LANGUAGE
+          title:
+            type: string
+          versions:
+            type: array
+            items:
+              $ref: '#/definitions/ImplementationVersion'
+          catalogEntries:
+            type: "array"
+            items:
+              $ref: "#/definitions/CatalogEntry"
   ImplementationVersion:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        sourceRepo:
-          $ref: '#/definitions/SourceRepository'
-        version:
-          type: string
-        implementation:
-          $ref: '#/definitions/Implementation'
-        apiVersion:
-          $ref: '#/definitions/ApiVersion'
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          sourceRepo:
+            $ref: '#/definitions/SourceRepository'
+          version:
+            type: string
+          implementation:
+            $ref: '#/definitions/Implementation'
+          apiVersion:
+            $ref: '#/definitions/ApiVersion'
   ApiVersion:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        component:
-          $ref: '#/definitions/Component'
-        released:
-          type: boolean
-        version:
-          type: string
-        apiRepositoryStatus:
-          enum: *RESOURCE_STATUS
-        librariesApiVersions:
-          type: array
-          items:
-            $ref: '#/definitions/LibraryApiVersion'
-        implementationsVersions:
-          type: array
-          items:
-            $ref: '#/definitions/ImplementationVersion'
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          component:
+            $ref: '#/definitions/Component'
+          released:
+            type: boolean
+          version:
+            type: string
+          apiRepositoryStatus:
+            enum: *RESOURCE_STATUS
+          librariesApiVersions:
+            type: array
+            items:
+              $ref: '#/definitions/LibraryApiVersion'
+          implementationsVersions:
+            type: array
+            items:
+              $ref: '#/definitions/ImplementationVersion'
   LibraryApiVersion:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        library:
-          $ref: '#/definitions/Library'
-        apiVersion:
-          $ref: '#/definitions/ApiVersion'
-        apiRepositoryStatus:
-          enum: *RESOURCE_STATUS
-        pipelineStatus:
-          enum: *RESOURCE_STATUS
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          library:
+            $ref: '#/definitions/Library'
+          apiVersion:
+            $ref: '#/definitions/ApiVersion'
+          apiRepositoryStatus:
+            enum: *RESOURCE_STATUS
+          pipelineStatus:
+            enum: *RESOURCE_STATUS
   SourceRepository:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        provider:
-          type: string
-        providerId:
-          type: string
-        path:
-          type: string
-        sshUrl:
-          type: string
-        httpUrl:
-          type: string
-        webUrl:
-          type: string
-        branchs:
-          type: array
-          items:
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          provider:
             type: string
+          providerId:
+            type: string
+          path:
+            type: string
+          sshUrl:
+            type: string
+          httpUrl:
+            type: string
+          webUrl:
+            type: string
+          branchs:
+            type: array
+            items:
+              type: string
   Pipeline:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        provider:
-          type: string
-        providerId:
-          type: string
-        credentialId:
-          type: string
-        path:
-          type: string
-        sourceRepository:
-          $ref: '#/definitions/SourceRepository'
-        template:
-          enum: *PIPELINE_TEMPLATE
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          provider:
+            type: string
+          providerId:
+            type: string
+          credentialId:
+            type: string
+          path:
+            type: string
+          sourceRepository:
+            $ref: '#/definitions/SourceRepository'
+          template:
+            enum: *PIPELINE_TEMPLATE
   Build:
     type: "object"
     properties:
@@ -300,71 +300,71 @@ definitions:
         type: string
   Group:
     allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        path:
-          type: string
-          description: Group's path in case of subgroup
-        technicalUser:
-          $ref: '#/definitions/User'
-        binaryRepositories:
-          type: "array"
-          items:
-            $ref: "#/definitions/BinaryRepository"
-        members:
-          type: "array"
-          items:
-            $ref: "#/definitions/Assignation"
-        parent:
-          $ref: '#/definitions/Group'
-        sourceRepositoryStatus:
-          enum: *RESOURCE_STATUS
-        sourceMembershipStatus:
-          enum: *RESOURCE_STATUS
-        pipelineFolderStatus:
-          enum: *RESOURCE_STATUS
-        binaryRepositoryStatus:
-          enum: *RESOURCE_STATUS
+      - $ref: '#/definitions/Resource'
+      - type: object
+        properties:
+          path:
+            type: string
+            description: Group's path in case of subgroup
+          technicalUser:
+            $ref: '#/definitions/User'
+          binaryRepositories:
+            type: "array"
+            items:
+              $ref: "#/definitions/BinaryRepository"
+          members:
+            type: "array"
+            items:
+              $ref: "#/definitions/Assignation"
+          parent:
+            $ref: '#/definitions/Group'
+          sourceRepositoryStatus:
+            enum: *RESOURCE_STATUS
+          sourceMembershipStatus:
+            enum: *RESOURCE_STATUS
+          pipelineFolderStatus:
+            enum: *RESOURCE_STATUS
+          binaryRepositoryStatus:
+            enum: *RESOURCE_STATUS
   KeyPair:
     allOf:
-    - $ref: "#/definitions/Resource"
-    - type: "object"
-      properties:
-        privateKey:
-          type: string
-        publicKey:
-          type: string
-        group:
-          $ref: '#/definitions/Group'
+      - $ref: "#/definitions/Resource"
+      - type: "object"
+        properties:
+          privateKey:
+            type: string
+          publicKey:
+            type: string
+          group:
+            $ref: '#/definitions/Group'
   User:
     allOf:
-    - $ref: "#/definitions/Resource"
-    - type: "object"
-      properties:
-        firstName:
-          type: "string"
-        lastName:
-          type: "string"
-        email:
-          type: "string"
-        password:
-          type: "string"
-        phone:
-          type: "string"
-        groups:
-          type: "array"
-          items:
-            $ref: "#/definitions/Assignation"
+      - $ref: "#/definitions/Resource"
+      - type: "object"
+        properties:
+          firstName:
+            type: "string"
+          lastName:
+            type: "string"
+          email:
+            type: "string"
+          password:
+            type: "string"
+          phone:
+            type: "string"
+          groups:
+            type: "array"
+            items:
+              $ref: "#/definitions/Assignation"
   Assignation:
     allOf:
-    - $ref: "#/definitions/Resource"
-    - type: "object"
-      properties:
-        role:
-          type: "string"
-        fte:
-          type: "string"
+      - $ref: "#/definitions/Resource"
+      - type: "object"
+        properties:
+          role:
+            type: "string"
+          fte:
+            type: "string"
   SourceRepositoryCommit:
     type: object
     properties:
@@ -411,22 +411,22 @@ definitions:
         items:
           $ref: "#/definitions/PackageTemplateArgument"
     example:
-    - name: RestApiService
-      arguments:
-      - key: CHART_NAME
-        contrainst: "[A-Za-z0-9]"
-      - key: CHART_VERSION
-        contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
-      - key: CHART_DESCRIPTION
-        contrainst: "[A-Za-z0-9]"
-      - key: APP_VERSION
-        contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
-      - key: IMAGE_NAME
-        value: ".+"
-      - key: IMAGE_TAG
-        value: ".+"
-      - key: REGISTRY_HOST
-        value: ".+"
+      - name: RestApiService
+        arguments:
+          - key: CHART_NAME
+            contrainst: "[A-Za-z0-9]"
+          - key: CHART_VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: CHART_DESCRIPTION
+            contrainst: "[A-Za-z0-9]"
+          - key: APP_VERSION
+            contrainst: "[0-9]+\\.[0-9]+\\.[0-9]+"
+          - key: IMAGE_NAME
+            value: ".+"
+          - key: IMAGE_TAG
+            value: ".+"
+          - key: REGISTRY_HOST
+            value: ".+"
   PackageTemplateArgument:
     type: "object"
     properties:
@@ -445,46 +445,46 @@ definitions:
       key: "CHART_NAME"
   CatalogEntry:
     allOf:
-    - $ref: "#/definitions/Resource"
-    - type: "object"
-      properties:
-        description:
-          type: "string"
-          description: "Description"
-        icon:
-          type: "string"
-          description: "Icon's URL"
-        packageTemplate:
-          enum: *PACKAGE_TEMPLATE_TYPE
-        packages:
-          type: "array"
-          items:
-            $ref: "#/definitions/CatalogEntryPackage"
+      - $ref: "#/definitions/Resource"
+      - type: "object"
+        properties:
+          description:
+            type: "string"
+            description: "Description"
+          icon:
+            type: "string"
+            description: "Icon's URL"
+          packageTemplate:
+            enum: *PACKAGE_TEMPLATE_TYPE
+          packages:
+            type: "array"
+            items:
+              $ref: "#/definitions/CatalogEntryPackage"
     example:
       name: "postgresql"
       description: "Chart for PostgreSQL, an object-relational database manag..."
   CatalogEntryPackage:
     allOf:
-    - $ref: "#/definitions/Asset"
-    - type: "object"
-      properties:
-        catalogEntry:
-          $ref: '#/definitions/CatalogEntry'
-        packageType:
-          enum: *PACKAGE_TYPE
-        provider:
-          type: "string"
-          description: "Provider"
-        providerId:
-          type: "string"
-          description: "ProviderId"
-        url:
-          type: "string"
-          description: "String"
-        versions:
-          type: "array"
-          items:
-            $ref: "#/definitions/CatalogEntryPackageVersion"
+      - $ref: "#/definitions/Asset"
+      - type: "object"
+        properties:
+          catalogEntry:
+            $ref: '#/definitions/CatalogEntry'
+          packageType:
+            enum: *PACKAGE_TYPE
+          provider:
+            type: "string"
+            description: "Provider"
+          providerId:
+            type: "string"
+            description: "ProviderId"
+          url:
+            type: "string"
+            description: "String"
+          versions:
+            type: "array"
+            items:
+              $ref: "#/definitions/CatalogEntryPackageVersion"
     example:
       providerId: "stable/postgresql"
       repository: "http://harbor.kathra.org/chartrepo"
@@ -508,26 +508,18 @@ definitions:
           $ref: "#/definitions/CatalogEntryArgument"
     example:
       version: "6.5.4"
-      documentation: "# PostgreSQL [PostgreSQL](https://www.postgresql.org/) is an
-        object-relational database management system (ORDBMS) with an emphasis on
-        extensibility and on standards-compliance. ## TL;DR; ```console $ helm install
-        stable/postgresql ``` ## Introduction This chart bootstraps a [PostgreSQL](https://github.com/bitnami/bitnami-docker-postgresql)
-        deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh)
-        package manager. Bitnami charts can be used with [Kubeapps](https://kubeapps.com/)
-        for deployment and management of Helm Charts in clusters. This chart has been
-        tested to work with NGINX Ingress, cert-manager, fluentd and Prometheus on
-        top of the [BKPR](https://kubeprod.io/). .. .. . "
+      documentation: "# PostgreSQL [PostgreSQL](https://www.postgresql.org/) is an object-relational database management system (ORDBMS) with an emphasis on extensibility and on standards-compliance. ## TL;DR; ```console $ helm install stable/postgresql ``` ## Introduction This chart bootstraps a [PostgreSQL](https://github.com/bitnami/bitnami-docker-postgresql) deployment on a [Kubernetes](http://kubernetes.io) cluster using the [Helm](https://helm.sh) package manager. Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment and management of Helm Charts in clusters. This chart has been tested to work with NGINX Ingress, cert-manager, fluentd and Prometheus on top of the [BKPR](https://kubeprod.io/). .. .. . "
       arguments:
-      - label: "global.postgresql.postgresqlDatabase"
-        description: "PostgreSQL database (overrides postgresqlDatabase)"
-        contrainst: ".*"
-        value: "nil"
-        key: "global.postgresql.postgresqlDatabase"
-      - label: "global.postgresql.postgresqlUsername"
-        description: "PostgreSQL usernmae (overrides postgresqlUsername)"
-        contrainst: ".*"
-        value: "nil"
-        key: "global.postgresql.postgresqlUsername"
+        - label: "global.postgresql.postgresqlDatabase"
+          description: "PostgreSQL database (overrides postgresqlDatabase)"
+          contrainst: ".*"
+          value: "nil"
+          key: "global.postgresql.postgresqlDatabase"
+        - label: "global.postgresql.postgresqlUsername"
+          description: "PostgreSQL usernmae (overrides postgresqlUsername)"
+          contrainst: ".*"
+          value: "nil"
+          key: "global.postgresql.postgresqlUsername"
   CatalogEntryArgument:
     type: "object"
     properties:
