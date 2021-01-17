@@ -1,0 +1,8 @@
+@startuml
+
+class Asset {
+  SourceRepository sourceRepository
+  Pipeline pipeline
+}
+Resource <|-- Asset
+@enduml

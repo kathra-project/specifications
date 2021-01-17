@@ -1,0 +1,14 @@
+@startuml
+
+
+class  Component {
+  String description
+  String title
+  SourceRepository apiRepository
+  ListOfApiVersion versions
+  ListOfImplementation implementations
+  ListOfLibrary libraries
+}
+Component  "1"  o-- "0..1"   SourceRepository
+Resource <|-- Component
+@enduml

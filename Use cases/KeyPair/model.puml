@@ -1,0 +1,7 @@
+@startuml
+class KeyPair {
+  String privateKey
+  String publicKey
+}
+Resource <|-- KeyPair
+@enduml

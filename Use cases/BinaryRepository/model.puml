@@ -1,11 +1,11 @@
 @startuml
 
 class  BinaryRepository {
-     - binaryRepositoryType <b>:BinaryRepositoryType</b>
-     - url <b>:string</b>
-     - provider <b>:string</b>
-     - providerId <b>:string</b>
-     - snapshot <b>:boolean</b>
+     BinaryRepositoryType binaryRepositoryType
+     String url
+     String provider
+     String providerId
+     Boolean snapshot
 }
 
 enum  BinaryRepositoryType {
@@ -14,5 +14,8 @@ enum  BinaryRepositoryType {
      DOCKER
      HELM
 }
+
+BinaryRepository  "0..*" --o "1" Asset : binaryRepository
+Group  "0..*" --o "1" BinaryRepository : group
 
 @enduml

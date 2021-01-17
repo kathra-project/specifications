@@ -1,0 +1,33 @@
+@startuml
+
+Asset <|-- Library
+class  Library {
+  LIBRARY_TYPE type
+  Component component
+  ListOfLibraryApiVersion versions
+  PROGRAMMING_LANGUAGE language
+}
+Component "1" *-- "0..*" Library
+
+enum PROGRAMMING_LANGUAGE {
+         - JAVA
+         - PYTHON
+}
+
+enum LIBRARY_TYPE {
+         - MODEL
+         - INTERFACE
+         - CLIENT
+}
+
+class LibraryApiVersion {
+  ApiVersion apiVersion
+  Library library
+  RESOURCE_STATUS sourceRepositoryStatus
+  RESOURCE_STATUS pipelineStatus
+}
+Resource <|-- LibraryApiVersion
+LibraryApiVersion "0..*" --o "1" Library
+LibraryApiVersion "0..*" --* "1" ApiVersion
+
+@enduml

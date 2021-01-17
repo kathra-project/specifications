@@ -1,0 +1,24 @@
+@startuml
+class  Pipeline {
+  String provider
+  String providerId
+  String credentialId
+  SourceRepository sourceRepository
+  String path
+  PIPELINE_TEMPLATE template
+  Asset asset
+}
+Pipeline "1" o-- "0..*" Asset
+Resource <|-- Pipeline
+SourceRepository "1" o-- "0..*" Pipeline
+Asset "1" o-- "0..1"   Pipeline
+
+
+enum PIPELINE_TEMPLATE {
+         - JAVA_LIBRARY
+         - JAVA_SERVICE
+         - PYTHON_LIBRARY
+         - PYTHON_SERVICE
+}
+
+@enduml

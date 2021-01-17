@@ -1,0 +1,11 @@
+@startuml
+
+class User {
+  String firstName
+  String lastName
+  String email
+  String password
+}
+Assignation  "1" o-- "0..*"   User : assignations
+Resource <|-- User
+@enduml

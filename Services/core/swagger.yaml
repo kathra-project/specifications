@@ -1,7 +1,7 @@
 swagger: '2.0'
 info:
   title: Kathra Core Model
-  version: 1.1.0-SNAPSHOT
+  version: 1.3.0-SNAPSHOT
   x-artifactName: core
   x-groupId: org.kathra
 paths: 
@@ -571,9 +571,6 @@ Bitnami charts can be used with [Kubeapps](https://kubeapps.com/) for deployment
         provider:
           type: string
           description: Cluster provider
-        providerId:
-          type: string
-          description: Cluster providerId
         providerId:
           type: string
           description: Cluster providerId

@@ -1,0 +1,14 @@
+@startuml
+
+class  SourceRepository {
+  String provider
+  String providerId
+  String path
+  String sshUrl
+  String httpUrl
+  String webUrl
+  ListOfString branchs
+}
+Resource <|-- SourceRepository
+Asset "1" o-- "0..1"   SourceRepository
+@enduml

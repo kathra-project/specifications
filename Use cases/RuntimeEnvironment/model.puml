@@ -1,30 +1,35 @@
 @startuml
 
-class Cluster < extends Resources> {
-     - providerId <b>: String</b>
-     - provider <b>: String</b>
-     - packageManagerManaged <b>: PACKAGE_TYPE[]</b>
+class Cluster {
+     String providerId
+     String provider
+     PACKAGE_TYPE packageManagerManaged
 }
 RuntimeEnvironment  "1" --o "0..*" Cluster
+Resource <|-- Cluster
 
-class RuntimeEnvironment < extends Resources> {
-     - providerId <b>: String</b>
-     - provider <b>: String</b>
-     - description <b>: String</b>
-     - labels <b>: String[]</b>
+class RuntimeEnvironment {
+     String providerId
+     String provider
+     String description
+     String labels
+     User owner
 }
+Resource <|-- RuntimeEnvironment
+Group  "1" o-- "0..*" RuntimeEnvironment : owner
+User "1" o-- "0..*" RuntimeEnvironment : owner
 
 RuntimeAppInstance  "1" --o "0..*" RuntimeEnvironment
 class RuntimeAppInstance {
-     - name <b>: String</b>
-     - providerId <b>: String</b>
-     - status <b>: RuntimeAppInstanceStatus</b>
+     String providerId
+     String name
+     RuntimeAppInstanceStatus status
 }
 
 RuntimeJob  "1" --o "0..*" RuntimeEnvironment
 class RuntimeJob {
-     - providerId <b>: String</b>
-     - status <b>: RuntimeAppInstanceStatus</b>
+     String providerId
+     RuntimeAppInstanceStatus status
 }
 enum RuntimeJobStatus {
     SCHEDULED
@@ -42,17 +47,17 @@ enum RuntimeAppInstanceStatus {
 
 RuntimeAppService  "1" --o "0..*" RuntimeEnvironment
 class RuntimeAppService {
-     - name <b>: String</b>
-     - providerId <b>: String</b>
-     - ports <b>: String[]</b>
+     String name
+     String providerId
+     MapOfObject status
 }
 
 RuntimeVolume  "1" --o "0..*" RuntimeEnvironment
 class RuntimeVolume {
-     - name <b>: String</b>
-     - providerId <b>: String</b>
-     - space <b>: String</b>
-     - status <b>: RuntimeJobStatus</b>
+     String name
+     String providerId
+     String space
+     RuntimeJobStatus status
 }
 enum RuntimeVolumeStatus {
     PROVISIONING
@@ -71,20 +76,20 @@ enum RuntimeContainerStatus {
 
 RuntimeContainer  "1" --o "0..*" RuntimeEnvironment
 class RuntimeContainer {
-     - name <b>: String</b>
-     - providerId <b>: String</b>
-     - image <b>: String</b>
-     - imageHash <b>: String</b>
-     - memoryLimit <b>: String</b>
-     - cpuLimit <b>: String</b>
-     - status <b>: RuntimeContainerStatus</b>
+     String name
+     String providerId
+     String image
+     String imageHash
+     String memoryLimit
+     String cpuLimit
+     RuntimeContainerStatus status
 }
 
 RuntimeEnvironmentBackup  "1" --o "0..*" RuntimeEnvironment
 class RuntimeEnvironmentBackup {
-     - providerId <b>: String</b>
-     - date <b>: timestamp</b>
-     - status <b>: String</b>
+     String date
+     String providerId
+     String status
 }
 enum RuntimeEnvironmentBackupStatus {
     SCHEDULED
@@ -96,18 +101,19 @@ enum RuntimeEnvironmentBackupStatus {
 RuntimeHttpLoadBalancer  "1" --o "0..*" RuntimeEnvironment
 
 class RuntimeHttpLoadBalancer {
-     - name <b>: String</b>
-     - providerId <b>: String</b>
-     - hostname <b>: String</b>
-     - port <b>: String</b>
-     - rewriteUrl <b>: String</b>
+     String name
+     String providerId
+     String hostname
+     String port
+     String rewriteUrl
 }
 RuntimeHttpLoadBalancerForwarding  "1" --o "0..*" RuntimeHttpLoadBalancer
 
 class RuntimeHttpLoadBalancerForwarding {
-     - rule <b>: String</b>
-     - service <b>: String</b>
-     - port <b>: String</b>
+     String rule
+     String service
+     String port
 }
 
+CatalogEntryPackage  "0..*" --o "1" RuntimeAppInstance
 @enduml

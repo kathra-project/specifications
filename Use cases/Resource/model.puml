@@ -1,0 +1,23 @@
+@startuml
+
+class  Resource {
+  String path
+  String role
+  MapOfObject metadata
+  RESOURCE_STATUS status
+  String createdBy
+  String updatedBy
+  String createdAt
+  String updatedAt
+}
+
+enum RESOURCE_STATUS {
+         - PENDING
+         - READY
+         - UPDATING
+         - UNSTABLE
+         - ERROR
+         - DELETED
+}
+
+@enduml

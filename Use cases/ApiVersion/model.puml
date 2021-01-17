@@ -1,0 +1,13 @@
+@startuml
+
+class  ApiVersion {
+  Component component
+  String version
+  Boolean released
+  RESOURCE_STATUS apiRepositoryStatus
+  ListOfImplementationVersion implementationVersions
+  ListOfLibraryApiVersion librariesApiVersions
+}
+Component "1" *-- "0..*"  ApiVersion
+Resource <|-- ApiVersion
+@enduml

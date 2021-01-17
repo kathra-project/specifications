@@ -3,18 +3,35 @@ const config = require('./config');
 console.debug('config : ', config);
 
 // REQUIREMENTS
+var path = require('path');
 var fs = require('fs');
 var rimraf = require('rimraf');
 var Mustache = require('mustache');
 const { parse, parseFile, formatters } = require('plantuml-parser');
 
 
-var modelClassDiagramData = fs.readFileSync(config.modelClassDiagram, 'utf8');
+function resolveIncludes(fileIn) {
+  var modelClassDiagramData = fs.readFileSync(fileIn, 'utf8');
+  var filesToInclude = modelClassDiagramData.split("\n")
+                                      .filter(line => line.match("^!include .*"))
+                                      .map(line => line.substr("!include ".length,line.length).trim())
+  var dataWithoutIncludes = modelClassDiagramData.split("\n")
+                                                  .filter(line => !line.match("^!include .*"))
+                                                  .filter(line => !line.match("@startuml") && !line.match("@enduml"))
+                                                  .join("\n");
+  filesToInclude.forEach(file => {
+    fileContent = resolveIncludes(path.dirname(fileIn) + "/" + file);
+    dataWithoutIncludes += "\n" + fileContent;
+  });
+
+  return dataWithoutIncludes;
+}
+plantUmlUnified = resolveIncludes(fs.realpathSync(config.modelClassDiagram));
+plantUmlUnifiedFilePath = config.destPath + ".tmp.puml"
+fs.writeFileSync(plantUmlUnifiedFilePath, "@startuml\n" + plantUmlUnified + "\n@enduml", 'utf8');
 
 // parse PlantUML
-const ast = parseFile(config.modelClassDiagram);
-
-
+const ast = parseFile(plantUmlUnifiedFilePath);
 // Format and print AST
 //console.log(
 //  formatters.default(ast)
@@ -53,37 +70,45 @@ function parseRelationshipInherit(relationship, clazzArray) {
   return clazzArray;
 }
 
-function parseRelationshipComposition(relationship, clazzArray) {
-  console.log(relationship)
-  var leftTypeField = relationship.right;
-  if (relationship.rightCardinality.includes("N")) {
-    leftTypeField = "ListOf"+leftTypeField
-  }
-  var rightTypeField = relationship.left;
-  if (relationship.leftCardinality.includes("N")) {
-    rightTypeField = "ListOf"+rightTypeField
-  }
+function cardinalityIsList(cardinality) {
+  return cardinality.includes("N") || cardinality.includes("*");
+}
 
-  clazzArray.filter(clazz => clazz.clazzName == relationship.left).forEach(function(clazz) {
-    clazz.fields.filter(field => field.type == leftTypeField).forEach(function(field) {
-      field.type = null;
-      if (relationship.rightCardinality.includes("N")) {
-        field.arrayRef = relationship.right
-      } else {
-        field.objectRef = relationship.right
-      }
-    })
-  })
-  clazzArray.filter(clazz => clazz.clazzName == relationship.right).forEach(function(clazz) {
-    clazz.fields.filter(field => field.type == rightTypeField).forEach(function(field) {
-      field.type = null;
-      if (relationship.rightCardinality.includes("N")) {
-        field.arrayRef = relationship.left
-      } else {
-        field.objectRef = relationship.left
-      }
-    })
-  })
+function parseRelationshipComposition(relationship, clazzArray) {
+
+    if (cardinalityIsList(relationship.rightCardinality)) {
+      rightTypeField = "ListOf"+relationship.right
+    } else {
+      rightTypeField = relationship.right
+    }
+    if (cardinalityIsList(relationship.leftCardinality)) {
+      leftTypeField = "ListOf"+relationship.left
+    } else {
+      leftTypeField = relationship.left
+    }
+
+    clazzArray.filter(clazz => clazz.clazzName == relationship.left).forEach(function(clazz) {
+      clazz.fields.filter(field => field.type == rightTypeField).forEach(function(field) {
+        field.type = null;
+        if (cardinalityIsList(relationship.leftCardinality)) {
+          field.arrayRef = relationship.right
+        } else {
+          field.objectRef = relationship.right
+        }
+      })
+    });
+    
+    clazzArray.filter(clazz => clazz.clazzName == relationship.right).forEach(function(clazz) {
+      clazz.fields.filter(field => field.type == leftTypeField).forEach(function(field) {
+        field.type = null;
+        if (cardinalityIsList(relationship.rightCardinality)) {
+          field.arrayRef = relationship.left
+        } else {
+          field.objectRef = relationship.left
+        }
+      })
+    });
+
   return clazzArray;
 }
 
@@ -134,11 +159,10 @@ function parseClazzField(member, enums) {
     case 'Boolean':
       field.type = 'boolean'
       break;
-
-      additionalProperties
   }
   if (enums.filter(i => i.enumName == field.type).length > 0) {
-    field.type = "*"+field.type;
+    field.enum = "*"+field.type;
+    field.type = null;
   }
   return field;
 }
@@ -151,5 +175,6 @@ function generateFromTemplate(clazz, enums) {
   return Mustache.to_html(template, {"clazz":clazz, 'enums': enums})
 }
 
-fs.writeFileSync(config.destPath, generateFromTemplate(clazz, enums), 'utf8');
+yamlContent = generateFromTemplate(clazz, enums);
+fs.writeFileSync(config.destPath, yamlContent, 'utf8');
 

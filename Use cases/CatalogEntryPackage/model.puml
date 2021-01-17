@@ -1,10 +1,10 @@
 @startuml
 
-class  CatalogEntryPackage{
-     - packageType <b>:PACKAGE_TYPE</b>
-     - provider <b>: String</b>
-     - providerId <b>: String</b>
-     - url <b>: String</b>
+class  CatalogEntryPackage {
+     PACKAGE_TYPE packageType
+     string packaprovidergeType
+     string packagproviderIdeType
+     string url
 }
 CatalogEntryVersion "1" --o  "0..*" CatalogEntryPackage
 
@@ -15,6 +15,6 @@ enum PACKAGE_TYPE {
      - SNAP
 }
 
-!include ../CatalogEntryVersion/model.puml
+Asset <|-- CatalogEntryPackage
 
 @enduml

@@ -1,0 +1,22 @@
+@startuml
+
+Asset <|-- Implementation
+class  Implementation {
+  String description
+  String title
+  Component component
+  ListOfImplementationVersion versions
+  PROGRAMMING_LANGUAGE language
+}
+Implementation "1" o-- "0..*" ImplementationVersion
+
+class  ImplementationVersion {
+  string version
+  Implementation implementation
+  ApiVersion apiVersion
+}
+Resource <|-- ImplementationVersion
+
+ImplementationVersion  "0..*" --o "1" ApiVersion
+Implementation  "0..*" --o "1"  Component
+@enduml

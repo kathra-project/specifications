@@ -1,15 +1,15 @@
 @startuml
 
 class  CatalogEntryVersion {
-     - version <b>:String</b>
+     string version
 }
 
 class  CatalogEntryArgument {
-     - label <b>: String</b>
-     - description <b>: String</b>
-     - key <b>: String</b>
-     - value <b>: String</b>
-     - contrainst <b>: String</b>
+     string label
+     string description
+     string key
+     string value
+     string constraint
 }
 CatalogEntryVersion  "0..*" --o "1" CatalogEntryArgument
 

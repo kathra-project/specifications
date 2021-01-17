@@ -1,8 +1,8 @@
 @startuml
 
-class  CatalogEntry <extends Resource> {
-     - packageTemplate <b>: PACKAGE_TEMPLATE</b>
-     - icon <b>: String</b>
+class  CatalogEntry {
+     PACKAGE_TEMPLATE packageTemplate
+     string icon
 }
 
 enum PACKAGE_TEMPLATE {
@@ -10,7 +10,7 @@ enum PACKAGE_TEMPLATE {
 }
 CatalogEntry  "0..*" --o "1" CatalogEntryPackage
 
-!include ../CatalogEntryPackage/model.puml
-
+Resource <|-- CatalogEntry
+Asset  "0..*" --o "1" CatalogEntry
 
 @enduml
