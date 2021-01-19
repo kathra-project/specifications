@@ -1,17 +1,19 @@
 @startuml
 
 class  BinaryRepository {
-     BinaryRepositoryType binaryRepositoryType
+     BinaryRepositoryType type
      String url
      String provider
      String providerId
      Boolean snapshot
+     Group group
 }
+Resource <|-- BinaryRepository
 
 enum  BinaryRepositoryType {
      JAVA
      PYTHON
-     DOCKER
+     DOCKER_IMAGE
      HELM
 }
 

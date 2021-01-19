@@ -6,19 +6,43 @@ class  Pipeline {
   SourceRepository sourceRepository
   String path
   PIPELINE_TEMPLATE template
-  Asset asset
 }
-Pipeline "1" o-- "0..*" Asset
 Resource <|-- Pipeline
 SourceRepository "1" o-- "0..*" Pipeline
-Asset "1" o-- "0..1"   Pipeline
 
 
 enum PIPELINE_TEMPLATE {
          - JAVA_LIBRARY
+         - PYTHON_SERVICE
          - JAVA_SERVICE
          - PYTHON_LIBRARY
-         - PYTHON_SERVICE
+         - HELM_PACKAGE
+         - DOCKER_SERVICE
 }
 
+
+class Build {
+  String buildNumber
+  String path
+  String commitLabel
+  String commitId
+  Long creationDate
+  Integer duration
+  BUILD_STATUS status
+  ListOfBuildArgument buildArguments
+  String logs
+}
+Build "1" o-- "0..*" BuildArgument
+
+class BuildArgument {
+  String key
+  String value
+}
+
+enum BUILD_STATUS {
+  - scheduled
+  - processing
+  - success
+  - failed 
+}
 @enduml

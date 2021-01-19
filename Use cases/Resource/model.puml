@@ -1,14 +1,14 @@
 @startuml
 
 class  Resource {
-  String path
-  String role
+  String id
+  String name
   MapOfObject metadata
   RESOURCE_STATUS status
   String createdBy
   String updatedBy
-  String createdAt
-  String updatedAt
+  Integer createdAt
+  Integer updatedAt
 }
 
 enum RESOURCE_STATUS {

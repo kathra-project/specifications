@@ -10,5 +10,18 @@ class  SourceRepository {
   ListOfString branchs
 }
 Resource <|-- SourceRepository
-Asset "1" o-- "0..1"   SourceRepository
+
+class SourceRepositoryCommit {
+  String id
+  String shortId
+  String title
+  String authorName
+  String authorEmail
+  String createdAt
+  String committerName
+  String committerEmail
+  String message
+  
+}
+
 @enduml

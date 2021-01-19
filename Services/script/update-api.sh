@@ -1,19 +1,21 @@
 #!/bin/bash
+export EXTERNAL_PORT=8085
 export SCRIPT_DIR=$(dirname $(readlink -f "$0"))
-export CODEGEN_URL="http://localhost:8085/api/v1"
-export VERSION="1.1.0-SNAPSHOT"
+export CODEGEN_URL="http://localhost:$EXTERNAL_PORT/api/v1"
+export VERSION="1.3.0-SNAPSHOT"
+export CODEGEN_IMAGE="kathra/codegen-swagger:stable"
 export APIS=(core resourcemanager appmanager binaryrepositorymanager catalogmanager pipelinemanager codegen)
 export PROJECT_BASE=$SCRIPT_DIR/../../../
 export CODE_MODEL_CLAZZ_MANAGED=Group,ApiVersion,Assignation,BinaryRepository,CatalogEntry,CatalogEntryPackage,Component,Implementation,ImplementationVersion,KeyPair,Library,LibraryApiVersion,Pipeline,SourceRepository,User
 
 function main() {
-
     if [ $(findInArgs "--help" $*) ] || [ $(findInArgs "-h" $*) ]
     then
         help
         return 0
     fi
-    [ $(findInArgs "--start-codegen" $*) ] && docker run --detach -p 8085:8080 -e ARTIFACT_REPOSITORY_URL="none" -e ARTIFACT_PIP_REPOSITORY_NAME="none" kathra/codegen-swagger:dev
+    [ $(findInArgs "--start-codegen" $*) ] && docker run --name codegen --detach -p ${EXTERNAL_PORT}:8080 -e ARTIFACT_REPOSITORY_URL="none" -e ARTIFACT_PIP_REPOSITORY_NAME="none" ${CODEGEN_IMAGE}
+    [ $(findInArgs "--stop-codegen" $*) ]  && docker rm -f codegen
 
     if [ $(findInArgs "--generateSource" $*) ]
     then
@@ -48,6 +50,9 @@ function help() {
     printInfo "--start-codegen"
     printInfo "Start codegen"
     printInfo ""
+    printInfo "--stop-codegen"
+    printInfo "Stop codegen"
+    printInfo ""
     printInfo "--generateSource"
     printInfo "Generate source for all components"
     printInfo "Options : "
@@ -59,9 +64,6 @@ function help() {
     printInfo ""
     printInfo "--resourceManagerGenerateSrc"
     printInfo "Update ResourceManager ArangoDB [$(realpath --relative-to=. $SCRIPT_DIR/../../kathra-resourcemanager-arangodb)] from Kathra-Core Model [$(realpath --relative-to=. $SCRIPT_DIR/../../kathra-core-model)] [clazz: $CODE_MODEL_CLAZZ_MANAGED] "
-    printInfo ""
-    printInfo "--start-codegen"
-    printInfo "Start codegen"
     printInfo ""
 }
 
@@ -76,7 +78,7 @@ function updateComponent() {
         [ "$component" == "catalogmanager" ] && updateImplementationGo "kathra-$component-helm" "$PROJECT_BASE/kathra-$component-helm" "$fileApi"
     elif [ "$component" == "core" ]
     then
-        #codegen "$fileApi" "$srcDirectory" "model"
+        codegen "$fileApi" "$srcDirectory" "model"
         updateModelGo "$fileApi" "$srcDirectory-go" "kathra-$component-model-go"
     else
         codegen "$fileApi" "$srcDirectory" "$lib"
@@ -190,11 +192,12 @@ function codegen() {
     cd $dirLib
     [ $? -ne 0 ] && echo "Error" && exit 1
 
-    curl --fail -X POST \
-    "${CODEGEN_URL}/${type}?language=JAVA&artifactName=${artifactName}&groupId=${groupId}&artifactVersion=${version}" \
-    -H 'Content-Type: multipart/form-data' \
-    -H 'content-type: multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW' \
-    -F "apiFile=@$apiFile" > generated-code.zip
+    curl -v --fail -X POST "${CODEGEN_URL}/generateFromTemplate" \
+    -H  "accept: application/octet-stream" \
+    -H  "Content-Type: application/json" \
+    -d "$(printf "{  \"name\": \"LIBRARY_JAVA_REST_${type^^}\",\"arguments\": [{\"key\": \"GROUP\",\"value\": \"${groupId}\"},{\"key\": \"NAME\",\"value\": \"${artifactName}\"},{\"key\": \"VERSION\",\"value\": \"${version}\"},{\"key\": \"SWAGGER2_SPEC\",\"value\": \"%s\"}]}" "$(echo | cat $apiFile | sed 's/"/\\"/g')")" \
+    > generated-code.zip
+    
     [ $? -ne 0 ] && echo "Error" && exit 1
     # clean
     rm -Rf src
@@ -206,7 +209,9 @@ function codegen() {
     rm generated-code.zip
 }
 export -f codegen
-
+function json_escape () {
+    printf '%s' "$1" | python -c 'import json,sys; print(json.dumps(sys.stdin.read()))'
+}
 
 function printError(){
     echo -e "\033[31;1m $* \033[0m" 1>&2

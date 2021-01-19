@@ -1,16 +1,19 @@
 @startuml
 
-class  CatalogEntry {
+class CatalogEntry {
      PACKAGE_TEMPLATE packageTemplate
-     string icon
+     ListOfCatalogEntryPackage packages
+     string description
 }
 
 enum PACKAGE_TEMPLATE {
-     - REST_API
+     - REST_SERVICE
 }
-CatalogEntry  "0..*" --o "1" CatalogEntryPackage
+CatalogEntryPackage  "0..*" --o "1" CatalogEntry
 
 Resource <|-- CatalogEntry
 Asset  "0..*" --o "1" CatalogEntry
+
+
 
 @enduml

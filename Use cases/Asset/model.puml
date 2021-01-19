@@ -1,8 +1,12 @@
 @startuml
 
 class Asset {
+  BinaryRepository binaryRepository
   SourceRepository sourceRepository
   Pipeline pipeline
 }
 Resource <|-- Asset
+Asset "1" o-- "0..1"   BinaryRepository
+Asset "1" o-- "0..1"   Pipeline
+Asset "1" o-- "0..1"   SourceRepository
 @enduml

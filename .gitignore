@@ -4,5 +4,5 @@
 .settings
 .classpath
 target
-kathra-model-gen/node_modules/**
-kathra-model-gen/build/**
+**/node_modules/**
+**/build/**

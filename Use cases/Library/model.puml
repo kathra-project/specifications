@@ -23,9 +23,19 @@ enum LIBRARY_TYPE {
 class LibraryApiVersion {
   ApiVersion apiVersion
   Library library
-  RESOURCE_STATUS sourceRepositoryStatus
+  API_REPOSITORY_SATUS apiRepositoryStatus
   RESOURCE_STATUS pipelineStatus
 }
+
+enum API_REPOSITORY_SATUS {
+         - PENDING
+         - READY
+         - UPDATING
+         - UNSTABLE
+         - ERROR
+         - DELETED
+}
+
 Resource <|-- LibraryApiVersion
 LibraryApiVersion "0..*" --o "1" Library
 LibraryApiVersion "0..*" --* "1" ApiVersion

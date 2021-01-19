@@ -32,3 +32,11 @@ see documentation [here](./Services/app-mananger/README.md)
 ### Functionalities existing
 #### Implementations
 see documentation [here](./Use%20cases/Implementation/README.md)
+
+
+## Generate Core Source Code From PlantUML
+Generate PlantUML to Swagger and generate source code Go and Java
+```sh 
+./generate-core.sh
+```
+

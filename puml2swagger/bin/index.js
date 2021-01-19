@@ -90,7 +90,7 @@ function parseRelationshipComposition(relationship, clazzArray) {
     clazzArray.filter(clazz => clazz.clazzName == relationship.left).forEach(function(clazz) {
       clazz.fields.filter(field => field.type == rightTypeField).forEach(function(field) {
         field.type = null;
-        if (cardinalityIsList(relationship.leftCardinality)) {
+        if (cardinalityIsList(relationship.rightCardinality)) {
           field.arrayRef = relationship.right
         } else {
           field.objectRef = relationship.right
@@ -101,14 +101,13 @@ function parseRelationshipComposition(relationship, clazzArray) {
     clazzArray.filter(clazz => clazz.clazzName == relationship.right).forEach(function(clazz) {
       clazz.fields.filter(field => field.type == leftTypeField).forEach(function(field) {
         field.type = null;
-        if (cardinalityIsList(relationship.rightCardinality)) {
+        if (cardinalityIsList(relationship.leftCardinality)) {
           field.arrayRef = relationship.left
         } else {
           field.objectRef = relationship.left
         }
       })
     });
-
   return clazzArray;
 }
 
@@ -146,7 +145,21 @@ function parseClazzField(member, enums) {
   field.type = member.type;
   switch(field.type) {
     case 'String':
+    case 'string':
       field.type = 'string'
+      break;
+    case 'int64':
+    case 'long':
+    case 'Long':
+      field.type = 'integer'
+      field.format = 'int64'
+      break;
+    case 'int32':
+    case 'int':
+    case 'Integer':
+    case 'integer':
+      field.type = 'integer'
+      field.format = 'int32'
       break;
     case 'ListOfString':
       field.type = null

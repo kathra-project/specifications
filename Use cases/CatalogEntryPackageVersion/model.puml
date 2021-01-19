@@ -1,0 +1,21 @@
+@startuml
+
+
+class CatalogEntryPackageVersion  {
+     String version
+     String documentation
+     CatalogEntryPackage catalogEntryPackage
+     ListOfCatalogEntryArgument arguments
+}
+CatalogEntryPackage "1" --o  "0..*" CatalogEntryPackageVersion
+
+class CatalogEntryArgument  {
+     String label
+     String description
+     String key
+     String value
+     String constraint
+}
+CatalogEntryPackageVersion "1" --o  "0..*" CatalogEntryArgument
+
+@enduml

@@ -3,15 +3,20 @@
 class  Group {
   String path
   Group parent
+  User technicalUser
+  ListOfBinaryRepository binaryRepositories
+  ListOfAssignation members
   RESOURCE_STATUS sourceRepositoryStatus
   RESOURCE_STATUS sourceMembershipStatus
   RESOURCE_STATUS pipelineFolderStatus
   RESOURCE_STATUS binaryRepositoryStatus
 }
+Resource <|-- Group
 Group  o-- "0..1"   Group : parent
-Group  "1" <--   User : technicalUser
-Assignation  "1" o-- "0..*"   Group : assignations
-Group  "1" <-- "0..1"   KeyPair : group
+Group  "1" o--   User : technicalUser
+Group  "1" o-- "0..*"   Assignation : assignations
+Group  "1" o-- "0..1"   KeyPair : group
+Group  "1" o-- "0..*"   BinaryRepository : ownership
 
 enum MEMBERSHIP_ROLE {
          - GUEST

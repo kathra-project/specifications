@@ -5,7 +5,7 @@ class  ApiVersion {
   String version
   Boolean released
   RESOURCE_STATUS apiRepositoryStatus
-  ListOfImplementationVersion implementationVersions
+  ListOfImplementationVersion implementationsVersions
   ListOfLibraryApiVersion librariesApiVersions
 }
 Component "1" *-- "0..*"  ApiVersion

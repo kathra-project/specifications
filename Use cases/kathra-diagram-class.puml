@@ -12,8 +12,8 @@ skinparam class {
 !include ./Asset/model.puml
 !include ./BinaryRepository/model.puml
 !include ./CatalogEntry/model.puml
-!include ./CatalogEntryVersion/model.puml
 !include ./CatalogEntryPackage/model.puml
+!include ./CatalogEntryPackageVersion/model.puml
 !include ./Component/model.puml
 !include ./Group/model.puml
 !include ./Implementation/model.puml

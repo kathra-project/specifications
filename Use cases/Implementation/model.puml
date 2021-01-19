@@ -6,17 +6,22 @@ class  Implementation {
   String title
   Component component
   ListOfImplementationVersion versions
+  ListOfCatalogEntry catalogEntries
   PROGRAMMING_LANGUAGE language
 }
 Implementation "1" o-- "0..*" ImplementationVersion
+Implementation "1" o-- "0..*" CatalogEntry
 
 class  ImplementationVersion {
   string version
+  string description
   Implementation implementation
   ApiVersion apiVersion
+  SourceRepository sourceRepo
 }
 Resource <|-- ImplementationVersion
 
+SourceRepository  "0..1" -- "0..1" ImplementationVersion
 ImplementationVersion  "0..*" --o "1" ApiVersion
 Implementation  "0..*" --o "1"  Component
 @enduml

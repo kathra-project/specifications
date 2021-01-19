@@ -1,11 +1,12 @@
 @startuml
-
 class User {
   String firstName
   String lastName
   String email
   String password
+  String phone
+  ListOfAssignation groups
 }
-Assignation  "1" o-- "0..*"   User : assignations
+User  "1" o-- "0..*"  Assignation  : assignations
 Resource <|-- User
 @enduml

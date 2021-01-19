@@ -1,12 +1,16 @@
 @startuml
 
 class  CatalogEntryPackage {
+     CatalogEntry catalogEntry
      PACKAGE_TYPE packageType
-     string packaprovidergeType
-     string packagproviderIdeType
-     string url
+     String provider
+     String providerId
+     String url
+     ListOfCatalogEntryPackageVersion versions
 }
 CatalogEntryVersion "1" --o  "0..*" CatalogEntryPackage
+CatalogEntry "1" --o  "0..*" CatalogEntryPackage
+
 
 enum PACKAGE_TYPE {
      - HELM
@@ -16,5 +20,18 @@ enum PACKAGE_TYPE {
 }
 
 Asset <|-- CatalogEntryPackage
+
+class PackageTemplate {
+     string name
+     ListOfPackageTemplateArgument arguments
+}
+
+class PackageTemplateArgument {
+     string key
+     string value
+     string constraint
+}
+PackageTemplate "1" --o  "0..*" PackageTemplateArgument
+
 
 @enduml

@@ -2,6 +2,8 @@
 class KeyPair {
   String privateKey
   String publicKey
+  Group group
 }
 Resource <|-- KeyPair
+KeyPair  "0..1" -- "0..1" Group
 @enduml
