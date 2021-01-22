@@ -1,0 +1,54 @@
+@startuml
+
+interface BinaryRepositoryService {
+    + Credential getCredentials(String id)
+    + ListOfBinaryRepository getBinaryRepositories()
+    + BinaryRepository addBinaryRepository(BinaryRepository binaryRepository)
+    + BinaryRepository getBinaryRepository(String binaryRepoId)
+    + BinaryRepository updateBinaryRepositoryAttributes(String binaryRepoId, BinaryRepository binaryRepository)
+    + BinaryRepository updateBinaryRepository(String binaryRepoId, BinaryRepository binaryRepository)
+    + ListOfMembership getBinaryRepositoryMembership(String binaryRepoId)
+    + void addBinaryRepositoryMembership(String binaryRepoId, Membership binaryRepositoryMembership)
+}
+
+note bottom
+info.title: Kathra Binary Repository Manager
+info.description: Kathra Binary Repository Manager
+info.version: 1.3.0-SNAPSHOT
+info.x-groupId: org.kathra
+info.x-artifactName: binaryRepositoryManager
+
+| Tag               | Verb  | Path                                          | Scopes            | Method                                                                                                            | Description                   |
+| BinaryRepository  | GET   | /credentials/{id}                             | read              | BinaryRepositoryService.getCredentials(String id)                                                                 | Return credentials for a user |
+| BinaryRepository  | GET   | /binaryRepositories/                          | read              | BinaryRepositoryService.getBinaryRepositories()                                                                   | Retrieve a list of existing binary repositories for authenticated |
+| BinaryRepository  | POST  | /binaryRepositories/                          | write             | BinaryRepositoryService.addBinaryRepository(BinaryRepository binaryRepository)                                    | Add a binary repository |
+| BinaryRepository  | GET   | /binaryRepositories/{binaryRepoId}            | read              | BinaryRepositoryService.getBinaryRepository(String binaryRepoId)                                                  | Retrieve a specific binary repository |
+| BinaryRepository  | PATCH | /binaryRepositories/{binaryRepoId}            | write             | BinaryRepositoryService.updateBinaryRepositoryAttributes(String binaryRepoId, BinaryRepository binaryRepository)  | Partially update a registered binary repository |
+| BinaryRepository  | PUT   | /binaryRepositories/{binaryRepoId}            | write             | BinaryRepositoryService.updateBinaryRepository(String binaryRepoId, BinaryRepository binaryRepository)            | Fully update a registered binary repository |
+| BinaryRepository  | GET   | /binaryRepositories/{binaryRepoId}/membership | read              | BinaryRepositoryService.getBinaryRepositoryMembership(String binaryRepoId)                                        | Retrieve a list of users and groups membership values for the specified binary repository |
+| BinaryRepository  | PUT   | /binaryRepositories/{binaryRepoId}/membership | write             | BinaryRepositoryService.addBinaryRepositoryMembership(String binaryRepoId, Membership binaryRepositoryMembership) | Add a binary repository membership for a user or group |
+
+
+end note
+
+class Credential {
+    string username
+    string password
+}
+
+package "org.kathra.core.model" {
+    class BinaryRepository {
+    }                                          
+    class Membership {
+    }
+}
+
+note bottom
+artifactId: kathra-core-model
+groupId: org.kathra
+artifactVersion: 1.3.0-SNAPSHOT
+modelPackage: core.model
+end note
+
+
+@enduml

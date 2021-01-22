@@ -1,5 +1,5 @@
 #!/bin/bash
-export EXTERNAL_PORT=8085
+export EXTERNAL_PORT=8080
 export SCRIPT_DIR=$(dirname $(readlink -f "$0"))
 export CODEGEN_URL="http://localhost:$EXTERNAL_PORT/api/v1"
 export VERSION="1.3.0-SNAPSHOT"

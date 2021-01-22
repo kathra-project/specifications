@@ -1,0 +1,220 @@
+swagger: '2.0'
+{{#info}}
+info:
+  title: {{title}}
+  version: {{version}}
+  x-artifactName: {{x-artifactName}}
+  x-groupId: {{x-groupId}}
+  description: {{description}}
+{{/info}}
+securityDefinitions:
+  kathra_auth:
+    type: oauth2
+    authorizationUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth
+    tokenUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token
+    flow: accessCode
+    scopes:
+      read: read everything
+      write: create everything
+{{#hasTags}}
+tags:
+{{/hasTags}}
+{{#tags}}
+- name: {{name}}
+  description: {{description}}
+{{/tags}}
+paths: 
+{{#paths}}
+  {{{path}}}:{{#methods}}    
+    {{method}}:
+      operationId: {{operationId}}
+      summary: {{summary}}
+      {{#hasTags}}
+      tags:
+      {{/hasTags}}
+      {{#tags}}
+      - {{tags}}
+      {{/tags}}
+      {{#hasConsumes}}
+      consumes:
+      {{/hasConsumes}}
+      {{#consumes}}
+      - {{{type}}}
+      {{/consumes}}
+      {{#hasProduces}}
+      produces:
+      {{/hasProduces}}
+      {{#produces}}
+      - {{{type}}}
+      {{/produces}}
+      {{#hasParameters}}
+      parameters:
+      {{/hasParameters}}
+      {{#parameters}}
+      - in: {{in}}
+        name: {{name}}
+        description: {{description}}
+        required: {{required}}
+        {{^schema}}
+        type: {{type}}
+        {{/schema}}
+        {{#schema}}
+        schema:
+          {{#arrayType}}
+            type: array
+            items:
+              type: {{arrayType}}
+          {{/arrayType}}
+          {{#arrayRef}}
+            type: array
+            items:
+              $ref: '#/definitions/{{arrayRef}}'
+          {{/arrayRef}}
+          {{#objectRef}}
+          $ref: '#/definitions/{{objectRef}}'
+          {{/objectRef}}
+        {{/schema}}
+      {{/parameters}}
+      responses:
+      {{#responses}}
+        "{{httpCode}}":
+          description: {{description}}
+          {{#schema}}
+          schema:
+            {{#type}}
+            type: {{type}}
+            {{/type}}
+            {{#arrayType}}
+              type: array
+              items:
+                type: {{arrayType}}
+            {{/arrayType}}
+            {{#arrayRef}}
+              type: array
+              items:
+                $ref: '#/definitions/{{arrayRef}}'
+            {{/arrayRef}}
+            {{#objectRef}}
+            $ref: '#/definitions/{{objectRef}}'
+            {{/objectRef}}
+          {{/schema}}
+      {{/responses}}
+      security:
+      - kathra_auth:
+      {{#scopes}}
+        - {{scopes}}
+      {{/scopes}}
+    {{/methods}}
+{{/paths}}
+{{^paths}}
+  /no-operation:
+    get:
+      summary: "empty"
+      operationId: "empty"
+      produces:
+        - "application/json"
+      parameters: []
+      responses:
+        200:
+          description: "empty"
+          schema:
+            type: "string"
+{{/paths}}
+definitions:
+{{#enums}}
+  {{enumName}}:
+    type: {{enumType}}
+    enum: &{{enumName}}
+      {{#values}}
+    - {{.}}
+      {{/values}}
+{{/enums}}
+{{#clazz}}
+  {{clazzName}}:
+    {{#parentClazz}}
+    allOf:
+    - $ref: '#/definitions/{{parentClazz}}'
+    - type: object
+      {{#hasProperties}}
+      properties:
+      {{/hasProperties}}
+      {{#fields}}
+        {{name}}:
+        {{#type}}
+          type: {{type}}
+        {{/type}}
+        {{#format}}
+          format: {{format}}
+        {{/format}}
+        {{#enum}}
+          enum: {{enum}}
+        {{/enum}}
+        {{#objectRef}}
+          $ref: '#/definitions/{{objectRef}}'
+        {{/objectRef}}
+        {{#arrayType}}
+          type: array
+          items:
+            type: {{arrayType}}
+        {{/arrayType}}
+        {{#arrayRef}}
+          type: array
+          items:
+            $ref: '#/definitions/{{arrayRef}}'
+        {{/arrayRef}}
+        {{#additionalProperties}}
+          type: object
+          additionalProperties:
+            type: object
+        {{/additionalProperties}}
+      {{/fields}}
+    {{/parentClazz}}
+    {{#noParentClazz}}
+    type: object
+    {{#hasProperties}}
+    properties:
+    {{/hasProperties}}
+    {{^hasProperties}}
+    x-artifactId: {{x-artifactId}}
+    {{/hasProperties}}
+    {{#fields}}
+      {{name}}:
+      {{#type}}
+        type: {{type}}
+      {{/type}}
+      {{#format}}
+        format: {{format}}
+      {{/format}}
+      {{#enum}}
+        enum: {{enum}}
+      {{/enum}}
+      {{#objectRef}}
+        $ref: '#/definitions/{{objectRef}}'
+      {{/objectRef}}
+      {{#arrayType}}
+        type: array
+        items:
+          type: {{arrayType}}
+      {{/arrayType}}
+      {{#arrayRef}}
+        type: array
+        items:
+          $ref: '#/definitions/{{arrayRef}}'
+      {{/arrayRef}}
+      {{#additionalProperties}}
+        type: object
+        additionalProperties:
+          type: object
+      {{/additionalProperties}}
+      {{/fields}}
+    {{/noParentClazz}}
+{{/clazz}}
+{{#hasDependencies}}
+x-dependencies:
+{{/hasDependencies}}
+{{#dependencies}}
+- artifactId: {{artifactId}}
+  groupId: {{groupId}}
+  artifactVersion: {{artifactId}}
+  modelPackage: {{artifactVersion}}
+{{/dependencies}}

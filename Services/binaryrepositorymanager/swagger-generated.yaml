@@ -1,0 +1,336 @@
+swagger: '2.0'
+info:
+  title: Kathra Binary Repository Manager
+  version: 1.3.0-SNAPSHOT
+  x-artifactName: binaryRepositoryManager
+  x-groupId: org.kathra
+  description: Kathra Binary Repository Manager
+securityDefinitions:
+  kathra_auth:
+    type: oauth2
+    authorizationUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth
+    tokenUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token
+    flow: accessCode
+    scopes:
+      read: read everything
+      write: create everything
+tags:
+- name: BinaryRepository
+  description: BinaryRepository
+paths: 
+  /credentials/{id}:    
+    get:
+      operationId: getCredentials
+      summary: Return credentials for a user
+      tags:
+      - BinaryRepository
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: id
+        description: undefined
+        required: true
+        type: string
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "200":
+          description: Get Credential
+          schema:
+            $ref: '#/definitions/Credential'
+      security:
+      - kathra_auth:
+        - read
+  /binaryRepositories/:    
+    get:
+      operationId: getBinaryRepositories
+      summary: Retrieve a list of existing binary repositories for authenticated
+      tags:
+      - BinaryRepository
+      produces:
+      - application/json
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "200":
+          description: Get list of BinaryRepository
+          schema:
+              type: array
+              items:
+                $ref: '#/definitions/BinaryRepository'
+      security:
+      - kathra_auth:
+        - read
+    
+    post:
+      operationId: addBinaryRepository
+      summary: Add a binary repository
+      tags:
+      - BinaryRepository
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: body
+        name: binaryRepository
+        description: undefined
+        required: true
+        schema:
+          $ref: '#/definitions/BinaryRepository'
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "200":
+          description: Get BinaryRepository
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+      security:
+      - kathra_auth:
+        - write
+  /binaryRepositories/{binaryRepoId}:    
+    get:
+      operationId: getBinaryRepository
+      summary: Retrieve a specific binary repository
+      tags:
+      - BinaryRepository
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: binaryRepoId
+        description: undefined
+        required: true
+        type: string
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "200":
+          description: Get BinaryRepository
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+      security:
+      - kathra_auth:
+        - read
+    
+    patch:
+      operationId: updateBinaryRepositoryAttributes
+      summary: Partially update a registered binary repository
+      tags:
+      - BinaryRepository
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: binaryRepoId
+        description: undefined
+        required: true
+        type: string
+      - in: body
+        name: binaryRepository
+        description: undefined
+        required: true
+        schema:
+          $ref: '#/definitions/BinaryRepository'
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "200":
+          description: Get BinaryRepository
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+      security:
+      - kathra_auth:
+        - write
+    
+    put:
+      operationId: updateBinaryRepository
+      summary: Fully update a registered binary repository
+      tags:
+      - BinaryRepository
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: binaryRepoId
+        description: undefined
+        required: true
+        type: string
+      - in: body
+        name: binaryRepository
+        description: undefined
+        required: true
+        schema:
+          $ref: '#/definitions/BinaryRepository'
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "200":
+          description: Get BinaryRepository
+          schema:
+            $ref: '#/definitions/BinaryRepository'
+      security:
+      - kathra_auth:
+        - write
+  /binaryRepositories/{binaryRepoId}/membership:    
+    get:
+      operationId: getBinaryRepositoryMembership
+      summary: Retrieve a list of users and groups membership values for the specified binary repository
+      tags:
+      - BinaryRepository
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: binaryRepoId
+        description: undefined
+        required: true
+        type: string
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "200":
+          description: Get list of Membership
+          schema:
+              type: array
+              items:
+                $ref: '#/definitions/Membership'
+      security:
+      - kathra_auth:
+        - read
+    
+    put:
+      operationId: addBinaryRepositoryMembership
+      summary: Add a binary repository membership for a user or group
+      tags:
+      - BinaryRepository
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      parameters:
+      - in: path
+        name: binaryRepoId
+        description: undefined
+        required: true
+        type: string
+      - in: body
+        name: binaryRepositoryMembership
+        description: undefined
+        required: true
+        schema:
+          $ref: '#/definitions/Membership'
+      responses:
+        "400":
+          description: Bad request
+          schema:
+            type: string
+        "404":
+          description: Not found
+          schema:
+            type: string
+        "500":
+          description: Internal error
+          schema:
+            type: string
+        "200":
+          description: Ok
+          schema:
+            type: string
+      security:
+      - kathra_auth:
+        - write
+definitions:
+  Credential:
+    type: object
+    properties:
+      username:
+        type: string
+      password:
+        type: string
+  BinaryRepository:
+    type: object
+    x-artifactId: kathra-core-model
+  Membership:
+    type: object
+    x-artifactId: kathra-core-model
+x-dependencies:
+- artifactId: kathra-core-model
+  groupId: org.kathra
+  artifactVersion: kathra-core-model
+  modelPackage: 1.3.0-SNAPSHOT
