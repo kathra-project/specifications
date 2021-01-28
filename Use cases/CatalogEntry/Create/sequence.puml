@@ -139,8 +139,7 @@ loop (package types) :packageType={HELM, KUSTOMIZE, ...}
 
     deactivate AppManager.CatalogEntryPackageService
 
-  
-  
+
 end
 
 == Wait all CatalogEntryPackage status are READY ==

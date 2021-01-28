@@ -1,8 +1,7 @@
 #!/bin/bash
 export SCRIPT_DIR=$(dirname $(readlink -f "$0"))
 cd $SCRIPT_DIR/puml2swagger
-node . 
-cp build/swagger.yaml ../Services/core/swagger.yaml 
+node . "$SCRIPT_DIR/Use cases/kathra-diagram-class.puml" "$SCRIPT_DIR/Services/core/swagger.yaml"
 
-#./../Services/script/update-api.sh --start-codegen
-./../Services/script/update-api.sh --generateSource --component=core --lib=model
+#$SCRIPT_DIR/Services/script/update-api.sh --start-codegen
+$SCRIPT_DIR/Services/script/update-api.sh --generateSource --component=core --lib=model

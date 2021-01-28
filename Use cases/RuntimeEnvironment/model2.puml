@@ -1,0 +1,25 @@
+@startuml
+
+
+class Environment {
+    String description
+    EnvironmentType type
+    MapOfObject configuration
+    ListOfEnvironmentPackage packages
+}
+Asset <|-- Environment
+
+Environment  "1" o-- "0..*" EnvironmentPackage : package
+class EnvironmentPackage {
+    CatalogEntryPackageVersion catalogEntryPackageVersion
+    ListOfCatalogEntryArgument configuration
+}
+
+enum EnvironmentType {
+    - TERRAFORM_HELM
+}
+
+EnvironmentPackage  "0..*" --- "1" CatalogEntryPackageVersion : catalogEntryPackageVersion
+CatalogEntryArgument  "0..*" --o "1" EnvironmentPackage : configuration
+
+@enduml

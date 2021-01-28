@@ -5,6 +5,7 @@ console.debug('config : ', config);
 // REQUIREMENTS
 var path = require('path');
 var fs = require('fs');
+var uuid = require('uuid-random');
 var rimraf = require('rimraf');
 var Mustache = require('mustache');
 const { parse, parseFile, formatters } = require('plantuml-parser');
@@ -28,11 +29,12 @@ function resolveIncludes(fileIn) {
   return dataWithoutIncludes;
 }
 plantUmlUnified = resolveIncludes(fs.realpathSync(inFile));
-plantUmlUnifiedFilePath = config.destPath + ".tmp.puml"
+plantUmlUnifiedFilePath =  "./build/" + uuid() + ".tmp.puml"
 fs.writeFileSync(plantUmlUnifiedFilePath, "@startuml\n" + plantUmlUnified + "\n@enduml", 'utf8');
 
 // parse PlantUML
 const ast = parseFile(plantUmlUnifiedFilePath);
+fs.unlinkSync(plantUmlUnifiedFilePath)
 // Format and print AST
 //console.log(
 //  formatters.default(ast)
@@ -105,8 +107,16 @@ function parseMethod(interfaceName, methodToParse, enums, clazz, notes) {
 function addExtraMethodInfoInNotes(method, interfaceName, methodToParse, notes) {
   var methodId = interfaceName+"."+methodToParse.name+"("+methodToParse._arguments+")"
   notes.forEach(function(note) {
+    var interfaceNameFromNode = null
     note.text.split("\n").forEach(line => {
+      if (line.trim().startsWith("Interface:")) {
+        interfaceNameFromNode = line.trim().replace("Interface:", "").trim()
+      }
+
       var cells = line.split("|").map(cell => cell.trim()).filter(cell => cell != "")
+      if (cells.length <= 3)
+        return;
+
       if (cells.indexOf("Verb") >= 0)
         iVerb = cells.indexOf("Verb")
       if (cells.indexOf("Path") >= 0)
@@ -119,8 +129,9 @@ function addExtraMethodInfoInNotes(method, interfaceName, methodToParse, notes) 
         iTag = cells.indexOf("Tag")
       if (cells.indexOf("Scopes") >= 0)
         iScope = cells.indexOf("Scopes")
-
-      if (cells.length > 3 && cells[iMethod] == methodId) {
+      
+      methodSignatureFromNote =  interfaceNameFromNode+"."+cells[iMethod]
+      if (methodSignatureFromNote == methodId) {
         method.httpSignature  = {verb: cells[iVerb], path: cells[iPath]};
         method.summary        = cells[iDescription]
         if (iTag != null) {

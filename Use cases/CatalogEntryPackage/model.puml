@@ -1,6 +1,6 @@
 @startuml
 
-class  CatalogEntryPackage {
+class CatalogEntryPackage {
      CatalogEntry catalogEntry
      PACKAGE_TYPE packageType
      String provider

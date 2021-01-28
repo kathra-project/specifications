@@ -1,9 +1,19 @@
 swagger: '2.0'
 info:
-  title: Kathra Core Model
+  title: Kathra Core
   version: 1.3.0-SNAPSHOT
   x-artifactName: core
   x-groupId: org.kathra
+  description: Kathra Core
+securityDefinitions:
+  kathra_auth:
+    type: oauth2
+    authorizationUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/auth
+    tokenUrl: https://keycloak.irtsysx.fr/auth/realms/kathra/protocol/openid-connect/token
+    flow: accessCode
+    scopes:
+      read: read everything
+      write: create everything
 paths: 
   /no-operation:
     get:
@@ -47,6 +57,10 @@ definitions:
     enum: &MEMBERSHIP_MEMBERTYPE
     - USER
     - GROUP
+  EnvironmentType:
+    type: string
+    enum: &EnvironmentType
+    - TERRAFORM_HELM
   PROGRAMMING_LANGUAGE:
     type: string
     enum: &PROGRAMMING_LANGUAGE
@@ -76,6 +90,8 @@ definitions:
     - PYTHON_LIBRARY
     - HELM_PACKAGE
     - DOCKER_SERVICE
+    - TERRAFORM_ENVIRONMENT
+    - ANSIBLE_ENVIRONMENT
   BUILD_STATUS:
     type: string
     enum: &BUILD_STATUS
@@ -92,41 +108,6 @@ definitions:
     - UNSTABLE
     - ERROR
     - DELETED
-  RuntimeJobStatus:
-    type: string
-    enum: &RuntimeJobStatus
-    - SCHEDULED
-    - RUNNING
-    - SUCCESS
-    - FAILED
-  RuntimeAppInstanceStatus:
-    type: string
-    enum: &RuntimeAppInstanceStatus
-    - DEPLOYED
-    - PENDING
-    - FAILED
-  RuntimeVolumeStatus:
-    type: string
-    enum: &RuntimeVolumeStatus
-    - PROVISIONING
-    - AVAILABLE
-    - TERMINATING
-  RuntimeContainerStatus:
-    type: string
-    enum: &RuntimeContainerStatus
-    - CREATING
-    - RUNNING
-    - PAUSED
-    - TERMINATING
-    - EXIT_WITH_SUCCES
-    - EXIT_WITH_ERROR
-  RuntimeEnvironmentBackupStatus:
-    type: string
-    enum: &RuntimeEnvironmentBackupStatus
-    - SCHEDULED
-    - PROCESSING
-    - DONE
-    - FAILED
   ApiVersion:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -212,46 +193,46 @@ definitions:
     type: object
     properties:
       name:
-          type: string
+        type: string
       arguments:
-          type: array
-          items:
-            $ref: '#/definitions/PackageTemplateArgument'
+        type: array
+        items:
+          $ref: '#/definitions/PackageTemplateArgument'
   PackageTemplateArgument:
     type: object
     properties:
       key:
-          type: string
+        type: string
       value:
-          type: string
+        type: string
       constraint:
-          type: string
+        type: string
   CatalogEntryPackageVersion:
     type: object
     properties:
       version:
-          type: string
+        type: string
       documentation:
-          type: string
+        type: string
       catalogEntryPackage:
-          $ref: '#/definitions/CatalogEntryPackage'
+        $ref: '#/definitions/CatalogEntryPackage'
       arguments:
-          type: array
-          items:
-            $ref: '#/definitions/CatalogEntryArgument'
+        type: array
+        items:
+          $ref: '#/definitions/CatalogEntryArgument'
   CatalogEntryArgument:
     type: object
     properties:
       label:
-          type: string
+        type: string
       description:
-          type: string
+        type: string
       key:
-          type: string
+        type: string
       value:
-          type: string
+        type: string
       constraint:
-          type: string
+        type: string
   Component:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -306,13 +287,13 @@ definitions:
     type: object
     properties:
       path:
-          type: string
+        type: string
       role:
-          enum: *MEMBERSHIP_ROLE
+        enum: *MEMBERSHIP_ROLE
       memberType:
-          enum: *MEMBERSHIP_MEMBERTYPE
+        enum: *MEMBERSHIP_MEMBERTYPE
       memberName:
-          type: string
+        type: string
   Assignation:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -358,6 +339,32 @@ definitions:
           $ref: '#/definitions/ApiVersion'
         sourceRepo:
           $ref: '#/definitions/SourceRepository'
+  Environment:
+    allOf:
+    - $ref: '#/definitions/Asset'
+    - type: object
+      properties:
+        description:
+          type: string
+        type:
+          enum: *EnvironmentType
+        configuration:
+          type: object
+          additionalProperties:
+            type: object
+        packages:
+          type: array
+          items:
+            $ref: '#/definitions/EnvironmentPackage'
+  EnvironmentPackage:
+    type: object
+    properties:
+      catalogEntryPackageVersion:
+        $ref: '#/definitions/CatalogEntryPackageVersion'
+      configuration:
+        type: array
+        items:
+          $ref: '#/definitions/CatalogEntryArgument'
   KeyPair:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -418,169 +425,57 @@ definitions:
     type: object
     properties:
       buildNumber:
-          type: string
+        type: string
       path:
-          type: string
+        type: string
       commitLabel:
-          type: string
+        type: string
       commitId:
-          type: string
+        type: string
       creationDate:
-          type: integer
-          format: int64
+        type: integer
+        format: int64
       duration:
-          type: integer
-          format: int32
+        type: integer
+        format: int32
       status:
-          enum: *BUILD_STATUS
+        enum: *BUILD_STATUS
       buildArguments:
-          type: array
-          items:
-            $ref: '#/definitions/BuildArgument'
+        type: array
+        items:
+          $ref: '#/definitions/BuildArgument'
       logs:
-          type: string
+        type: string
   BuildArgument:
     type: object
     properties:
       key:
-          type: string
+        type: string
       value:
-          type: string
+        type: string
   Resource:
     type: object
     properties:
       id:
-          type: string
+        type: string
       name:
-          type: string
+        type: string
       metadata:
+        type: object
+        additionalProperties:
           type: object
-          additionalProperties:
-            type: object
       status:
-          enum: *RESOURCE_STATUS
+        enum: *RESOURCE_STATUS
       createdBy:
-          type: string
+        type: string
       updatedBy:
-          type: string
+        type: string
       createdAt:
-          type: integer
-          format: int32
+        type: integer
+        format: int32
       updatedAt:
-          type: integer
-          format: int32
-  Cluster:
-    allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        providerId:
-          type: string
-        provider:
-          type: string
-        packageManagerManaged:
-          enum: *PACKAGE_TYPE
-  RuntimeEnvironment:
-    allOf:
-    - $ref: '#/definitions/Resource'
-    - type: object
-      properties:
-        providerId:
-          type: string
-        provider:
-          type: string
-        description:
-          type: string
-        labels:
-          type: string
-        owner:
-          $ref: '#/definitions/User'
-  RuntimeAppInstance:
-    type: object
-    properties:
-      providerId:
-          type: string
-      name:
-          type: string
-      status:
-          enum: *RuntimeAppInstanceStatus
-  RuntimeJob:
-    type: object
-    properties:
-      providerId:
-          type: string
-      status:
-          enum: *RuntimeAppInstanceStatus
-  RuntimeAppService:
-    type: object
-    properties:
-      name:
-          type: string
-      providerId:
-          type: string
-      status:
-          type: object
-          additionalProperties:
-            type: object
-  RuntimeVolume:
-    type: object
-    properties:
-      name:
-          type: string
-      providerId:
-          type: string
-      space:
-          type: string
-      status:
-          enum: *RuntimeJobStatus
-  RuntimeContainer:
-    type: object
-    properties:
-      name:
-          type: string
-      providerId:
-          type: string
-      image:
-          type: string
-      imageHash:
-          type: string
-      memoryLimit:
-          type: string
-      cpuLimit:
-          type: string
-      status:
-          enum: *RuntimeContainerStatus
-  RuntimeEnvironmentBackup:
-    type: object
-    properties:
-      date:
-          type: string
-      providerId:
-          type: string
-      status:
-          type: string
-  RuntimeHttpLoadBalancer:
-    type: object
-    properties:
-      name:
-          type: string
-      providerId:
-          type: string
-      hostname:
-          type: string
-      port:
-          type: string
-      rewriteUrl:
-          type: string
-  RuntimeHttpLoadBalancerForwarding:
-    type: object
-    properties:
-      rule:
-          type: string
-      service:
-          type: string
-      port:
-          type: string
+        type: integer
+        format: int32
   SourceRepository:
     allOf:
     - $ref: '#/definitions/Resource'
@@ -606,23 +501,23 @@ definitions:
     type: object
     properties:
       id:
-          type: string
+        type: string
       shortId:
-          type: string
+        type: string
       title:
-          type: string
+        type: string
       authorName:
-          type: string
+        type: string
       authorEmail:
-          type: string
+        type: string
       createdAt:
-          type: string
+        type: string
       committerName:
-          type: string
+        type: string
       committerEmail:
-          type: string
+        type: string
       message:
-          type: string
+        type: string
   User:
     allOf:
     - $ref: '#/definitions/Resource'

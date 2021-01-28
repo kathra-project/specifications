@@ -12,7 +12,7 @@ state PENDING {
 ERROR -> [*]
 PENDING -> OK : Runtime environment is fully initialized
 PENDING -> ERROR
-OK : Update CatalogEntry to OK
+OK : Update RuntimeEnvironment to OK
 OK --> UNSTABLE : An error exception is detected
 state UNSTABLE {
     state "Check runtime environment exists into RuntimeManager" as checkRE

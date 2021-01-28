@@ -17,13 +17,20 @@ skinparam class {
 !include ./Component/model.puml
 !include ./Group/model.puml
 !include ./Implementation/model.puml
+!include ./RuntimeEnvironment/model2.puml
 !include ./KeyPair/model.puml
 !include ./Library/model.puml
 !include ./Pipeline/model.puml
 !include ./Resource/model.puml
-!include ./RuntimeEnvironment/model.puml
 !include ./SourceRepository/model.puml
 !include ./User/model.puml
 
+note bottom
+info.title: Kathra Core
+info.description: Kathra Core
+info.version: 1.3.0-SNAPSHOT
+info.x-groupId: org.kathra
+info.x-artifactName: core
+end note
 
 @enduml

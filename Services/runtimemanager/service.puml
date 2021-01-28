@@ -1,0 +1,17 @@
+@startuml
+
+interface RuntimeManagerService {
+    + RuntimeEnvironment getRuntimeEnvironment(String id)
+    + ListOfRuntimeEnvironment getRuntimeEnvironments()
+    + RuntimeEnvironment addRuntimeEnvironment(RuntimeEnvironment runtimeEnvironment)
+    + void deleteRuntimeEnvironment(RuntimeEnvironment runtimeEnvironment)
+}
+
+interface RuntimeEnvironmentPackageService {
+    + RuntimeEnvironmentPackage addRuntimeEnvironmentPackage(RuntimeEnvironmentPackage runtimeEnvironmentPackage)
+    + void updateRuntimeEnvironmentPackage(RuntimeEnvironmentPackage runtimeEnvironmentPackage)
+    + void deleteRuntimeEnvironmentPackage(RuntimeEnvironmentPackage runtimeEnvironmentPackage)
+}
+
+
+@enduml

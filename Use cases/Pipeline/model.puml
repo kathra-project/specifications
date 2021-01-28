@@ -12,12 +12,14 @@ SourceRepository "1" o-- "0..*" Pipeline
 
 
 enum PIPELINE_TEMPLATE {
-         - JAVA_LIBRARY
-         - PYTHON_SERVICE
-         - JAVA_SERVICE
-         - PYTHON_LIBRARY
-         - HELM_PACKAGE
-         - DOCKER_SERVICE
+    - JAVA_LIBRARY
+    - PYTHON_SERVICE
+    - JAVA_SERVICE
+    - PYTHON_LIBRARY
+    - HELM_PACKAGE
+    - DOCKER_SERVICE
+    - TERRAFORM_ENVIRONMENT
+    - ANSIBLE_ENVIRONMENT
 }
 
 

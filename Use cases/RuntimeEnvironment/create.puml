@@ -1,0 +1,64 @@
+@startuml
+
+activate User
+User -> UI: LINK: goto /addCatalogEntry page
+activate UI
+    UI -> AppManager : POST /environments [
+        activate AppManager
+        AppManager -> AppManager.EnvironmentService : create(Environment environment) \n [body:Environment{"name"= :name, \n "metadata"={"groupPath"=:groupPath, "groupId"=:groupId}}]
+            activate AppManager.EnvironmentService
+            AppManager.EnvironmentService -> ResourceManager: POST /environments \n [body:Environment { "name"= :name, \n "metadata"={"groupPath"=:groupPath, \n "groupId"=:groupId}}]
+               activate ResourceManager
+               ResourceManager -> ResourceManager: create environment into db
+               ResourceManager -> AppManager.EnvironmentService: Environment {"id"= <guid>, \n "status" = "PENDING" }
+               deactivate ResourceManager
+        AppManager <-- AppManager.EnvironmentService: \n Environment{ \n "id" = <guid>, \n "name" = :name, \n "status" = "PENDING"}
+    UI <- AppManager: \n Environment{ \n "id" = <guid>, \n "name" = :name, \n "status" = "PENDING"}
+User <- UI:
+
+
+            AppManager.EnvironmentService -> AppManager.RepositoryService:createRepository(String name, String path, String[] deployKeys) \n name=:environment.name \n path=:groupPath/environments/:environment.name \n deployKeys=[:environment.metadata.groupId]
+
+            AppManager.EnvironmentService -> ResourceManager: PATCH /environment/{id} \n [params: "id"= :environment.id] \n [body: Environment {"sourceRepository"= {"id"= SourceRepository.id}}]
+            activate ResourceManager
+            AppManager.EnvironmentService <- ResourceManager : EnvironmentService
+            deactivate ResourceManager
+
+
+            AppManager.EnvironmentService --> AppManager.PipelineService: PipelineService.createPipeline(\n String path, \n SourceRepository sourceRepository, \n PipelineTemplate pipelineTemplate) : Pipeline  \n path=groupId/environments/:environment.name \n sourceRepository=:sourceRepository \n metadata.KATHRA_WEBHOOK=:KATHRA_WEBHOOK \n PipelineTemplate=:environmentType
+
+            AppManager.EnvironmentService -> ResourceManager: PATCH /environment/{id} \n [params: "id"= :environment.id] \n [body: Environment {"pipeline"= {"id"= Pipeline.id}}]
+            activate ResourceManager
+            ResourceManager -> AppManager.EnvironmentService: EnvironmentService
+            deactivate ResourceManager
+
+== Wait until SourceRepository and Pipeline status are READY ==
+
+
+            AppManager.EnvironmentService -> CodeGen: POST /generateFromTemplate [body: CodeGenTemplate { template: environment.template, arguments: [{key: "ENVIRONMENT_CONFIGURATION", value: environment.configuration }} }]
+            activate CodeGen
+            AppManager.EnvironmentService <- CodeGen: zip file w/ source code generated
+            deactivate CodeGen
+
+
+            AppManager.EnvironmentService -> AppManager.RepositoryService : RepositoryService.updateSourceRepository( \n SourceRepository sourceRepository, String branch, File archiveFile) \n sourceRepository=:environment.sourceRepository \n sourceRepository=:archiveFile \n branch="main"
+
+            AppManager.EnvironmentService -> AppManager.PipelineService: PipelineService.executeBuild(\n Pipeline pipeline,\nString branch) \n pipeline=:environment.pipeline \n branch="main"
+            activate AppManager.PipelineService
+            AppManager.EnvironmentService <- AppManager.PipelineService : Build
+            deactivate AppManager.PipelineService
+
+== Wait until last build status are READY ==
+
+            AppManager.EnvironmentService -> ResourceManager: PATCH /environment/{id} \n [params: "id"= :environment.id] \n [body: Environment {"status"= "READY"}]
+            deactivate AppManager.EnvironmentService
+
+        deactivate AppManager
+
+
+deactivate Dashboard
+deactivate UI
+deactivate User
+
+
+@enduml
